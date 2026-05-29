@@ -139,7 +139,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
 
       <label>Fahrzeug</label>
-      <select id="f-fahrzeug">
+      <select id="f-fahrzeug" onchange="onFahrzeugChange()">
         <option value="">– wählen –</option>
         <option>PTF</option>
         <option>OW</option>
@@ -148,18 +148,21 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <option>PIF</option>
         <option>OC</option>
         <option>ULF</option>
+        <option>ADL</option>
       </select>
 
-      <label>Einsatzgebiet</label>
-      <div class="radio-group" id="gebiet-group">
-        <label class="radio-card" id="rc-stuetzpunkt" onclick="selectGebiet('stuetzpunkt')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Stützpunktgebiet
-        </label>
-        <label class="radio-card" id="rc-orts" onclick="selectGebiet('orts')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          Ortsfeuerwehrgebiet
-        </label>
+      <div id="gebiet-wrap" style="display:none">
+        <label>Einsatzgebiet</label>
+        <div class="radio-group" id="gebiet-group">
+          <label class="radio-card" id="rc-stuetzpunkt" onclick="selectGebiet('stuetzpunkt')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Stützpunktgebiet
+          </label>
+          <label class="radio-card" id="rc-orts" onclick="selectGebiet('orts')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Ortsfeuerwehrgebiet
+          </label>
+        </div>
       </div>
 
       <label>Fahrt</label>
@@ -417,7 +420,16 @@ const FRAGEN = {
     {f:"Was ist bei der Ankunft am Schadenplatz mit dem OC zuerst zu tun?",a:["Pumpe starten","Lage erkunden und Lagebericht erstatten","Mannschaft aussteigen lassen","Funk abschalten"],r:1,e:"Zuerst Lage erkunden und Lagebericht an Disposition erstatten."},
     {f:"Was ist das METHANE-Schema?",a:["Funkalphabet","Einsatz-Führungsschema","Chemikalienliste","[Platzhalter]"],r:1,e:"METHANE = Major incident, Exact location, Type, Hazards, Access, Number, Emergency services."}
   ],
-  ULF:[
+  ADL:[
+    {f:"Wofür steht ADL?",a:["Anhängerdrehleiter","Automatische Drehleitern","Ausziehbare Drehleiter","[Platzhalter – bitte anpassen]"],r:0,e:"ADL = Anhängerdrehleiter."},
+    {f:"Welcher Führerschein ist für das Zugfahrzeug der ADL erforderlich?",a:["Kat. B","Kat. BE","Kat. C1E","Kat. CE"],r:1,e:"Das Zugfahrzeug mit Anhänger erfordert Kat. BE je nach Gesamtgewicht."},
+    {f:"Was ist die maximale Arbeitshöhe einer typischen ADL?",a:["18 m","23 m","30 m","40 m"],r:2,e:"Eine typische ADL erreicht eine Arbeitshöhe von ca. 30 m – bitte lokal prüfen."},
+    {f:"Was ist vor dem Aufstellen der ADL zwingend zu prüfen?",a:["Reifendruck","Untergrund und Abstützfläche","Windgeschwindigkeit","Beleuchtung"],r:1,e:"Der Untergrund muss tragfähig sein, Abstützplatten verwenden."},
+    {f:"Was bezeichnet man als 'Korbnennlast' der ADL?",a:["Gesamtgewicht der Leiter","Maximale Zuladung im Rettungskorb","Eigengewicht des Anhängers","Zugkraft des Fahrzeugs"],r:1,e:"Korbnennlast = maximales zulässiges Gewicht im Rettungskorb (Person + Ausrüstung)."},
+    {f:"Was ist beim Rangieren mit der ADL im Anhängerbetrieb besonders zu beachten?",a:["Anhänger lenkt gleich wie Zugfahrzeug","Anhänger schlägt beim Rückwärtsfahren entgegengesetzt ein","Anhänger hat eigene Bremsen","Keine Besonderheiten"],r:1,e:"Beim Rückwärtsfahren schlägt der Anhänger entgegengesetzt ein – Übung erforderlich."},
+    {f:"Welche Windgeschwindigkeit ist typischerweise die Einsatzgrenze der ADL?",a:["30 km/h","50 km/h","72 km/h","100 km/h"],r:2,e:"Typische Einsatzgrenze liegt bei Windstärke 6 (ca. 72 km/h) – bitte Herstellerangaben prüfen."},
+    {f:"Was ist nach dem Einsatz mit der ADL als erstes zu tun?",a:["Leiter einfahren und sichern","Korb reinigen","Protokoll ausfüllen","Fahrzeug tanken"],r:0,e:"Leiter vollständig einfahren, verriegeln und Abstützungen einziehen."}
+  ]
     {f:"Wofür steht ULF?",a:["Ultra-Lösch-Fahrzeug","Universallöschfahrzeug","Unterdruck-Last-Fahrzeug","Urbanes Löschfahrzeug"],r:1,e:"ULF = Universallöschfahrzeug."},
     {f:"Was zeichnet das ULF gegenüber dem TLF aus?",a:["Grösserer Tank","Mehr Mannschaft","Kombinierte Löschmittel (Wasser, Schaum, Pulver)","Höhere Geschwindigkeit"],r:2,e:"Das ULF kann verschiedene Löschmittel kombiniert einsetzen."},
     {f:"Welcher Führerschein ist für das ULF erforderlich?",a:["Kat. B","Kat. C1","Kat. C","Kat. D"],r:2,e:"Das ULF ist in der Regel über 7.5 t und erfordert Kat. C."},
@@ -429,8 +441,23 @@ const FRAGEN = {
   ]
 };
 
+const STUETZPUNKT_FAHRZEUGE = ["PIF","ULF","OC"];
+
 let ST = {};
 let selectedGebiet = "";
+
+function onFahrzeugChange(){
+  const fzg = document.getElementById("f-fahrzeug").value;
+  const wrap = document.getElementById("gebiet-wrap");
+  if(STUETZPUNKT_FAHRZEUGE.includes(fzg)){
+    wrap.style.display = "block";
+  } else {
+    wrap.style.display = "none";
+    selectedGebiet = "orts";
+    document.getElementById("rc-stuetzpunkt").classList.remove("selected");
+    document.getElementById("rc-orts").classList.remove("selected");
+  }
+}
 
 function selectGebiet(val) {
   selectedGebiet = val;
@@ -454,10 +481,13 @@ function weiter(){
   const aufbau=document.getElementById("f-aufbau").value;
   const err=document.getElementById("form1-err");
 
-  if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||!selectedGebiet){err.style.display="block";return;}
+  const needsGebiet = STUETZPUNKT_FAHRZEUGE.includes(fzg);
+  if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||(needsGebiet&&!selectedGebiet)){err.style.display="block";return;}
   err.style.display="none";
 
-  ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,gebiet:selectedGebiet,einsatzAddr:null,quizResults:[]};
+  const gebiet = needsGebiet ? selectedGebiet : "orts";
+
+  ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,gebiet,einsatzAddr:null,quizResults:[]};
 
   if(fahrt==="einsatz") zeigeEinsatz();
   else if(aufbau==="abfrage") starteAbfrage();
@@ -587,26 +617,20 @@ async function abschliessen(){
       method:"POST", mode:"no-cors",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
-        type:"fahrt",
-        datum:ST.datum, fahrer:ST.fahrer, beifahrer:ST.beifahrer,
-        fahrzeug:ST.fahrzeug, fahrt:ST.fahrt, aufbau:ST.aufbau,
-        gebiet:gebietLabel, abfahrt:ST.abfahrt, rueckkehr:rk,
-        einsatzAddr:ST.einsatzAddr||"–",
-        richtig, total, pct
-      })
-    });
-
-    for(const qr of ST.quizResults){
-      await fetch(SHEETS_URL, {
-        method:"POST", mode:"no-cors",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          type:"frage",
+        type:"alles",
+        fahrt:{
+          datum:ST.datum, fahrer:ST.fahrer, beifahrer:ST.beifahrer,
+          fahrzeug:ST.fahrzeug, fahrt:ST.fahrt, aufbau:ST.aufbau,
+          gebiet:gebietLabel, abfahrt:ST.abfahrt, rueckkehr:rk,
+          einsatzAddr:ST.einsatzAddr||"–",
+          richtig, total, pct
+        },
+        fragen: ST.quizResults.map(qr=>({
           datum:ST.datum, fahrer:ST.fahrer, fahrzeug:ST.fahrzeug,
           frage:qr.frage, gegeben:qr.gegeben, korrekt:qr.korrekt, richtig:qr.richtig
-        })
-      });
-    }
+        }))
+      })
+    });
 
     let sum=`${ST.fahrer} / ${ST.beifahrer} · ${ST.fahrzeug} · ${gebietLabel} · ${ST.datum} · ${ST.abfahrt} – ${rk}`;
     if(total>0) sum+=` · Quiz ${richtig}/${total}`;
@@ -622,6 +646,7 @@ function neustart(){
   selectedGebiet="";
   document.getElementById("rc-stuetzpunkt").classList.remove("selected");
   document.getElementById("rc-orts").classList.remove("selected");
+  document.getElementById("gebiet-wrap").style.display="none";
   document.getElementById("f-fahrer").value="";
   document.getElementById("f-beifahrer").value="";
   document.getElementById("f-datum").value=today();
