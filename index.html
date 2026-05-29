@@ -133,8 +133,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <h2>Fahrt erfassen</h2>
       <p class="sub">Angaben vor der Abfahrt ausfüllen</p>
       <div class="grid2">
-        <div><label>Fahrer (Kürzel)</label><input type="text" id="f-fahrer" maxlength="3" placeholder="MÜL" style="text-transform:uppercase"></div>
-        <div><label>Beifahrer (Kürzel)</label><input type="text" id="f-beifahrer" maxlength="3" placeholder="SCH" style="text-transform:uppercase"></div>
+        <div><label>Fahrer (Kürzel)</label><input type="text" id="f-fahrer" maxlength="3" style="text-transform:uppercase"></div>
+        <div><label>Beifahrer (Kürzel)</label><input type="text" id="f-beifahrer" maxlength="3" style="text-transform:uppercase"></div>
       </div>
       <div class="grid2">
         <div><label>Datum</label><input type="date" id="f-datum"></div>
@@ -143,7 +143,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <label>Fahrzeugkategorie</label>
       <div class="radio-group" id="kat-group">
         <div class="radio-card" id="rc-kat-b" onclick="selectKat('B')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="15" height="13" rx="1"/><path d="M16 10h4l3 4v5h-7V10z"/><circle cx="5.5" cy="19.5" r="1.5"/><circle cx="18.5" cy="19.5" r="1.5"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v9a2 2 0 01-2 2h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
           B Fahrzeuge
         </div>
         <div class="radio-card" id="rc-kat-c" onclick="selectKat('C')">
@@ -316,7 +316,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.15</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.16</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
