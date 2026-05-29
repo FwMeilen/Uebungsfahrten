@@ -3,130 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fahrtraining – Feuerwehr Meilen</title>
+<title>Fahrtraining – Stützpunktfeuerwehr Meilen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --blue-50:#E6F1FB;--blue-600:#185FA5;--blue-800:#0C447C;
-  --green-50:#EAF3DE;--green-600:#3B6D11;--green-800:#27500A;
-  --amber-50:#FAEEDA;--amber-600:#854F0B;--amber-800:#633806;
-  --red-50:#FCEBEB;--red-600:#A32D2D;
-  --bg:#ffffff;--bg2:#f7f6f3;--bg3:#f0efe9;
-  --text:#1a1a18;--text2:#5f5e5a;--text3:#888780;
-  --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);
-  --rm:8px;--rl:12px;
+  --red:#CC0000;--red-dark:#990000;--red-light:#FDEAEA;
+  --black:#1a1a1a;--gray:#666;--gray-light:#f4f4f4;--gray-mid:#e0e0e0;
+  --green:#2d6a1f;--green-light:#eaf3e6;
+  --bg:#fff;--bg2:#f4f4f4;--bg3:#e8e8e8;
+  --text:#1a1a1a;--text2:#555;--text3:#888;
+  --border:rgba(0,0,0,0.13);--border2:rgba(0,0,0,0.22);
 }
-@media(prefers-color-scheme:dark){
-  :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2c2c2a;--text:#f0efe9;--text2:#b4b2a9;--text3:#888780;--border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);}
-}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;}
-.page{max-width:600px;margin:0 auto;padding:1.25rem 1rem 4rem;}
-.hdr{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;}
-.hdr-icon{width:34px;height:34px;background:var(--red-600);border-radius:var(--rm);display:flex;align-items:center;justify-content:center;}
-.hdr-icon svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.hdr h1{font-size:17px;font-weight:500;}
-.hdr p{font-size:12px;color:var(--text2);}
+body{font-family:'Open Sans',Arial,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* Header */
+.site-header{background:var(--black);}
+.site-header-inner{max-width:660px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;height:54px;gap:12px;}
+.logo-flame{width:32px;height:32px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-flame svg{width:18px;height:18px;fill:white;}
+.logo-text{color:white;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;line-height:1.2;}
+.logo-text span{display:block;font-size:10px;font-weight:400;color:#999;text-transform:none;letter-spacing:0;}
+.red-stripe{height:4px;background:var(--red);}
+
+/* Layout */
+.page{max-width:660px;margin:0 auto;padding:1.5rem 1rem 4rem;}
 .screen{display:none;}
 .screen.active{display:block;}
-.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem;}
-h2{font-size:16px;font-weight:500;margin-bottom:0.35rem;}
-h3{font-size:14px;font-weight:500;margin-bottom:0.5rem;}
-.sub{font-size:13px;color:var(--text2);margin-bottom:0.9rem;line-height:1.5;}
-label{font-size:12px;color:var(--text2);display:block;margin-bottom:3px;margin-top:10px;}
-label:first-child{margin-top:0;}
+
+/* Cards */
+.card{background:var(--bg);border:1px solid var(--gray-mid);border-top:3px solid var(--red);padding:1.25rem;margin-bottom:1rem;}
+h2{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.25rem;}
+h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.5rem;}
+.sub{font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.5;}
+
+/* Form elements */
+label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray);display:block;margin-bottom:3px;margin-top:12px;}
+label:first-of-type{margin-top:0;}
 input[type=text],input[type=date],input[type=time],select{
-  width:100%;height:38px;padding:0 12px;
-  border-radius:var(--rm);border:0.5px solid var(--border2);
-  background:var(--bg);color:var(--text);font-size:14px;
-  appearance:none;-webkit-appearance:none;
+  width:100%;height:38px;padding:0 10px;
+  border:1px solid var(--gray-mid);background:var(--bg);color:var(--text);
+  font-size:14px;font-family:inherit;appearance:none;-webkit-appearance:none;border-radius:0;
+}
+input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,select:focus{
+  outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(204,0,0,0.1);
 }
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn{height:40px;padding:0 18px;border-radius:var(--rm);border:0.5px solid var(--border2);background:var(--bg);color:var(--text);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:inherit;}
-.btn:hover{background:var(--bg2);}
+
+/* Buttons */
+.btn{height:40px;padding:0 20px;border:2px solid var(--black);background:var(--bg);color:var(--black);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:inherit;transition:background 0.15s,color 0.15s;border-radius:0;}
+.btn:hover{background:var(--black);color:#fff;}
 .btn:active{transform:scale(0.98);}
-.btn-primary{background:var(--blue-600);color:#fff;border-color:var(--blue-600);font-weight:500;}
-.btn-primary:hover{background:var(--blue-800);}
-.btn-red{background:var(--red-600);color:#fff;border-color:var(--red-600);font-weight:500;}
-.btn-red:hover{background:#791F1F;}
-.btn-green{background:var(--green-600);color:#fff;border-color:var(--green-600);font-weight:500;}
-.btn-green:hover{background:var(--green-800);}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:1rem;}
-.badge{font-size:11px;padding:3px 10px;border-radius:20px;display:inline-block;font-weight:500;}
-.badge-blue{background:var(--blue-50);color:var(--blue-800);}
-.badge-green{background:var(--green-50);color:var(--green-800);}
-.badge-amber{background:var(--amber-50);color:var(--amber-800);}
-.badge-red{background:var(--red-50);color:var(--red-600);}
-.divider{height:0.5px;background:var(--border);margin:1rem 0;}
+.btn-primary{background:var(--red);color:#fff;border-color:var(--red);}
+.btn-primary:hover{background:var(--red-dark);border-color:var(--red-dark);}
+.btn-red{background:var(--red);color:#fff;border-color:var(--red);}
+.btn-red:hover{background:var(--red-dark);border-color:var(--red-dark);}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green);}
+.btn-green:hover{background:#1e4d15;border-color:#1e4d15;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.25rem;}
+
+/* Badges */
+.badge{font-size:10px;font-weight:700;padding:2px 8px;display:inline-block;text-transform:uppercase;letter-spacing:0.05em;}
+.badge-green{background:var(--green-light);color:var(--green);}
+.badge-red{background:var(--red-light);color:var(--red);}
+.badge-amber{background:#fdf3e0;color:#7a4a00;}
+
+/* Divider */
+.divider{height:1px;background:var(--gray-mid);margin:1rem 0;}
+
+/* Gebiet radio cards */
 .radio-group{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
-.radio-card{border:0.5px solid var(--border2);border-radius:var(--rm);padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;transition:border-color 0.15s;}
-.radio-card:hover{background:var(--bg2);}
-.radio-card.selected{border-color:var(--blue-600);background:var(--blue-50);color:var(--blue-800);}
-.radio-card input{display:none;}
-.alarm-header{background:var(--red-600);color:#fff;border-radius:var(--rm);padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;}
+.radio-card{border:2px solid var(--gray-mid);padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;background:var(--bg);}
+.radio-card:hover{border-color:var(--gray);}
+.radio-card.selected{border-color:var(--red);background:var(--red-light);color:var(--red-dark);}
+
+/* Alarm */
+.alarm-header{background:var(--red);color:#fff;padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;}
 .alarm-header svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
-.alarm-header span{font-size:15px;font-weight:500;}
-.alarm-addr{font-size:22px;font-weight:500;margin:0.5rem 0 0.2rem;}
+.alarm-header span{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+.alarm-addr{font-size:22px;font-weight:700;margin:0.5rem 0 0.2rem;}
 .alarm-sub{font-size:14px;color:var(--text2);margin-bottom:0.75rem;}
-.alarm-meld{background:var(--bg2);border-radius:var(--rm);padding:0.9rem;margin:0.75rem 0;}
-.alarm-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
-.alarm-text{font-size:15px;font-weight:500;line-height:1.5;}
-.maps-link{font-size:13px;color:var(--blue-600);display:inline-flex;align-items:center;gap:4px;text-decoration:none;margin-bottom:0.5rem;}
+.alarm-meld{background:var(--bg2);border-left:3px solid var(--red);padding:0.9rem;margin:0.75rem 0;}
+.alarm-lbl{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;}
+.alarm-text{font-size:15px;font-weight:600;line-height:1.5;}
+.maps-link{font-size:13px;color:var(--red);display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-weight:700;}
 .maps-link:hover{text-decoration:underline;}
-.qr-wrap{background:white;border-radius:var(--rm);padding:10px;display:inline-block;border:0.5px solid var(--border);}
+.qr-wrap{background:white;padding:10px;display:inline-block;border:1px solid var(--gray-mid);}
 .top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
-.progress-bar-bg{height:4px;background:var(--border);border-radius:2px;margin-bottom:1.25rem;}
-.progress-bar{height:4px;background:var(--blue-600);border-radius:2px;transition:width 0.3s;}
-.frage-nr{font-size:11px;color:var(--text3);margin-bottom:6px;}
-.frage-text{font-size:16px;font-weight:500;margin-bottom:1rem;line-height:1.5;}
-.antwort-btn{width:100%;text-align:left;height:auto;padding:10px 14px;margin-bottom:8px;border-radius:var(--rm);border:0.5px solid var(--border2);background:var(--bg);color:var(--text);font-size:14px;cursor:pointer;display:block;font-family:inherit;line-height:1.4;}
+
+/* Quiz */
+.progress-bar-bg{height:4px;background:var(--gray-mid);margin-bottom:1.25rem;}
+.progress-bar{height:4px;background:var(--red);transition:width 0.3s;}
+.frage-nr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--gray);margin-bottom:6px;}
+.frage-text{font-size:16px;font-weight:700;margin-bottom:1rem;line-height:1.5;}
+.antwort-btn{width:100%;text-align:left;padding:10px 14px;margin-bottom:8px;border:1px solid var(--gray-mid);background:var(--bg);color:var(--text);font-size:14px;cursor:pointer;display:block;font-family:inherit;line-height:1.4;border-radius:0;}
 .antwort-btn:hover{background:var(--bg2);}
-.antwort-btn.correct{background:var(--green-50);border-color:var(--green-600);color:var(--green-800);}
-.antwort-btn.wrong{background:var(--red-50);border-color:var(--red-600);color:var(--red-600);}
-.erklaerung{background:var(--bg2);border-radius:var(--rm);padding:0.75rem;margin-top:0.5rem;font-size:13px;color:var(--text2);display:none;}
+.antwort-btn.correct{background:var(--green-light);border-color:var(--green);border-left:4px solid var(--green);color:var(--green);}
+.antwort-btn.wrong{background:var(--red-light);border-color:var(--red);border-left:4px solid var(--red);color:var(--red-dark);}
+.erklaerung{background:var(--bg2);border-left:3px solid var(--gray-mid);padding:0.75rem;margin-top:0.5rem;font-size:13px;color:var(--text2);display:none;}
+
+/* Abschluss */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:1rem 0;}
-.stat-card{background:var(--bg2);border-radius:var(--rm);padding:0.75rem;}
-.stat-val{font-size:22px;font-weight:500;}
-.stat-lbl{font-size:12px;color:var(--text2);margin-top:2px;}
-.sum-row{padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
+.stat-card{background:var(--bg2);border-top:3px solid var(--red);padding:0.75rem;}
+.stat-val{font-size:22px;font-weight:700;}
+.stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--gray);margin-top:2px;}
+.sum-row{padding:8px 0;border-bottom:1px solid var(--gray-mid);font-size:13px;}
 .sum-row:last-child{border-bottom:none;}
-.sum-q{color:var(--text2);}
-.chip{font-size:12px;color:var(--text2);background:var(--bg2);padding:3px 10px;border-radius:20px;display:inline-block;margin-right:4px;margin-bottom:4px;}
-.save-status{font-size:12px;margin-top:8px;padding:6px 10px;border-radius:var(--rm);display:none;}
-.save-ok{background:var(--green-50);color:var(--green-800);}
-.save-err{background:var(--red-50);color:var(--red-600);}
+.chip{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--gray);background:var(--bg2);padding:3px 10px;border:1px solid var(--gray-mid);display:inline-block;margin-right:4px;margin-bottom:4px;}
+.save-status{font-size:12px;font-weight:600;margin-top:10px;padding:8px 12px;display:none;}
+.save-ok{background:var(--green-light);color:var(--green);border-left:3px solid var(--green);}
+.save-err{background:var(--red-light);color:var(--red-dark);border-left:3px solid var(--red);}
+
+/* Footer */
+.site-footer{background:var(--black);color:#888;font-size:11px;text-align:center;padding:1rem;}
+
+/* Error */
+.err-msg{color:var(--red);font-size:12px;font-weight:600;margin-top:8px;display:none;}
 </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="hdr">
-    <div class="hdr-icon">
-      <svg viewBox="0 0 24 24"><polygon points="12 2 22 21 2 21"/></svg>
+<div class="site-header">
+  <div class="site-header-inner">
+    <div class="logo-flame">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8 6 6 9 8 13c-2-1-3-3-3-5C3 13 5 18 12 22c7-4 9-9 7-14-1 2-3 3-5 3 2-2 1-6-2-9z"/></svg>
     </div>
-    <div>
-      <h1>Fahrtraining</h1>
-      <p>Feuerwehr Meilen</p>
+    <div class="logo-text">
+      Stützpunktfeuerwehr Meilen
+      <span>Fahrtraining</span>
     </div>
   </div>
+</div>
+<div class="red-stripe"></div>
 
-  <!-- ═══ FORM 1 ═══ -->
+<div class="page">
+
+  <!-- FORM 1 -->
   <div class="screen active" id="s-form1">
     <div class="card">
       <h2>Fahrt erfassen</h2>
-      <p class="sub">Angaben vor der Abfahrt</p>
+      <p class="sub">Angaben vor der Abfahrt ausfüllen</p>
 
       <div class="grid2">
         <div>
           <label>Fahrer (Kürzel)</label>
-          <input type="text" id="f-fahrer" maxlength="3" placeholder="z.B. MÜL" style="text-transform:uppercase">
+          <input type="text" id="f-fahrer" maxlength="3" placeholder="MÜL" style="text-transform:uppercase">
         </div>
         <div>
           <label>Beifahrer (Kürzel)</label>
-          <input type="text" id="f-beifahrer" maxlength="3" placeholder="z.B. SCH" style="text-transform:uppercase">
+          <input type="text" id="f-beifahrer" maxlength="3" placeholder="SCH" style="text-transform:uppercase">
         </div>
       </div>
-
       <div class="grid2">
         <div>
           <label>Datum</label>
@@ -137,9 +166,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <input type="time" id="f-abfahrt">
         </div>
       </div>
-
       <label>Fahrzeug</label>
-      <select id="f-fahrzeug" onchange="onFahrzeugChange()">
+      <select id="f-fahrzeug">
         <option value="">– wählen –</option>
         <option>PTF</option>
         <option>OW</option>
@@ -153,15 +181,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
       <div id="gebiet-wrap" style="display:none">
         <label>Einsatzgebiet</label>
-        <div class="radio-group" id="gebiet-group">
-          <label class="radio-card" id="rc-stuetzpunkt" onclick="selectGebiet('stuetzpunkt')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="radio-group">
+          <div class="radio-card" id="rc-stuetzpunkt" onclick="selectGebiet('stuetzpunkt')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             Stützpunktgebiet
-          </label>
-          <label class="radio-card" id="rc-orts" onclick="selectGebiet('orts')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Ortsfeuerwehrgebiet
-          </label>
+          </div>
+          <div class="radio-card" id="rc-orts" onclick="selectGebiet('orts')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Ortsfeuerwehr
+          </div>
         </div>
       </div>
 
@@ -171,7 +199,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <option value="frei">Freies Fahren</option>
         <option value="einsatz">Einsatzmeldung</option>
       </select>
-
       <label>Aufbau</label>
       <select id="f-aufbau">
         <option value="">– wählen –</option>
@@ -181,21 +208,21 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
       <div class="btn-row">
         <button class="btn btn-primary" onclick="weiter()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           Weiter
         </button>
       </div>
-      <p id="form1-err" style="color:var(--red-600);font-size:13px;margin-top:8px;display:none;">Bitte alle Felder ausfüllen.</p>
+      <p class="err-msg" id="form1-err">Bitte alle Felder ausfüllen.</p>
     </div>
   </div>
 
-  <!-- ═══ EINSATZMELDUNG ═══ -->
+  <!-- EINSATZMELDUNG -->
   <div class="screen" id="s-einsatz">
     <div class="alarm-header">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       <span>Einsatzmeldung</span>
     </div>
-    <div class="card">
+    <div class="card" style="border-top-color:var(--black)">
       <div class="top-row">
         <div style="min-width:0">
           <span class="badge badge-red" id="e-stichwort">BRAND</span>
@@ -206,9 +233,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
             Google Maps öffnen
           </a>
         </div>
-        <div class="qr-wrap">
-          <canvas id="e-qr" width="100" height="100"></canvas>
-        </div>
+        <div class="qr-wrap"><canvas id="e-qr" width="100" height="100"></canvas></div>
       </div>
       <div class="alarm-meld">
         <div class="alarm-lbl">Meldung</div>
@@ -220,14 +245,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
       <div class="btn-row">
         <button class="btn btn-red" onclick="einsatzAbschliessen()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           Einsatz abschliessen
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ═══ ABFRAGE ═══ -->
+  <!-- ABFRAGE -->
   <div class="screen" id="s-abfrage">
     <div class="card">
       <div class="progress-bar-bg"><div class="progress-bar" id="q-progress" style="width:0%"></div></div>
@@ -237,18 +262,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="erklaerung" id="q-erklaerung"></div>
       <div class="btn-row" id="q-next-row" style="display:none">
         <button class="btn btn-primary" onclick="naechsteFrage()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           Nächste Frage
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ═══ ABSCHLUSS ═══ -->
+  <!-- ABSCHLUSS -->
   <div class="screen" id="s-abschluss">
     <div class="card">
       <span class="badge badge-green">Fahrt abgeschlossen</span>
-      <h2 style="margin-top:0.4rem">Abschluss</h2>
+      <h2 style="margin-top:0.5rem">Abschluss</h2>
       <div style="margin:0.75rem 0" id="ac-chips"></div>
       <div class="divider"></div>
       <label>Zeit Rückkehr</label>
@@ -261,7 +286,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
       <div class="btn-row">
         <button class="btn btn-green" onclick="abschliessen()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           Fertig &amp; speichern
         </button>
       </div>
@@ -269,15 +294,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- ═══ FERTIG ═══ -->
+  <!-- FERTIG -->
   <div class="screen" id="s-fertig">
-    <div class="card" style="text-align:center;padding:2rem 1.25rem">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green-600)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <div class="card" style="text-align:center;padding:2.5rem 1.25rem">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem;display:block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <h2>Fahrt gespeichert</h2>
       <p class="sub" style="margin-top:0.5rem" id="fd-summary"></p>
       <div class="btn-row" style="justify-content:center;margin-top:1.25rem">
         <button class="btn btn-primary" onclick="neustart()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
           Neue Fahrt
         </button>
       </div>
@@ -286,10 +311,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 </div>
 
-<script>
-const SHEETS_URL = "https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
+<div class="site-footer">© Stützpunktfeuerwehr Meilen</div>
 
-const ADRESSEN = {
+<script>
+const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
+
+const ADRESSEN={
   meilen:[
     {str:"Dorfstrasse",plz:"8706",ort:"Meilen"},{str:"Seestrasse",plz:"8706",ort:"Meilen"},
     {str:"Bergstrasse",plz:"8706",ort:"Meilen"},{str:"Schulhausstrasse",plz:"8706",ort:"Meilen"},
@@ -338,10 +365,11 @@ const ADRESSEN = {
   ]
 };
 
-const STUETZPUNKT_GEMEINDEN = ["meilen","feldmeilen","herrliberg","uetikon","oetwil","maennedorf","staefa","hombrechtikon"];
-const ORTS_GEMEINDEN = ["herrliberg","feldmeilen","meilen"];
+const STUETZPUNKT_GEMEINDEN=["meilen","feldmeilen","herrliberg","uetikon","oetwil","maennedorf","staefa","hombrechtikon"];
+const ORTS_GEMEINDEN=["herrliberg","feldmeilen","meilen"];
+const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC"];
 
-const EINSAETZE = [
+const EINSAETZE=[
   {stichwort:"BRAND",meldung:"Gebäudebrand, Rauch aus Obergeschoss sichtbar. Personen im Gebäude nicht ausgeschlossen.",mittel:"1× TLF, 1× PTF, 1× MTF"},
   {stichwort:"BRAND",meldung:"Kellerbrand in Mehrfamilienhaus. Starke Rauchentwicklung, Bewohner haben sich selbst gerettet.",mittel:"1× TLF, 1× PTF"},
   {stichwort:"BRAND",meldung:"Fahrzeugbrand auf Parkplatz. Übergriff auf Nachbarfahrzeug möglich.",mittel:"1× TLF, 1× OW"},
@@ -359,7 +387,7 @@ const EINSAETZE = [
   {stichwort:"FEHLALARM",meldung:"Brandmeldeanlage ausgelöst, Betrieb ohne sichtbare Brandzeichen.",mittel:"1× PTF, 1× OW"}
 ];
 
-const FRAGEN = {
+const FRAGEN={
   PTF:[
     {f:"Was bedeutet das Kürzel PTF?",a:["Pikettfahrzeug","Pumpen-Tanklöschfahrzeug","Pionier-Transportfahrzeug","Primär-Tankfahrzeug"],r:0,e:"PTF = Pikettfahrzeug, eingesetzt für schnelle Ersterkundung."},
     {f:"Welches Gerät befindet sich im Geräteraum G1 des PTF?",a:["Hochdruckpumpe","Atemschutzgeräte","Stromerzeuger","Schaummittelanlage"],r:2,e:"Im Geräteraum G1 befindet sich standardmässig der Stromerzeuger."},
@@ -420,16 +448,7 @@ const FRAGEN = {
     {f:"Was ist bei der Ankunft am Schadenplatz mit dem OC zuerst zu tun?",a:["Pumpe starten","Lage erkunden und Lagebericht erstatten","Mannschaft aussteigen lassen","Funk abschalten"],r:1,e:"Zuerst Lage erkunden und Lagebericht an Disposition erstatten."},
     {f:"Was ist das METHANE-Schema?",a:["Funkalphabet","Einsatz-Führungsschema","Chemikalienliste","[Platzhalter]"],r:1,e:"METHANE = Major incident, Exact location, Type, Hazards, Access, Number, Emergency services."}
   ],
-  ADL:[
-    {f:"Wofür steht ADL?",a:["Anhängerdrehleiter","Automatische Drehleitern","Ausziehbare Drehleiter","[Platzhalter – bitte anpassen]"],r:0,e:"ADL = Anhängerdrehleiter."},
-    {f:"Welcher Führerschein ist für das Zugfahrzeug der ADL erforderlich?",a:["Kat. B","Kat. BE","Kat. C1E","Kat. CE"],r:1,e:"Das Zugfahrzeug mit Anhänger erfordert Kat. BE je nach Gesamtgewicht."},
-    {f:"Was ist die maximale Arbeitshöhe einer typischen ADL?",a:["18 m","23 m","30 m","40 m"],r:2,e:"Eine typische ADL erreicht eine Arbeitshöhe von ca. 30 m – bitte lokal prüfen."},
-    {f:"Was ist vor dem Aufstellen der ADL zwingend zu prüfen?",a:["Reifendruck","Untergrund und Abstützfläche","Windgeschwindigkeit","Beleuchtung"],r:1,e:"Der Untergrund muss tragfähig sein, Abstützplatten verwenden."},
-    {f:"Was bezeichnet man als 'Korbnennlast' der ADL?",a:["Gesamtgewicht der Leiter","Maximale Zuladung im Rettungskorb","Eigengewicht des Anhängers","Zugkraft des Fahrzeugs"],r:1,e:"Korbnennlast = maximales zulässiges Gewicht im Rettungskorb (Person + Ausrüstung)."},
-    {f:"Was ist beim Rangieren mit der ADL im Anhängerbetrieb besonders zu beachten?",a:["Anhänger lenkt gleich wie Zugfahrzeug","Anhänger schlägt beim Rückwärtsfahren entgegengesetzt ein","Anhänger hat eigene Bremsen","Keine Besonderheiten"],r:1,e:"Beim Rückwärtsfahren schlägt der Anhänger entgegengesetzt ein – Übung erforderlich."},
-    {f:"Welche Windgeschwindigkeit ist typischerweise die Einsatzgrenze der ADL?",a:["30 km/h","50 km/h","72 km/h","100 km/h"],r:2,e:"Typische Einsatzgrenze liegt bei Windstärke 6 (ca. 72 km/h) – bitte Herstellerangaben prüfen."},
-    {f:"Was ist nach dem Einsatz mit der ADL als erstes zu tun?",a:["Leiter einfahren und sichern","Korb reinigen","Protokoll ausfüllen","Fahrzeug tanken"],r:0,e:"Leiter vollständig einfahren, verriegeln und Abstützungen einziehen."}
-  ]
+  ULF:[
     {f:"Wofür steht ULF?",a:["Ultra-Lösch-Fahrzeug","Universallöschfahrzeug","Unterdruck-Last-Fahrzeug","Urbanes Löschfahrzeug"],r:1,e:"ULF = Universallöschfahrzeug."},
     {f:"Was zeichnet das ULF gegenüber dem TLF aus?",a:["Grösserer Tank","Mehr Mannschaft","Kombinierte Löschmittel (Wasser, Schaum, Pulver)","Höhere Geschwindigkeit"],r:2,e:"Das ULF kann verschiedene Löschmittel kombiniert einsetzen."},
     {f:"Welcher Führerschein ist für das ULF erforderlich?",a:["Kat. B","Kat. C1","Kat. C","Kat. D"],r:2,e:"Das ULF ist in der Regel über 7.5 t und erfordert Kat. C."},
@@ -438,38 +457,33 @@ const FRAGEN = {
     {f:"Was ist die Mischrate bei Proteinschaum?",a:["0.5 %","1–3 %","6 %","10 %"],r:2,e:"Proteinschaum wird typischerweise mit 3–6 % Zumischrate eingesetzt."},
     {f:"Welche Schutzausrüstung ist bei Schaumeinsatz zwingend?",a:["Nur Handschuhe","Vollständige Brandschutzausrüstung mit Visier","Chemikalienschutzanzug","Keine besondere"],r:1,e:"Vollständige Brandschutzausrüstung mit Gesichtsschutz ist zwingend."},
     {f:"Was ist zuerst zu prüfen, bevor das ULF in enges Gelände fährt?",a:["Reifendruck","Breite, Höhe und Wendekreis des Fahrzeugs","Tankfüllung","Funkverbindung"],r:1,e:"Breite (oft >2.5 m), Höhe und Wendekreis des ULF vor der Einfahrt prüfen."}
+  ],
+  ADL:[
+    {f:"Wofür steht ADL?",a:["Anhängerdrehleiter","Automatische Drehleitern","Ausziehbare Drehleiter","Andere Drehleiter"],r:0,e:"ADL = Anhängerdrehleiter."},
+    {f:"Welcher Führerschein ist für das Zugfahrzeug der ADL erforderlich?",a:["Kat. B","Kat. BE","Kat. C1E","Kat. CE"],r:1,e:"Das Zugfahrzeug mit Anhänger erfordert Kat. BE je nach Gesamtgewicht."},
+    {f:"Was ist die maximale Arbeitshöhe einer typischen ADL?",a:["18 m","23 m","30 m","40 m"],r:2,e:"Eine typische ADL erreicht eine Arbeitshöhe von ca. 30 m – bitte lokal prüfen."},
+    {f:"Was ist vor dem Aufstellen der ADL zwingend zu prüfen?",a:["Reifendruck","Untergrund und Abstützfläche","Windgeschwindigkeit","Beleuchtung"],r:1,e:"Der Untergrund muss tragfähig sein, Abstützplatten verwenden."},
+    {f:"Was bezeichnet man als Korbnennlast der ADL?",a:["Gesamtgewicht der Leiter","Maximale Zuladung im Rettungskorb","Eigengewicht des Anhängers","Zugkraft des Fahrzeugs"],r:1,e:"Korbnennlast = maximales zulässiges Gewicht im Rettungskorb."},
+    {f:"Was ist beim Rückwärtsfahren mit der ADL zu beachten?",a:["Anhänger lenkt gleich wie Zugfahrzeug","Anhänger schlägt entgegengesetzt ein","Anhänger hat eigene Lenkung","Keine Besonderheiten"],r:1,e:"Beim Rückwärtsfahren schlägt der Anhänger entgegengesetzt ein – Übung erforderlich."},
+    {f:"Welche Windgeschwindigkeit ist typischerweise die Einsatzgrenze der ADL?",a:["30 km/h","50 km/h","72 km/h","100 km/h"],r:2,e:"Typische Einsatzgrenze liegt bei Windstärke 6 (ca. 72 km/h)."},
+    {f:"Was ist nach dem Einsatz mit der ADL als erstes zu tun?",a:["Leiter einfahren und sichern","Korb reinigen","Protokoll ausfüllen","Fahrzeug tanken"],r:0,e:"Leiter vollständig einfahren, verriegeln und Abstützungen einziehen."}
   ]
 };
 
-const STUETZPUNKT_FAHRZEUGE = ["PIF","ULF","OC"];
-
-let ST = {};
-let selectedGebiet = "";
-
-function onFahrzeugChange(){
-  const fzg = document.getElementById("f-fahrzeug").value;
-  const wrap = document.getElementById("gebiet-wrap");
-  if(STUETZPUNKT_FAHRZEUGE.includes(fzg)){
-    wrap.style.display = "block";
-  } else {
-    wrap.style.display = "none";
-    selectedGebiet = "orts";
-    document.getElementById("rc-stuetzpunkt").classList.remove("selected");
-    document.getElementById("rc-orts").classList.remove("selected");
-  }
-}
-
-function selectGebiet(val) {
-  selectedGebiet = val;
-  document.getElementById("rc-stuetzpunkt").classList.toggle("selected", val === "stuetzpunkt");
-  document.getElementById("rc-orts").classList.toggle("selected", val === "orts");
-}
+let ST={};
+let selectedGebiet="";
 
 function r(a){return a[Math.floor(Math.random()*a.length)];}
 function rn(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
 function today(){return new Date().toISOString().split("T")[0];}
 function nowTime(){return new Date().toTimeString().slice(0,5);}
+
+function selectGebiet(val){
+  selectedGebiet=val;
+  document.getElementById("rc-stuetzpunkt").classList.toggle("selected",val==="stuetzpunkt");
+  document.getElementById("rc-orts").classList.toggle("selected",val==="orts");
+}
 
 function weiter(){
   const fa=document.getElementById("f-fahrer").value.trim().toUpperCase();
@@ -479,43 +493,37 @@ function weiter(){
   const fzg=document.getElementById("f-fahrzeug").value;
   const fahrt=document.getElementById("f-fahrt").value;
   const aufbau=document.getElementById("f-aufbau").value;
+  const needsGebiet=STUETZPUNKT_FAHRZEUGE.includes(fzg);
   const err=document.getElementById("form1-err");
-
-  const needsGebiet = STUETZPUNKT_FAHRZEUGE.includes(fzg);
-  if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||(needsGebiet&&!selectedGebiet)){err.style.display="block";return;}
+  if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||(needsGebiet&&!selectedGebiet)){
+    err.style.display="block";return;
+  }
   err.style.display="none";
-
-  const gebiet = needsGebiet ? selectedGebiet : "orts";
-
+  const gebiet=needsGebiet?selectedGebiet:"orts";
   ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,gebiet,einsatzAddr:null,quizResults:[]};
-
   if(fahrt==="einsatz") zeigeEinsatz();
   else if(aufbau==="abfrage") starteAbfrage();
   else zeigeAbschluss();
 }
 
 function genAddr(){
-  const gemeinden = ST.gebiet === "stuetzpunkt" ? STUETZPUNKT_GEMEINDEN : ORTS_GEMEINDEN;
-  const gem = r(gemeinden);
-  const ad = r(ADRESSEN[gem]);
-  return {...ad, nr: rn(1,120)};
+  const pool=ST.gebiet==="stuetzpunkt"?STUETZPUNKT_GEMEINDEN:ORTS_GEMEINDEN;
+  const ad=r(ADRESSEN[r(pool)]);
+  return {...ad,nr:rn(1,120)};
 }
 
 function zeigeEinsatz(){
-  const ad = genAddr();
-  const ens = r(EINSAETZE);
-  ST.einsatzAddr = `${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}`;
-
-  document.getElementById("e-stichwort").textContent = ens.stichwort;
-  document.getElementById("e-addr").textContent = `${ad.str} ${ad.nr}`;
-  document.getElementById("e-city").textContent = `${ad.plz} ${ad.ort}`;
-  document.getElementById("e-meldung").textContent = ens.meldung;
-  document.getElementById("e-mittel").textContent = ens.mittel;
-
-  const q = encodeURIComponent(`${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}, Schweiz`);
-  const url = `https://www.google.com/maps/search/?api=1&query=${q}`;
-  document.getElementById("e-mapslink").href = url;
-  drawQR(document.getElementById("e-qr"), url, 100);
+  const ad=genAddr(),ens=r(EINSAETZE);
+  ST.einsatzAddr=`${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}`;
+  document.getElementById("e-stichwort").textContent=ens.stichwort;
+  document.getElementById("e-addr").textContent=`${ad.str} ${ad.nr}`;
+  document.getElementById("e-city").textContent=`${ad.plz} ${ad.ort}`;
+  document.getElementById("e-meldung").textContent=ens.meldung;
+  document.getElementById("e-mittel").textContent=ens.mittel;
+  const q=encodeURIComponent(`${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}, Schweiz`);
+  const url=`https://www.google.com/maps/search/?api=1&query=${q}`;
+  document.getElementById("e-mapslink").href=url;
+  drawQR(document.getElementById("e-qr"),url,100);
   show("s-einsatz");
 }
 
@@ -523,33 +531,27 @@ function einsatzAbschliessen(){
   if(ST.aufbau==="abfrage") starteAbfrage(); else zeigeAbschluss();
 }
 
-let QPOOL=[], QIDX=0;
+let QPOOL=[],QIDX=0;
 
 function starteAbfrage(){
-  const alle = FRAGEN[ST.fahrzeug] || FRAGEN.PTF;
-  QPOOL = [...alle].sort(()=>Math.random()-0.5).slice(0,6);
-  QIDX = 0;
-  ST.quizResults = [];
-  zeigeFrageUI();
-  show("s-abfrage");
+  QPOOL=[...(FRAGEN[ST.fahrzeug]||FRAGEN.PTF)].sort(()=>Math.random()-0.5).slice(0,6);
+  QIDX=0;ST.quizResults=[];
+  zeigeFrageUI();show("s-abfrage");
 }
 
 function zeigeFrageUI(){
-  const total=QPOOL.length, q=QPOOL[QIDX];
+  const q=QPOOL[QIDX],total=QPOOL.length;
   document.getElementById("q-progress").style.width=`${(QIDX/total)*100}%`;
   document.getElementById("q-nr").textContent=`Frage ${QIDX+1} von ${total}`;
   document.getElementById("q-text").textContent=q.f;
   document.getElementById("q-erklaerung").style.display="none";
   document.getElementById("q-next-row").style.display="none";
   const shuffled=q.a.map((t,i)=>({t,i})).sort(()=>Math.random()-0.5);
-  document.getElementById("q-antworten").innerHTML=shuffled.map(x=>
-    `<button class="antwort-btn" onclick="antworten(${x.i})">${x.t}</button>`
-  ).join("");
+  document.getElementById("q-antworten").innerHTML=shuffled.map(x=>`<button class="antwort-btn" onclick="antworten(${x.i})">${x.t}</button>`).join("");
 }
 
 function antworten(idx){
-  const q=QPOOL[QIDX];
-  const richtig=idx===q.r;
+  const q=QPOOL[QIDX],richtig=idx===q.r;
   ST.quizResults.push({frage:q.f,richtig,gegeben:q.a[idx],korrekt:q.a[q.r]});
   document.querySelectorAll(".antwort-btn").forEach(btn=>{
     btn.disabled=true;
@@ -568,20 +570,13 @@ function naechsteFrage(){
 
 function zeigeAbschluss(){
   document.getElementById("ac-rueckkehr").value=nowTime();
-  const gebietLabel = ST.gebiet==="stuetzpunkt" ? "Stützpunktgebiet" : "Ortsfeuerwehrgebiet";
-  document.getElementById("ac-chips").innerHTML=`
-    <span class="chip">${ST.fahrer} / ${ST.beifahrer}</span>
-    <span class="chip">${ST.fahrzeug}</span>
-    <span class="chip">${gebietLabel}</span>
-    <span class="chip">${ST.datum}</span>
-    <span class="chip">Abfahrt ${ST.abfahrt}</span>`;
-
+  const gl=ST.gebiet==="stuetzpunkt"?"Stützpunktgebiet":"Ortsfeuerwehrgebiet";
+  document.getElementById("ac-chips").innerHTML=
+    `<span class="chip">${ST.fahrer} / ${ST.beifahrer}</span><span class="chip">${ST.fahrzeug}</span><span class="chip">${gl}</span><span class="chip">${ST.datum}</span><span class="chip">Abfahrt ${ST.abfahrt}</span>`;
   const qr=document.getElementById("ac-quiz-result");
   if(ST.quizResults.length>0){
     qr.style.display="block";
-    const richtig=ST.quizResults.filter(x=>x.richtig).length;
-    const total=ST.quizResults.length;
-    const pct=Math.round(richtig/total*100);
+    const richtig=ST.quizResults.filter(x=>x.richtig).length,total=ST.quizResults.length,pct=Math.round(richtig/total*100);
     document.getElementById("ac-stats").innerHTML=`
       <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Fragen</div></div>
       <div class="stat-card"><div class="stat-val">${richtig}</div><div class="stat-lbl">Richtig</div></div>
@@ -589,14 +584,12 @@ function zeigeAbschluss(){
     document.getElementById("ac-detail").innerHTML=ST.quizResults.map((x,i)=>`
       <div class="sum-row">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-          <div class="sum-q">F${i+1}: ${x.frage}</div>
+          <div style="color:var(--text2)">F${i+1}: ${x.frage}</div>
           <span class="badge ${x.richtig?"badge-green":"badge-red"}">${x.richtig?"✓":"✗"}</span>
         </div>
-        ${!x.richtig?`<div style="font-size:12px;color:var(--text2);margin-top:3px">Korrekt: ${x.korrekt}</div>`:""}
+        ${!x.richtig?`<div style="font-size:12px;color:var(--text3);margin-top:3px">Korrekt: ${x.korrekt}</div>`:""}
       </div>`).join("");
-  } else {
-    qr.style.display="none";
-  }
+  } else {qr.style.display="none";}
   show("s-abschluss");
 }
 
@@ -605,34 +598,17 @@ async function abschliessen(){
   const richtig=ST.quizResults.filter(x=>x.richtig).length;
   const total=ST.quizResults.length;
   const pct=total>0?Math.round(richtig/total*100):0;
+  const gl=ST.gebiet==="stuetzpunkt"?"Stützpunktgebiet":"Ortsfeuerwehrgebiet";
   const statusEl=document.getElementById("save-status");
-  statusEl.style.display="block";
-  statusEl.className="save-status";
-  statusEl.textContent="Wird gespeichert…";
-
-  const gebietLabel = ST.gebiet==="stuetzpunkt" ? "Stützpunktgebiet" : "Ortsfeuerwehrgebiet";
-
-  try {
-    await fetch(SHEETS_URL, {
-      method:"POST", mode:"no-cors",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        type:"alles",
-        fahrt:{
-          datum:ST.datum, fahrer:ST.fahrer, beifahrer:ST.beifahrer,
-          fahrzeug:ST.fahrzeug, fahrt:ST.fahrt, aufbau:ST.aufbau,
-          gebiet:gebietLabel, abfahrt:ST.abfahrt, rueckkehr:rk,
-          einsatzAddr:ST.einsatzAddr||"–",
-          richtig, total, pct
-        },
-        fragen: ST.quizResults.map(qr=>({
-          datum:ST.datum, fahrer:ST.fahrer, fahrzeug:ST.fahrzeug,
-          frage:qr.frage, gegeben:qr.gegeben, korrekt:qr.korrekt, richtig:qr.richtig
-        }))
+  statusEl.style.display="block";statusEl.className="save-status";statusEl.textContent="Wird gespeichert…";
+  try{
+    await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({type:"alles",
+        fahrt:{datum:ST.datum,fahrer:ST.fahrer,beifahrer:ST.beifahrer,fahrzeug:ST.fahrzeug,fahrt:ST.fahrt,aufbau:ST.aufbau,gebiet:gl,abfahrt:ST.abfahrt,rueckkehr:rk,einsatzAddr:ST.einsatzAddr||"–",richtig,total,pct},
+        fragen:ST.quizResults.map(q=>({datum:ST.datum,fahrer:ST.fahrer,fahrzeug:ST.fahrzeug,frage:q.frage,gegeben:q.gegeben,korrekt:q.korrekt,richtig:q.richtig}))
       })
     });
-
-    let sum=`${ST.fahrer} / ${ST.beifahrer} · ${ST.fahrzeug} · ${gebietLabel} · ${ST.datum} · ${ST.abfahrt} – ${rk}`;
+    let sum=`${ST.fahrer} / ${ST.beifahrer} · ${ST.fahrzeug} · ${gl} · ${ST.datum} · ${ST.abfahrt}–${rk}`;
     if(total>0) sum+=` · Quiz ${richtig}/${total}`;
     document.getElementById("fd-summary").textContent=sum;
     show("s-fertig");
@@ -673,6 +649,19 @@ function drawQR(canvas,text,size){
   ctx.fillStyle="#111";
   for(let rr=0;rr<mod;rr++)for(let c=0;c<mod;c++){if(m[rr][c])ctx.fillRect(off+c*cell,off+rr*cell,cell,cell);}
 }
+
+document.getElementById("f-fahrzeug").addEventListener("change",function(){
+  const fzg=this.value;
+  const wrap=document.getElementById("gebiet-wrap");
+  if(STUETZPUNKT_FAHRZEUGE.includes(fzg)){
+    wrap.style.display="block";
+  } else {
+    wrap.style.display="none";
+    selectedGebiet="orts";
+    document.getElementById("rc-stuetzpunkt").classList.remove("selected");
+    document.getElementById("rc-orts").classList.remove("selected");
+  }
+});
 
 document.getElementById("f-datum").value=today();
 document.getElementById("f-abfahrt").value=nowTime();
