@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auswertung – Stützpunktfeuerwehr Meilen</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --red:#CC0000;--red-dark:#990000;--red-light:#FDEAEA;
+  --black:#1a1a1a;--gray:#666;--gray-light:#f4f4f4;--gray-mid:#e0e0e0;
+  --green:#2d6a1f;--green-light:#eaf3e6;
+  --bg:#fff;--bg2:#f4f4f4;--bg3:#e8e8e8;
+  --text:#1a1a1a;--text2:#555;--text3:#888;
+}
+body{font-family:'Open Sans',Arial,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:14px;}
+.site-header{background:var(--black);}
+.site-header-inner{max-width:960px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;height:54px;gap:12px;}
+.logo-flame{width:32px;height:32px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-flame svg{width:18px;height:18px;fill:white;}
+.logo-text{color:white;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;line-height:1.2;}
+.logo-text span{display:block;font-size:10px;font-weight:400;color:#999;text-transform:none;letter-spacing:0;}
+.red-stripe{height:4px;background:var(--red);}
+.page{max-width:960px;margin:0 auto;padding:1.5rem 1rem 4rem;}
+.topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.5rem;}
+.topbar h1{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+.btn{height:36px;padding:0 16px;border:2px solid var(--black);background:var(--bg);color:var(--black);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;border-radius:0;}
+.btn:hover{background:var(--black);color:#fff;}
+.btn-red{background:var(--red);color:#fff;border-color:var(--red);}
+.btn-red:hover{background:var(--red-dark);border-color:var(--red-dark);}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.5rem;}
+.stat-card{background:var(--bg);border:1px solid var(--gray-mid);border-top:3px solid var(--red);padding:1rem;}
+.stat-val{font-size:28px;font-weight:700;color:var(--black);}
+.stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray);margin-top:4px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+.card{background:var(--bg);border:1px solid var(--gray-mid);border-top:3px solid var(--red);padding:1.25rem;margin-bottom:1rem;}
+.card h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1rem;color:var(--black);}
+.chart-wrap{position:relative;height:260px;}
+.frage-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--gray-mid);font-size:13px;}
+.frage-row:last-child{border-bottom:none;}
+.frage-pct{font-size:12px;font-weight:700;min-width:38px;text-align:right;flex-shrink:0;}
+.frage-bar-bg{flex:1;height:6px;background:var(--gray-mid);border-radius:0;min-width:40px;}
+.frage-bar{height:6px;background:var(--red);border-radius:0;transition:width 0.4s;}
+.frage-text{flex:2;min-width:0;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.frage-fahrzeug{font-size:10px;font-weight:700;background:var(--bg2);padding:2px 6px;border:1px solid var(--gray-mid);white-space:nowrap;flex-shrink:0;}
+.loading{text-align:center;padding:3rem;color:var(--text3);}
+.loading svg{display:block;margin:0 auto 0.75rem;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error{background:var(--red-light);border-left:3px solid var(--red);padding:1rem;font-size:13px;color:var(--red-dark);margin-bottom:1rem;}
+.updated{font-size:11px;color:var(--text3);margin-top:0.5rem;}
+.empty{color:var(--text3);font-size:13px;text-align:center;padding:2rem;}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;}
+select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);background:var(--bg);color:var(--text);font-size:12px;font-family:inherit;appearance:none;-webkit-appearance:none;padding-right:24px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;border-radius:0;}
+.site-footer{background:var(--black);color:#888;font-size:11px;text-align:center;padding:1rem;}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="site-header-inner">
+    <div class="logo-flame">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8 6 6 9 8 13c-2-1-3-3-3-5C3 13 5 18 12 22c7-4 9-9 7-14-1 2-3 3-5 3 2-2 1-6-2-9z"/></svg>
+    </div>
+    <div class="logo-text">
+      Stützpunktfeuerwehr Meilen
+      <span>Auswertung Fahrtraining</span>
+    </div>
+  </div>
+</div>
+<div class="red-stripe"></div>
+
+<div class="page">
+  <div class="topbar">
+    <h1>Dashboard</h1>
+    <button class="btn btn-red" onclick="loadData()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+      Aktualisieren
+    </button>
+  </div>
+
+  <div id="error-box" class="error" style="display:none"></div>
+
+  <div id="loading" class="loading">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
+    Daten werden geladen…
+  </div>
+
+  <div id="content" style="display:none">
+
+    <!-- KPIs -->
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-val" id="kpi-fahrten">–</div><div class="stat-lbl">Fahrten total</div></div>
+      <div class="stat-card"><div class="stat-val" id="kpi-fahrer">–</div><div class="stat-lbl">Fahrer</div></div>
+      <div class="stat-card"><div class="stat-val" id="kpi-quiz">–</div><div class="stat-lbl">Ø Quiz-Score</div></div>
+      <div class="stat-card"><div class="stat-val" id="kpi-fahrzeug">–</div><div class="stat-lbl">Häufigstes Fahrzeug</div></div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid2">
+      <div class="card">
+        <h2>Fahrten pro Fahrzeug</h2>
+        <div class="chart-wrap"><canvas id="chart-fahrzeug"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Ø Fahrzeit pro Fahrzeug (Min.)</h2>
+        <div class="chart-wrap"><canvas id="chart-fahrzeit"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Fragen -->
+    <div class="card">
+      <h2>Fragen nach Fehlerquote (höchste zuerst)</h2>
+      <div class="filter-row">
+        <select class="filter" id="filter-fahrzeug" onchange="renderFragen()">
+          <option value="">Alle Fahrzeuge</option>
+        </select>
+        <select class="filter" id="filter-min" onchange="renderFragen()">
+          <option value="3">Mindestens 3 Antworten</option>
+          <option value="1">Mindestens 1 Antwort</option>
+          <option value="5">Mindestens 5 Antworten</option>
+          <option value="10">Mindestens 10 Antworten</option>
+        </select>
+      </div>
+      <div id="fragen-list"></div>
+      <div class="updated" id="updated-label"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="site-footer">© Stützpunktfeuerwehr Meilen</div>
+
+<script>
+const SHEET_ID = "1Y_kp8pqKNimB00UDSqWyWIfwXKZ7wRmBcJkWqBLvC3w";
+const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+let DATA = {fahrten:[], fragen:[]};
+let charts = {};
+
+async function fetchSheet(sheet) {
+  const url = `${BASE}&sheet=${encodeURIComponent(sheet)}`;
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+  const cols = json.table.cols.map(c => c.label);
+  const rows = (json.table.rows || []).map(r =>
+    Object.fromEntries(cols.map((c, i) => [c, r.c[i] ? r.c[i].v : ""]))
+  );
+  return rows;
+}
+
+async function loadData() {
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("content").style.display = "none";
+  document.getElementById("error-box").style.display = "none";
+
+  try {
+    const [fahrten, fragen] = await Promise.all([
+      fetchSheet("Fahrten"),
+      fetchSheet("Fragen")
+    ]);
+    DATA.fahrten = fahrten;
+    DATA.fragen = fragen;
+    render();
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    document.getElementById("updated-label").textContent =
+      "Stand: " + new Date().toLocaleString("de-CH");
+  } catch(e) {
+    document.getElementById("loading").style.display = "none";
+    const eb = document.getElementById("error-box");
+    eb.style.display = "block";
+    eb.textContent = "Fehler beim Laden: " + e.message + " – Bitte sicherstellen dass das Sheet öffentlich lesbar ist.";
+  }
+}
+
+function render() {
+  renderKPIs();
+  renderFahrzeugChart();
+  renderFahrzeitChart();
+  populateFahrzeugFilter();
+  renderFragen();
+}
+
+function renderKPIs() {
+  const f = DATA.fahrten;
+  document.getElementById("kpi-fahrten").textContent = f.length;
+
+  const fahrer = new Set(f.map(r => r["Fahrer"])).size;
+  document.getElementById("kpi-fahrer").textContent = fahrer;
+
+  const mitQuiz = f.filter(r => parseInt(r["Quiz Total"]) > 0);
+  if (mitQuiz.length > 0) {
+    const avg = mitQuiz.reduce((s, r) => s + parseFloat(r["%"] || 0), 0) / mitQuiz.length;
+    document.getElementById("kpi-quiz").textContent = Math.round(avg) + "%";
+  } else {
+    document.getElementById("kpi-quiz").textContent = "–";
+  }
+
+  const fzgCount = {};
+  f.forEach(r => { const v = r["Fahrzeug"]; if(v) fzgCount[v] = (fzgCount[v]||0)+1; });
+  const topFzg = Object.entries(fzgCount).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById("kpi-fahrzeug").textContent = topFzg ? topFzg[0] : "–";
+}
+
+function renderFahrzeugChart() {
+  const f = DATA.fahrten;
+  const counts = {};
+  f.forEach(r => { const v = r["Fahrzeug"]; if(v) counts[v] = (counts[v]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+
+  if (charts.fahrzeug) charts.fahrzeug.destroy();
+  charts.fahrzeug = new Chart(document.getElementById("chart-fahrzeug"), {
+    type: "bar",
+    data: {
+      labels: sorted.map(x=>x[0]),
+      datasets: [{
+        data: sorted.map(x=>x[1]),
+        backgroundColor: "#CC0000",
+        borderRadius: 0
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: "#e0e0e0" } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderFahrzeitChart() {
+  const f = DATA.fahrten;
+  const fzgTimes = {};
+  f.forEach(r => {
+    const fzg = r["Fahrzeug"];
+    const abf = r["Abfahrt"];
+    const rk = r["Rückkehr"];
+    if (!fzg || !abf || !rk) return;
+    const mins = timeDiff(abf, rk);
+    if (mins <= 0 || mins > 300) return;
+    if (!fzgTimes[fzg]) fzgTimes[fzg] = [];
+    fzgTimes[fzg].push(mins);
+  });
+
+  const labels = Object.keys(fzgTimes).sort();
+  const avgs = labels.map(k => {
+    const arr = fzgTimes[k];
+    return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+  });
+
+  if (charts.fahrzeit) charts.fahrzeit.destroy();
+  charts.fahrzeit = new Chart(document.getElementById("chart-fahrzeit"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: avgs,
+        backgroundColor: "#1a1a1a",
+        borderRadius: 0
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: "#e0e0e0" }, title: { display: true, text: "Minuten" } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function timeDiff(a, b) {
+  const toMin = s => {
+    if (!s) return null;
+    const p = String(s).split(":");
+    if (p.length < 2) return null;
+    return parseInt(p[0]) * 60 + parseInt(p[1]);
+  };
+  const ma = toMin(a), mb = toMin(b);
+  if (ma === null || mb === null) return 0;
+  return mb >= ma ? mb - ma : (mb + 1440) - ma;
+}
+
+function populateFahrzeugFilter() {
+  const fzgs = [...new Set(DATA.fragen.map(r => r["Fahrzeug"]).filter(Boolean))].sort();
+  const sel = document.getElementById("filter-fahrzeug");
+  sel.innerHTML = '<option value="">Alle Fahrzeuge</option>';
+  fzgs.forEach(f => { const o = document.createElement("option"); o.value = f; o.textContent = f; sel.appendChild(o); });
+}
+
+function renderFragen() {
+  const filterFzg = document.getElementById("filter-fahrzeug").value;
+  const minAnt = parseInt(document.getElementById("filter-min").value);
+
+  let rows = DATA.fragen.filter(r => r["Frage"] && r["Richtig"] !== undefined && r["Richtig"] !== "");
+  if (filterFzg) rows = rows.filter(r => r["Fahrzeug"] === filterFzg);
+
+  const fragenMap = {};
+  rows.forEach(r => {
+    const key = r["Frage"];
+    if (!fragenMap[key]) fragenMap[key] = { frage: key, fahrzeug: r["Fahrzeug"], total: 0, falsch: 0 };
+    fragenMap[key].total++;
+    if (r["Richtig"] === "NEIN") fragenMap[key].falsch++;
+  });
+
+  const list = Object.values(fragenMap)
+    .filter(x => x.total >= minAnt)
+    .sort((a,b) => (b.falsch/b.total) - (a.falsch/a.total));
+
+  const el = document.getElementById("fragen-list");
+  if (list.length === 0) {
+    el.innerHTML = '<div class="empty">Noch keine Daten vorhanden.</div>';
+    return;
+  }
+
+  el.innerHTML = list.map(x => {
+    const pct = Math.round(x.falsch / x.total * 100);
+    const color = pct >= 60 ? "var(--red)" : pct >= 30 ? "#cc7700" : "var(--green)";
+    return `<div class="frage-row">
+      <div class="frage-pct" style="color:${color}">${pct}%</div>
+      <div class="frage-bar-bg"><div class="frage-bar" style="width:${pct}%;background:${color}"></div></div>
+      <div class="frage-text" title="${x.frage}">${x.frage}</div>
+      <div class="frage-fahrzeug">${x.fahrzeug||""}</div>
+      <div style="font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0">${x.falsch}/${x.total}</div>
+    </div>`;
+  }).join("");
+}
+
+loadData();
+</script>
+</body>
+</html>

@@ -10,15 +10,12 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --red:#CC0000;--red-dark:#990000;--red-light:#FDEAEA;
-  --black:#1a1a1a;--gray:#666;--gray-light:#f4f4f4;--gray-mid:#e0e0e0;
+  --black:#1a1a1a;--gray:#666;--gray-mid:#e0e0e0;
   --green:#2d6a1f;--green-light:#eaf3e6;
   --bg:#fff;--bg2:#f4f4f4;--bg3:#e8e8e8;
   --text:#1a1a1a;--text2:#555;--text3:#888;
-  --border:rgba(0,0,0,0.13);--border2:rgba(0,0,0,0.22);
 }
 body{font-family:'Open Sans',Arial,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:14px;}
-
-/* Header */
 .site-header{background:var(--black);}
 .site-header-inner{max-width:660px;margin:0 auto;padding:0 1rem;display:flex;align-items:center;height:54px;gap:12px;}
 .logo-flame{width:32px;height:32px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -26,34 +23,24 @@ body{font-family:'Open Sans',Arial,sans-serif;background:var(--bg3);color:var(--
 .logo-text{color:white;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;line-height:1.2;}
 .logo-text span{display:block;font-size:10px;font-weight:400;color:#999;text-transform:none;letter-spacing:0;}
 .red-stripe{height:4px;background:var(--red);}
-
-/* Layout */
 .page{max-width:660px;margin:0 auto;padding:1.5rem 1rem 4rem;}
 .screen{display:none;}
 .screen.active{display:block;}
-
-/* Cards */
 .card{background:var(--bg);border:1px solid var(--gray-mid);border-top:3px solid var(--red);padding:1.25rem;margin-bottom:1rem;}
 h2{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.25rem;}
 h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.5rem;}
 .sub{font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.5;}
-
-/* Form elements */
 label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray);display:block;margin-bottom:3px;margin-top:12px;}
 label:first-of-type{margin-top:0;}
 input[type=text],input[type=date],input[type=time],select{
-  width:100%;height:38px;padding:0 10px;
-  border:1px solid var(--gray-mid);background:var(--bg);color:var(--text);
-  font-size:14px;font-family:inherit;appearance:none;-webkit-appearance:none;border-radius:0;
+  width:100%;height:38px;padding:0 10px;border:1px solid var(--gray-mid);
+  background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;
+  appearance:none;-webkit-appearance:none;border-radius:0;
 }
-input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,select:focus{
-  outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(204,0,0,0.1);
-}
+input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,select:focus{outline:none;border-color:var(--red);}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
-/* Buttons */
-.btn{height:40px;padding:0 20px;border:2px solid var(--black);background:var(--bg);color:var(--black);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:inherit;transition:background 0.15s,color 0.15s;border-radius:0;}
+.btn{height:40px;padding:0 20px;border:2px solid var(--black);background:var(--bg);color:var(--black);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:inherit;border-radius:0;}
 .btn:hover{background:var(--black);color:#fff;}
 .btn:active{transform:scale(0.98);}
 .btn-primary{background:var(--red);color:#fff;border-color:var(--red);}
@@ -63,24 +50,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .btn-green{background:var(--green);color:#fff;border-color:var(--green);}
 .btn-green:hover{background:#1e4d15;border-color:#1e4d15;}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.25rem;}
-
-/* Badges */
 .badge{font-size:10px;font-weight:700;padding:2px 8px;display:inline-block;text-transform:uppercase;letter-spacing:0.05em;}
 .badge-green{background:var(--green-light);color:var(--green);}
 .badge-red{background:var(--red-light);color:var(--red);}
-.badge-amber{background:#fdf3e0;color:#7a4a00;}
-
-/* Divider */
 .divider{height:1px;background:var(--gray-mid);margin:1rem 0;}
-
-/* Gebiet radio cards */
 .radio-group{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
 .radio-card{border:2px solid var(--gray-mid);padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;background:var(--bg);}
 .radio-card:hover{border-color:var(--gray);}
 .radio-card.selected{border-color:var(--red);background:var(--red-light);color:var(--red-dark);}
-
+/* Disclaimer */
+.disclaimer{background:var(--red);color:#fff;padding:1rem;margin-bottom:1rem;text-align:center;}
+.disclaimer-title{font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+.disclaimer-sub{font-size:13px;margin-top:4px;font-weight:600;opacity:0.9;}
 /* Alarm */
-.alarm-header{background:var(--red);color:#fff;padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;}
+.alarm-header{background:var(--black);color:#fff;padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;}
 .alarm-header svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
 .alarm-header span{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
 .alarm-addr{font-size:22px;font-weight:700;margin:0.5rem 0 0.2rem;}
@@ -92,8 +75,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .maps-link:hover{text-decoration:underline;}
 .qr-wrap{background:white;padding:10px;display:inline-block;border:1px solid var(--gray-mid);}
 .top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
-
-/* Quiz */
+/* Weiter-Wahl nach Einsatz */
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem;}
+.choice-card{border:2px solid var(--gray-mid);padding:1rem;cursor:pointer;text-align:center;background:var(--bg);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+.choice-card:hover{border-color:var(--red);background:var(--red-light);color:var(--red-dark);}
+/* Abfrage */
 .progress-bar-bg{height:4px;background:var(--gray-mid);margin-bottom:1.25rem;}
 .progress-bar{height:4px;background:var(--red);transition:width 0.3s;}
 .frage-nr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--gray);margin-bottom:6px;}
@@ -103,8 +89,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .antwort-btn.correct{background:var(--green-light);border-color:var(--green);border-left:4px solid var(--green);color:var(--green);}
 .antwort-btn.wrong{background:var(--red-light);border-color:var(--red);border-left:4px solid var(--red);color:var(--red-dark);}
 .erklaerung{background:var(--bg2);border-left:3px solid var(--gray-mid);padding:0.75rem;margin-top:0.5rem;font-size:13px;color:var(--text2);display:none;}
-
-/* Abschluss */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:1rem 0;}
 .stat-card{background:var(--bg2);border-top:3px solid var(--red);padding:0.75rem;}
 .stat-val{font-size:22px;font-weight:700;}
@@ -115,25 +99,29 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .save-status{font-size:12px;font-weight:600;margin-top:10px;padding:8px 12px;display:none;}
 .save-ok{background:var(--green-light);color:var(--green);border-left:3px solid var(--green);}
 .save-err{background:var(--red-light);color:var(--red-dark);border-left:3px solid var(--red);}
-
-/* Footer */
-.site-footer{background:var(--black);color:#888;font-size:11px;text-align:center;padding:1rem;}
-
-/* Error */
 .err-msg{color:var(--red);font-size:12px;font-weight:600;margin-top:8px;display:none;}
+.init-overlay{position:fixed;inset:0;background:rgba(26,26,26,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:100;}
+.init-overlay svg{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.init-overlay p{color:white;font-size:14px;font-weight:600;}
+.init-sub{color:#aaa;font-size:12px;}
+.site-footer{background:var(--black);color:#888;font-size:11px;text-align:center;padding:1rem;}
 </style>
 </head>
 <body>
+
+<div class="init-overlay" id="init-overlay">
+  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#CC0000" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
+  <p id="init-msg">Wird geladen…</p>
+  <div class="init-sub" id="init-sub"></div>
+</div>
 
 <div class="site-header">
   <div class="site-header-inner">
     <div class="logo-flame">
       <svg viewBox="0 0 24 24"><path d="M12 2C8 6 6 9 8 13c-2-1-3-3-3-5C3 13 5 18 12 22c7-4 9-9 7-14-1 2-3 3-5 3 2-2 1-6-2-9z"/></svg>
     </div>
-    <div class="logo-text">
-      Stützpunktfeuerwehr Meilen
-      <span>Fahrtraining</span>
-    </div>
+    <div class="logo-text">Stützpunktfeuerwehr Meilen<span>Fahrtraining</span></div>
   </div>
 </div>
 <div class="red-stripe"></div>
@@ -145,54 +133,33 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card">
       <h2>Fahrt erfassen</h2>
       <p class="sub">Angaben vor der Abfahrt ausfüllen</p>
-
       <div class="grid2">
-        <div>
-          <label>Fahrer (Kürzel)</label>
-          <input type="text" id="f-fahrer" maxlength="3" placeholder="MÜL" style="text-transform:uppercase">
-        </div>
-        <div>
-          <label>Beifahrer (Kürzel)</label>
-          <input type="text" id="f-beifahrer" maxlength="3" placeholder="SCH" style="text-transform:uppercase">
-        </div>
+        <div><label>Fahrer (Kürzel)</label><input type="text" id="f-fahrer" maxlength="3" placeholder="MÜL" style="text-transform:uppercase"></div>
+        <div><label>Beifahrer (Kürzel)</label><input type="text" id="f-beifahrer" maxlength="3" placeholder="SCH" style="text-transform:uppercase"></div>
       </div>
       <div class="grid2">
-        <div>
-          <label>Datum</label>
-          <input type="date" id="f-datum">
-        </div>
-        <div>
-          <label>Abfahrtszeit</label>
-          <input type="time" id="f-abfahrt">
-        </div>
+        <div><label>Datum</label><input type="date" id="f-datum"></div>
+        <div><label>Abfahrtszeit</label><input type="time" id="f-abfahrt"></div>
       </div>
       <label>Fahrzeug</label>
       <select id="f-fahrzeug">
         <option value="">– wählen –</option>
-        <option>PTF</option>
-        <option>OW</option>
-        <option>MTF</option>
-        <option>TLF</option>
-        <option>PIF</option>
-        <option>OC</option>
-        <option>ULF</option>
-        <option>ADL</option>
+        <option>PTF</option><option>OW</option><option>MTF</option><option>TLF</option>
+        <option>PIF</option><option>OC</option><option>ULF</option><option>ADL</option>
       </select>
-
       <div id="gebiet-wrap" style="display:none">
         <label>Einsatzgebiet</label>
         <div class="radio-group">
           <div class="radio-card" id="rc-stuetzpunkt" onclick="selectGebiet('stuetzpunkt')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             Stützpunktgebiet
           </div>
           <div class="radio-card" id="rc-orts" onclick="selectGebiet('orts')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Ortsfeuerwehr
           </div>
         </div>
       </div>
-
       <label>Fahrt</label>
       <select id="f-fahrt">
         <option value="">– wählen –</option>
@@ -205,7 +172,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <option value="ueben">Freies Üben</option>
         <option value="abfrage">Abfrage</option>
       </select>
-
       <div class="btn-row">
         <button class="btn btn-primary" onclick="weiter()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -218,6 +184,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <!-- EINSATZMELDUNG -->
   <div class="screen" id="s-einsatz">
+    <div class="disclaimer">
+      <div class="disclaimer-title">⚠ Übungsmeldung</div>
+      <div class="disclaimer-sub">Kein Einsatz – Kein Sondersignal!</div>
+    </div>
     <div class="alarm-header">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       <span>Einsatzmeldung</span>
@@ -235,19 +205,31 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         </div>
         <div class="qr-wrap"><canvas id="e-qr" width="100" height="100"></canvas></div>
       </div>
-      <div class="alarm-meld">
-        <div class="alarm-lbl">Meldung</div>
-        <div class="alarm-text" id="e-meldung"></div>
-      </div>
-      <div class="alarm-meld">
-        <div class="alarm-lbl">Einsatzmittel</div>
-        <div class="alarm-text" id="e-mittel"></div>
-      </div>
+      <div class="alarm-meld"><div class="alarm-lbl">Meldung</div><div class="alarm-text" id="e-meldung"></div></div>
+      <div class="alarm-meld"><div class="alarm-lbl">Einsatzmittel</div><div class="alarm-text" id="e-mittel"></div></div>
       <div class="btn-row">
-        <button class="btn btn-red" onclick="einsatzAbschliessen()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Einsatz abschliessen
+        <button class="btn btn-green" onclick="einsatzOrtErreicht()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Bei Einsatzort angekommen
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NACH EINSATZ: WAHL -->
+  <div class="screen" id="s-nach-einsatz">
+    <div class="card">
+      <h2>Einsatz abgeschlossen</h2>
+      <p class="sub">Wie weiter?</p>
+      <div class="choice-grid">
+        <div class="choice-card" onclick="nochEinEinsatz()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 8px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Noch ein Einsatz
+        </div>
+        <div class="choice-card" onclick="weiterNachEinsatz()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 8px"><polyline points="9 18 15 12 9 6"/></svg>
+          Weiter zu Aufbautraining
+        </div>
       </div>
     </div>
   </div>
@@ -310,175 +292,139 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-
 <div class="site-footer">© Stützpunktfeuerwehr Meilen</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
-
-const ADRESSEN={
-  meilen:[
-    {str:"Dorfstrasse",plz:"8706",ort:"Meilen"},{str:"Seestrasse",plz:"8706",ort:"Meilen"},
-    {str:"Bergstrasse",plz:"8706",ort:"Meilen"},{str:"Schulhausstrasse",plz:"8706",ort:"Meilen"},
-    {str:"Bahnhofstrasse",plz:"8706",ort:"Meilen"},{str:"Rebhaldengasse",plz:"8706",ort:"Meilen"},
-    {str:"Kirchgasse",plz:"8706",ort:"Meilen"},{str:"Hauptstrasse",plz:"8706",ort:"Meilen"},
-    {str:"Lindenstrasse",plz:"8706",ort:"Meilen"},{str:"Riedstrasse",plz:"8706",ort:"Meilen"},
-    {str:"Ackerstrasse",plz:"8706",ort:"Meilen"},{str:"Oberdorfstrasse",plz:"8706",ort:"Meilen"}
-  ],
-  feldmeilen:[
-    {str:"Seestrasse",plz:"8706",ort:"Feldmeilen"},{str:"Feldmeilenerstrasse",plz:"8706",ort:"Feldmeilen"},
-    {str:"Bergstrasse",plz:"8706",ort:"Feldmeilen"},{str:"Zürichstrasse",plz:"8706",ort:"Feldmeilen"},
-    {str:"Rosenweg",plz:"8706",ort:"Feldmeilen"},{str:"Dorfweg",plz:"8706",ort:"Feldmeilen"}
-  ],
-  herrliberg:[
-    {str:"Seestrasse",plz:"8704",ort:"Herrliberg"},{str:"Dorfstrasse",plz:"8704",ort:"Herrliberg"},
-    {str:"Bergstrasse",plz:"8704",ort:"Herrliberg"},{str:"Kirchweg",plz:"8704",ort:"Herrliberg"},
-    {str:"Weinbergstrasse",plz:"8704",ort:"Herrliberg"},{str:"Rebhaldengasse",plz:"8704",ort:"Herrliberg"},
-    {str:"Alte Landstrasse",plz:"8704",ort:"Herrliberg"},{str:"Seefeldstrasse",plz:"8704",ort:"Herrliberg"}
-  ],
-  uetikon:[
-    {str:"Seestrasse",plz:"8707",ort:"Uetikon am See"},{str:"Dorfstrasse",plz:"8707",ort:"Uetikon am See"},
-    {str:"Bergstrasse",plz:"8707",ort:"Uetikon am See"},{str:"Kirchgasse",plz:"8707",ort:"Uetikon am See"},
-    {str:"Schulhausstrasse",plz:"8707",ort:"Uetikon am See"},{str:"Zürichstrasse",plz:"8707",ort:"Uetikon am See"}
-  ],
-  oetwil:[
-    {str:"Seestrasse",plz:"8618",ort:"Oetwil am See"},{str:"Dorfstrasse",plz:"8618",ort:"Oetwil am See"},
-    {str:"Bergstrasse",plz:"8618",ort:"Oetwil am See"},{str:"Rebweg",plz:"8618",ort:"Oetwil am See"},
-    {str:"Schulstrasse",plz:"8618",ort:"Oetwil am See"},{str:"Hauptstrasse",plz:"8618",ort:"Oetwil am See"}
-  ],
-  maennedorf:[
-    {str:"Seestrasse",plz:"8708",ort:"Männedorf"},{str:"Dorfstrasse",plz:"8708",ort:"Männedorf"},
-    {str:"Bergstrasse",plz:"8708",ort:"Männedorf"},{str:"Kirchgasse",plz:"8708",ort:"Männedorf"},
-    {str:"Schulhausstrasse",plz:"8708",ort:"Männedorf"},{str:"Zürichstrasse",plz:"8708",ort:"Männedorf"},
-    {str:"Alte Landstrasse",plz:"8708",ort:"Männedorf"},{str:"Rebhaldengasse",plz:"8708",ort:"Männedorf"}
-  ],
-  staefa:[
-    {str:"Seestrasse",plz:"8712",ort:"Stäfa"},{str:"Dorfstrasse",plz:"8712",ort:"Stäfa"},
-    {str:"Bergstrasse",plz:"8712",ort:"Stäfa"},{str:"Kirchgasse",plz:"8712",ort:"Stäfa"},
-    {str:"Schulhausstrasse",plz:"8712",ort:"Stäfa"},{str:"Zürichstrasse",plz:"8712",ort:"Stäfa"},
-    {str:"Rebhaldengasse",plz:"8712",ort:"Stäfa"},{str:"Hauptstrasse",plz:"8712",ort:"Stäfa"}
-  ],
-  hombrechtikon:[
-    {str:"Dorfstrasse",plz:"8634",ort:"Hombrechtikon"},{str:"Bergstrasse",plz:"8634",ort:"Hombrechtikon"},
-    {str:"Schulhausstrasse",plz:"8634",ort:"Hombrechtikon"},{str:"Kirchgasse",plz:"8634",ort:"Hombrechtikon"},
-    {str:"Zürichstrasse",plz:"8634",ort:"Hombrechtikon"},{str:"Hauptstrasse",plz:"8634",ort:"Hombrechtikon"}
-  ]
-};
-
-const STUETZPUNKT_GEMEINDEN=["meilen","feldmeilen","herrliberg","uetikon","oetwil","maennedorf","staefa","hombrechtikon"];
-const ORTS_GEMEINDEN=["herrliberg","feldmeilen","meilen"];
+const FRAGEN_SHEET_ID="1EVK63S1UzguuIxlYgkSLT3_Aw9yZpb_YxuUjTC7fEdU";
+const FAHRZEUGE=["PTF","OW","MTF","TLF","PIF","OC","ULF","ADL"];
 const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC"];
+const ADDR_CACHE_KEY="fw_adressen";
+const ADDR_TTL=7*24*60*60*1000;
+const FRAGEN_CACHE_KEY="fw_fragen";
+const FRAGEN_TTL=7*24*60*60*1000;
+
+const GEMEINDEN_ORTS=["meilen","feldmeilen","herrliberg"];
+const GEMEINDEN_STUETZ=["meilen","feldmeilen","herrliberg","uetikon","oetwil","maennedorf","staefa","hombrechtikon"];
+const GEMEINDE_INFO={
+  meilen:{name:"Meilen",plz:"8706"},feldmeilen:{name:"Feldmeilen",plz:"8706"},
+  herrliberg:{name:"Herrliberg",plz:"8704"},uetikon:{name:"Uetikon am See",plz:"8707"},
+  oetwil:{name:"Oetwil am See",plz:"8618"},maennedorf:{name:"Männedorf",plz:"8708"},
+  staefa:{name:"Stäfa",plz:"8712"},hombrechtikon:{name:"Hombrechtikon",plz:"8634"}
+};
 
 const EINSAETZE=[
   {stichwort:"BRAND",meldung:"Gebäudebrand, Rauch aus Obergeschoss sichtbar. Personen im Gebäude nicht ausgeschlossen.",mittel:"1× TLF, 1× PTF, 1× MTF"},
   {stichwort:"BRAND",meldung:"Kellerbrand in Mehrfamilienhaus. Starke Rauchentwicklung, Bewohner haben sich selbst gerettet.",mittel:"1× TLF, 1× PTF"},
   {stichwort:"BRAND",meldung:"Fahrzeugbrand auf Parkplatz. Übergriff auf Nachbarfahrzeug möglich.",mittel:"1× TLF, 1× OW"},
   {stichwort:"BRAND",meldung:"Gartenbrand, Gefahr der Ausbreitung auf Wohngebäude.",mittel:"1× TLF"},
-  {stichwort:"UNFALL",meldung:"Verkehrsunfall mit 2 Fahrzeugen, eine eingeklemmte Person, Feuerwehr zur Technischen Hilfe angefordert.",mittel:"1× OW, 1× MTF"},
+  {stichwort:"UNFALL",meldung:"Verkehrsunfall mit 2 Fahrzeugen, eine eingeklemmte Person.",mittel:"1× OW, 1× MTF"},
   {stichwort:"UNFALL",meldung:"Motorradunfall auf Seestrasse. Fahrer verletzt, Ölaustritt auf Fahrbahn.",mittel:"1× OW, 1× PTF"},
   {stichwort:"UNFALL",meldung:"Auffahrunfall auf der Hauptstrasse. Airbag ausgelöst, Person benommen.",mittel:"1× OW"},
   {stichwort:"PERSON",meldung:"Person in Not im See, geht unter. Zeugen am Ufer.",mittel:"1× OW, Seerettung"},
-  {stichwort:"PERSON",meldung:"Vermisste Person, zuletzt am Seeufer gesehen. Suchaktion angefordert.",mittel:"1× OC, 1× MTF"},
-  {stichwort:"TECHNISCH",meldung:"Sturmschaden: Baum auf Fahrbahn und Stromleitung. Strasse vollständig gesperrt.",mittel:"1× PTF, 1× OW"},
+  {stichwort:"PERSON",meldung:"Vermisste Person, zuletzt am Seeufer gesehen.",mittel:"1× OC, 1× MTF"},
+  {stichwort:"TECHNISCH",meldung:"Sturmschaden: Baum auf Fahrbahn und Stromleitung. Strasse gesperrt.",mittel:"1× PTF, 1× OW"},
   {stichwort:"TECHNISCH",meldung:"Überfluteter Keller nach Starkregen, Pumpen angefordert.",mittel:"1× TLF, 1× ULF"},
   {stichwort:"TECHNISCH",meldung:"Gasaustritt in Wohngebäude, Bewohner bereits evakuiert.",mittel:"1× PTF, 1× OW, 1× MTF"},
-  {stichwort:"TECHNISCH",meldung:"Aufzug mit Personen steckengeblieben, Befreiung erforderlich.",mittel:"1× OW"},
+  {stichwort:"TECHNISCH",meldung:"Aufzug mit Personen steckengeblieben.",mittel:"1× OW"},
   {stichwort:"TIER",meldung:"Tier in Not: Katze seit über 24h in Schacht eingeschlossen.",mittel:"1× MTF"},
-  {stichwort:"FEHLALARM",meldung:"Brandmeldeanlage ausgelöst, Betrieb ohne sichtbare Brandzeichen.",mittel:"1× PTF, 1× OW"}
+  {stichwort:"FEHLALARM",meldung:"Brandmeldeanlage ausgelöst, keine sichtbaren Brandzeichen.",mittel:"1× PTF, 1× OW"}
 ];
 
-const FRAGEN={
-  PTF:[
-    {f:"Was bedeutet das Kürzel PTF?",a:["Pikettfahrzeug","Pumpen-Tanklöschfahrzeug","Pionier-Transportfahrzeug","Primär-Tankfahrzeug"],r:0,e:"PTF = Pikettfahrzeug, eingesetzt für schnelle Ersterkundung."},
-    {f:"Welches Gerät befindet sich im Geräteraum G1 des PTF?",a:["Hochdruckpumpe","Atemschutzgeräte","Stromerzeuger","Schaummittelanlage"],r:2,e:"Im Geräteraum G1 befindet sich standardmässig der Stromerzeuger."},
-    {f:"Wie viel Nutzlast hat das PTF in kg?",a:["800 kg","1200 kg","2000 kg","3500 kg"],r:1,e:"Das PTF hat eine Nutzlast von ca. 1200 kg je nach Ausführung."},
-    {f:"Was ist die maximale zulässige Gesamtmasse des PTF?",a:["3.5 t","5.0 t","7.5 t","12 t"],r:2,e:"Das PTF ist als 7.5-Tönner zugelassen."},
-    {f:"Welcher Führerschein ist für das PTF erforderlich?",a:["Kat. B","Kat. C1","Kat. C","Kat. D"],r:1,e:"Für Fahrzeuge bis 7.5 t ist Kat. C1 erforderlich."},
-    {f:"Welche Funktion hat das PTF primär im Einsatz?",a:["Wasserversorgung","Ersterkundung und Nachschub","Personentransport","Technische Hilfeleistung"],r:1,e:"Das PTF dient der Ersterkundung und dem Materialnachschub."},
-    {f:"Wie wird das PTF im Funk bezeichnet?",a:["Florian 1","Tanker","Pikettfahrzeug Alpha","[Bitte Eintrag anpassen]"],r:3,e:"Bitte Funkrufname gemäss lokaler Disposition eintragen."},
-    {f:"Wo befindet sich der Hauptschalter der Beleuchtungsanlage?",a:["Armaturenbrett links","Armaturenbrett rechts","Hinter dem Fahrersitz","Am Bedienpanel G3"],r:0,e:"Bitte gemäss Fahrzeugdokumentation prüfen."}
-  ],
-  OW:[
-    {f:"Wofür steht OW?",a:["Offenes Werk","Oberwagen","Ölwehr","Operatives Werkzeug"],r:2,e:"OW = Ölwehr, spezialisiert auf Ölschadenbekämpfung."},
-    {f:"Welches Bindemittel wird im OW standardmässig mitgeführt?",a:["Sand","Ölkissen und Granulat","Kalk","Holzsägemehl"],r:1,e:"OW führt Ölkissen und Bindemittelgranulat mit."},
-    {f:"Für welchen Einsatztyp wird das OW primär gerufen?",a:["Gebäudebrände","Technische Hilfeleistung","Ölunfälle und Auslaufschäden","Personensuche"],r:2,e:"Das OW ist primär für Öl- und Auslaufschäden konzipiert."},
-    {f:"Wie gross ist der Wassertank des OW?",a:["500 l","1000 l","2000 l","Kein Tank"],r:3,e:"Das OW führt in der Regel keinen Wassertank – bitte lokal prüfen."},
-    {f:"Welcher Führerschein ist für das OW erforderlich?",a:["Kat. B","Kat. C1","Kat. C","Kat. BE"],r:1,e:"[Platzhalter – lokal anpassen]"},
-    {f:"Was ist beim Absichern einer Ölspur auf der Strasse zuerst zu tun?",a:["Bindemittel ausbringen","Fahrbahn absperren","Behörden benachrichtigen","Fotos machen"],r:1,e:"Zuerst die Fahrbahn absichern, dann Bindemittel ausbringen."},
-    {f:"Welche persönliche Schutzausrüstung ist bei Ölschäden zwingend?",a:["Nur Handschuhe","Helm und Handschuhe","Vollständige Chemikalienschutzausrüstung","PSA Stufe 1"],r:3,e:"Bei Ölschäden PSA Stufe 1 gemäss lokaler Regelung tragen."},
-    {f:"Wohin wird ölverunreinigtes Material entsorgt?",a:["Kehrichtsack","Sonderabfallsack / Spezialcontainer","Kompost","Schmutzwasserkanal"],r:1,e:"Ölverunreinigtes Material gehört in den Sonderabfallsack."}
-  ],
-  MTF:[
-    {f:"Wofür steht MTF?",a:["Mannschaftstransportfahrzeug","Mittelgrosse Tank-Fahrzeug","Motorisierte Truppe Feuerwehr","Material-Träger-Fahrzeug"],r:0,e:"MTF = Mannschaftstransportfahrzeug."},
-    {f:"Wie viele Personen kann das MTF typischerweise transportieren?",a:["4","6","9","12"],r:2,e:"Das MTF transportiert in der Regel 9 Personen (Fahrer + 8)."},
-    {f:"Welcher Führerschein ist für das MTF erforderlich?",a:["Kat. B","Kat. C1","Kat. C","Kat. D1"],r:0,e:"Das MTF fällt in der Regel unter Kat. B (unter 3.5 t)."},
-    {f:"Was befindet sich im Laderaum des MTF?",a:["Wassertank","Atemschutzgeräte","Material und Ausrüstung der Mannschaft","Pumpenanlage"],r:2,e:"Der Laderaum enthält die persönliche Ausrüstung der Einsatzmannschaft."},
-    {f:"Darf das MTF mit Blaulicht fahren?",a:["Nein, nie","Ja, immer","Nur auf Anweisung des Einsatzleiters","Nur auf Autobahnen"],r:2,e:"Blaulicht und Martinshorn nur auf Anweisung des Einsatzleiters."},
-    {f:"Wie wird die Mannschaft im MTF gesichert?",a:["Nur Fahrer gurtet","Alle Insassen müssen angeschnallt sein","Nur auf Autobahnen","PSA reicht als Sicherung"],r:1,e:"Alle Insassen müssen angeschnallt sein, auch im Feuerwehreinsatz."},
-    {f:"Welches Dokument muss bei jeder Fahrt mitgeführt werden?",a:["Einsatzprotokoll","Fahrzeugausweis und Versicherungsnachweis","Alarmierungsplan","Gefahrgutkarte"],r:1,e:"Fahrzeugausweis und Versicherungsnachweis sind Pflicht."},
-    {f:"Was ist vor der Abfahrt mit dem MTF obligatorisch zu prüfen?",a:["Nur Reifendruck","Beleuchtung, Bremsen, Spiegel, Tankanzeige","Nur Kraftstoff","Nur Beleuchtung"],r:1,e:"Vor jeder Fahrt: Beleuchtung, Bremsen, Spiegel und Tankanzeige prüfen."}
-  ],
-  TLF:[
-    {f:"Was bedeutet TLF?",a:["Tank-Last-Fahrzeug","Tanklöschfahrzeug","Transport-Lösch-Fahrzeug","Technisches Löschfahrzeug"],r:1,e:"TLF = Tanklöschfahrzeug, kombiniert Tank und Pumpe."},
-    {f:"Wie gross ist der Wassertank eines typischen TLF?",a:["500 l","1000 l","2000–4000 l","8000 l"],r:2,e:"Ein TLF führt je nach Bauart 2000 bis 4000 Liter Wasser mit."},
-    {f:"Welcher Führerschein ist für das TLF erforderlich?",a:["Kat. B","Kat. C1","Kat. C","Kat. D"],r:2,e:"Das TLF über 7.5 t erfordert Kat. C."},
-    {f:"Was ist der Förderstrom einer typischen Pumpe am TLF?",a:["500 l/min","1000 l/min","2000 l/min","5000 l/min"],r:2,e:"Typisch sind 2000 l/min bei 10 bar."},
-    {f:"Was ist beim Betrieb der Pumpe zwingend zu beachten?",a:["Motor abstellen","Feststellbremse anziehen","Getriebe in Leerlauf","Alle Ventile öffnen"],r:1,e:"Vor Pumpenentnahme Feststellbremse anziehen und Zapfwelle einschalten."},
-    {f:"Wie wird die Pumpe des TLF angetrieben?",a:["Elektromotor","Eigener Dieselmotor","Zapfwelle vom Fahrzeugmotor","Hydraulikantrieb"],r:2,e:"Die Pumpe wird über die Zapfwelle des Fahrzeugmotors angetrieben."},
-    {f:"Was bezeichnet man als 'B-Schlauch'?",a:["75-mm-Saugschlauch","75-mm-Druckschlauch","52-mm-Druckschlauch","110-mm-Saugschlauch"],r:1,e:"B-Schlauch = 75-mm-Druckschlauch (Storz B-Kupplung)."},
-    {f:"Wie wird die Wasserversorgung vom Hydrant sichergestellt?",a:["Über Saugschlauch","Über Druckschlauch direkt","Über B-Schlauch mit Übergangsstück","Automatisch"],r:2,e:"Anschluss vom Unterflurhydrant via B-Schlauch mit entsprechendem Übergangsstück."}
-  ],
-  PIF:[
-    {f:"Wofür steht PIF?",a:["Pionierfahrzeug","Pikettfahrzeug mit Infra","Pumpen-Intervention-Fahrzeug","[Platzhalter – bitte anpassen]"],r:3,e:"Bitte Bezeichnung gemäss lokaler Nomenklatur anpassen."},
-    {f:"Welche Zusatzausrüstung führt das PIF?",a:["Schaummittel","Technisches Rettungsgerät","Atemschutz","[Platzhalter – bitte anpassen]"],r:3,e:"Bitte Eintrag gemäss Fahrzeugbeladungsplan anpassen."},
-    {f:"Für welchen Einsatz ist das PIF primär vorgesehen?",a:["Brandbekämpfung","Personenrettung","[Platzhalter]","[Platzhalter]"],r:2,e:"Bitte lokal anpassen."},
-    {f:"Welcher Führerschein ist für das PIF erforderlich?",a:["Kat. B","Kat. C1","Kat. C","[Platzhalter]"],r:3,e:"Bitte lokal prüfen."},
-    {f:"Was ist die Zuladung des PIF?",a:["500 kg","1000 kg","1500 kg","[Platzhalter]"],r:3,e:"Bitte lokal prüfen."},
-    {f:"Wo befindet sich der Erste-Hilfe-Kasten im PIF?",a:["G1 links","G2 rechts","Fahrgastraum","[Platzhalter]"],r:3,e:"Bitte gemäss Beladungsplan anpassen."},
-    {f:"Welches Kommunikationsmittel wird im PIF verwendet?",a:["Analogfunk","Polycom","Handy","[Platzhalter]"],r:1,e:"Bitte lokal anpassen."},
-    {f:"Wie ist das PIF nummeriert?",a:["01","05","[Platzhalter]","[Platzhalter]"],r:2,e:"Bitte Fahrzeugnummer lokal eintragen."}
-  ],
-  OC:[
-    {f:"Wofür steht OC?",a:["Operations-Center","Offenes Cargo","Ölcontainer","[Platzhalter]"],r:0,e:"OC = Operations-Center / Einsatzleitwagen je nach Organisation."},
-    {f:"Welche Hauptfunktion hat das OC?",a:["Wasserversorgung","Einsatzführung und Kommunikation","Mannschaftstransport","Technische Hilfeleistung"],r:1,e:"Das OC dient der Einsatzführung und Lagekoordination."},
-    {f:"Welcher Führerschein ist für das OC erforderlich?",a:["Kat. B","Kat. C1","Kat. C","[Platzhalter]"],r:0,e:"Das OC ist oft ein Fahrzeug unter 3.5 t – Kat. B genügt."},
-    {f:"Welches Kommunikationssystem wird im OC betrieben?",a:["Analogfunk","Polycom","Beide","Handy"],r:2,e:"Das OC ist mit Polycom und Analogfunk ausgerüstet."},
-    {f:"Was befindet sich im OC ausser Kommunikationstechnik?",a:["Löschmittel","Kartenmaterial und Lagekarten","Atemschutz","Pumpe"],r:1,e:"Das OC führt Kartenmaterial, Lagekarten und Planungsunterlagen mit."},
-    {f:"Wer bedient das OC typischerweise?",a:["Fahrer alleine","Einsatzleiter und Einsatzleiterstellvertreter","Beliebiger Feuerwehrmann","Sanitäter"],r:1,e:"Das OC wird vom Einsatzleiter und seinem Stv. bedient."},
-    {f:"Was ist bei der Ankunft am Schadenplatz mit dem OC zuerst zu tun?",a:["Pumpe starten","Lage erkunden und Lagebericht erstatten","Mannschaft aussteigen lassen","Funk abschalten"],r:1,e:"Zuerst Lage erkunden und Lagebericht an Disposition erstatten."},
-    {f:"Was ist das METHANE-Schema?",a:["Funkalphabet","Einsatz-Führungsschema","Chemikalienliste","[Platzhalter]"],r:1,e:"METHANE = Major incident, Exact location, Type, Hazards, Access, Number, Emergency services."}
-  ],
-  ULF:[
-    {f:"Wofür steht ULF?",a:["Ultra-Lösch-Fahrzeug","Universallöschfahrzeug","Unterdruck-Last-Fahrzeug","Urbanes Löschfahrzeug"],r:1,e:"ULF = Universallöschfahrzeug."},
-    {f:"Was zeichnet das ULF gegenüber dem TLF aus?",a:["Grösserer Tank","Mehr Mannschaft","Kombinierte Löschmittel (Wasser, Schaum, Pulver)","Höhere Geschwindigkeit"],r:2,e:"Das ULF kann verschiedene Löschmittel kombiniert einsetzen."},
-    {f:"Welcher Führerschein ist für das ULF erforderlich?",a:["Kat. B","Kat. C1","Kat. C","Kat. D"],r:2,e:"Das ULF ist in der Regel über 7.5 t und erfordert Kat. C."},
-    {f:"Wie gross ist der Schaumtank des ULF typischerweise?",a:["100 l","500 l","1000 l","2000 l"],r:1,e:"Der Schaumtank fasst typischerweise ca. 500 l Schaummittelkonzentrat."},
-    {f:"Was ist beim Einsatz von Schaum auf Gewässer zu beachten?",a:["Keine Einschränkungen","Schaum ist harmlos","Nur biologisch abbaubares Schaummittel","Schaum verstärkt Löschergebnis immer"],r:2,e:"Auf Gewässern nur umweltverträgliches, zertifiziertes Schaummittel einsetzen."},
-    {f:"Was ist die Mischrate bei Proteinschaum?",a:["0.5 %","1–3 %","6 %","10 %"],r:2,e:"Proteinschaum wird typischerweise mit 3–6 % Zumischrate eingesetzt."},
-    {f:"Welche Schutzausrüstung ist bei Schaumeinsatz zwingend?",a:["Nur Handschuhe","Vollständige Brandschutzausrüstung mit Visier","Chemikalienschutzanzug","Keine besondere"],r:1,e:"Vollständige Brandschutzausrüstung mit Gesichtsschutz ist zwingend."},
-    {f:"Was ist zuerst zu prüfen, bevor das ULF in enges Gelände fährt?",a:["Reifendruck","Breite, Höhe und Wendekreis des Fahrzeugs","Tankfüllung","Funkverbindung"],r:1,e:"Breite (oft >2.5 m), Höhe und Wendekreis des ULF vor der Einfahrt prüfen."}
-  ],
-  ADL:[
-    {f:"Wofür steht ADL?",a:["Anhängerdrehleiter","Automatische Drehleitern","Ausziehbare Drehleiter","Andere Drehleiter"],r:0,e:"ADL = Anhängerdrehleiter."},
-    {f:"Welcher Führerschein ist für das Zugfahrzeug der ADL erforderlich?",a:["Kat. B","Kat. BE","Kat. C1E","Kat. CE"],r:1,e:"Das Zugfahrzeug mit Anhänger erfordert Kat. BE je nach Gesamtgewicht."},
-    {f:"Was ist die maximale Arbeitshöhe einer typischen ADL?",a:["18 m","23 m","30 m","40 m"],r:2,e:"Eine typische ADL erreicht eine Arbeitshöhe von ca. 30 m – bitte lokal prüfen."},
-    {f:"Was ist vor dem Aufstellen der ADL zwingend zu prüfen?",a:["Reifendruck","Untergrund und Abstützfläche","Windgeschwindigkeit","Beleuchtung"],r:1,e:"Der Untergrund muss tragfähig sein, Abstützplatten verwenden."},
-    {f:"Was bezeichnet man als Korbnennlast der ADL?",a:["Gesamtgewicht der Leiter","Maximale Zuladung im Rettungskorb","Eigengewicht des Anhängers","Zugkraft des Fahrzeugs"],r:1,e:"Korbnennlast = maximales zulässiges Gewicht im Rettungskorb."},
-    {f:"Was ist beim Rückwärtsfahren mit der ADL zu beachten?",a:["Anhänger lenkt gleich wie Zugfahrzeug","Anhänger schlägt entgegengesetzt ein","Anhänger hat eigene Lenkung","Keine Besonderheiten"],r:1,e:"Beim Rückwärtsfahren schlägt der Anhänger entgegengesetzt ein – Übung erforderlich."},
-    {f:"Welche Windgeschwindigkeit ist typischerweise die Einsatzgrenze der ADL?",a:["30 km/h","50 km/h","72 km/h","100 km/h"],r:2,e:"Typische Einsatzgrenze liegt bei Windstärke 6 (ca. 72 km/h)."},
-    {f:"Was ist nach dem Einsatz mit der ADL als erstes zu tun?",a:["Leiter einfahren und sichern","Korb reinigen","Protokoll ausfüllen","Fahrzeug tanken"],r:0,e:"Leiter vollständig einfahren, verriegeln und Abstützungen einziehen."}
-  ]
-};
-
+let ADRESSEN={};
+let FRAGEN={};
 let ST={};
 let selectedGebiet="";
+let QPOOL=[],QIDX=0;
 
-function r(a){return a[Math.floor(Math.random()*a.length)];}
+function ra(a){return a[Math.floor(Math.random()*a.length)];}
 function rn(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
 function today(){return new Date().toISOString().split("T")[0];}
 function nowTime(){return new Date().toTimeString().slice(0,5);}
+function setMsg(m,s=""){document.getElementById("init-msg").textContent=m;document.getElementById("init-sub").textContent=s;}
 
+/* ── Swisstopo ── */
+async function fetchGemeindeAdressen(key){
+  const info=GEMEINDE_INFO[key];
+  const url=`https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=${encodeURIComponent(info.name)}&type=locations&origins=address&limit=50&sr=4326&lang=de`;
+  const res=await fetch(url);
+  const data=await res.json();
+  const results=[];
+  for(const item of(data.results||[])){
+    const d=item.attrs||{};
+    if(!d.detail) continue;
+    const parts=d.detail.split(" ");
+    if(parts.length<2) continue;
+    const strNr=parts.slice(0,-3).join(" ");
+    const match=strNr.match(/^(.+?)\s+(\d+[a-z]?)$/i);
+    if(!match) continue;
+    results.push({str:match[1],nr:match[2],plz:info.plz,ort:info.name});
+    if(results.length>=20) break;
+  }
+  return results;
+}
+
+async function ladeAdressen(){
+  try{
+    const cached=localStorage.getItem(ADDR_CACHE_KEY);
+    if(cached){const obj=JSON.parse(cached);if(Date.now()-obj.ts<ADDR_TTL){ADRESSEN=obj.data;return;}}
+  }catch(e){}
+  setMsg("Adressen werden geladen…","Swisstopo API");
+  const result={};
+  for(const g of Object.keys(GEMEINDE_INFO)){
+    try{result[g]=await fetchGemeindeAdressen(g);}catch(e){result[g]=[];}
+  }
+  ADRESSEN=result;
+  try{localStorage.setItem(ADDR_CACHE_KEY,JSON.stringify({ts:Date.now(),data:result}));}catch(e){}
+}
+
+function genAddr(){
+  const pool=ST.gebiet==="stuetzpunkt"?GEMEINDEN_STUETZ:GEMEINDEN_ORTS;
+  const shuffled=[...pool].sort(()=>Math.random()-0.5);
+  for(const g of shuffled){
+    const list=ADRESSEN[g]||[];
+    if(list.length>0) return ra(list);
+  }
+  return {str:"Seestrasse",nr:"1",plz:"8706",ort:"Meilen"};
+}
+
+/* ── Fragen ── */
+async function ladeFragen(){
+  try{
+    const cached=localStorage.getItem(FRAGEN_CACHE_KEY);
+    if(cached){const obj=JSON.parse(cached);if(Date.now()-obj.ts<FRAGEN_TTL){FRAGEN=obj.data;return;}}
+  }catch(e){}
+  setMsg("Fragen werden geladen…","Google Sheets");
+  const result={};
+  for(const fzg of FAHRZEUGE){
+    try{
+      const url=`https://docs.google.com/spreadsheets/d/${FRAGEN_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(fzg)}`;
+      const res=await fetch(url);
+      const text=await res.text();
+      const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+      const rows=(json.table.rows||[]).slice(1);
+      result[fzg]=rows.map(row=>{
+        const c=row.c||[];
+        const val=i=>c[i]&&c[i].v!=null?String(c[i].v).trim():"";
+        const map={A:0,B:1,C:2,D:3};
+        return{f:val(0),a:[val(1),val(2),val(3),val(4)],r:map[val(5).toUpperCase()]??0,e:val(6)};
+      }).filter(q=>q.f&&q.a[0]);
+    }catch(e){result[fzg]=[];}
+  }
+  FRAGEN=result;
+  try{localStorage.setItem(FRAGEN_CACHE_KEY,JSON.stringify({ts:Date.now(),data:result}));}catch(e){}
+}
+
+/* ── Init ── */
+async function init(){
+  try{await Promise.all([ladeAdressen(),ladeFragen()]);}catch(e){console.warn(e);}
+  document.getElementById("init-overlay").style.display="none";
+  document.getElementById("f-datum").value=today();
+  document.getElementById("f-abfahrt").value=nowTime();
+}
+
+/* ── Form 1 ── */
 function selectGebiet(val){
   selectedGebiet=val;
   document.getElementById("rc-stuetzpunkt").classList.toggle("selected",val==="stuetzpunkt");
@@ -495,26 +441,20 @@ function weiter(){
   const aufbau=document.getElementById("f-aufbau").value;
   const needsGebiet=STUETZPUNKT_FAHRZEUGE.includes(fzg);
   const err=document.getElementById("form1-err");
-  if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||(needsGebiet&&!selectedGebiet)){
-    err.style.display="block";return;
-  }
+  if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||(needsGebiet&&!selectedGebiet)){err.style.display="block";return;}
   err.style.display="none";
-  const gebiet=needsGebiet?selectedGebiet:"orts";
-  ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,gebiet,einsatzAddr:null,quizResults:[]};
+  ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,
+      gebiet:needsGebiet?selectedGebiet:"orts",einsatzAddr:null,quizResults:[],einsatzCount:0};
   if(fahrt==="einsatz") zeigeEinsatz();
   else if(aufbau==="abfrage") starteAbfrage();
   else zeigeAbschluss();
 }
 
-function genAddr(){
-  const pool=ST.gebiet==="stuetzpunkt"?STUETZPUNKT_GEMEINDEN:ORTS_GEMEINDEN;
-  const ad=r(ADRESSEN[r(pool)]);
-  return {...ad,nr:rn(1,120)};
-}
-
+/* ── Einsatz ── */
 function zeigeEinsatz(){
-  const ad=genAddr(),ens=r(EINSAETZE);
+  const ad=genAddr(),ens=ra(EINSAETZE);
   ST.einsatzAddr=`${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}`;
+  ST.einsatzCount=(ST.einsatzCount||0)+1;
   document.getElementById("e-stichwort").textContent=ens.stichwort;
   document.getElementById("e-addr").textContent=`${ad.str} ${ad.nr}`;
   document.getElementById("e-city").textContent=`${ad.plz} ${ad.ort}`;
@@ -527,14 +467,23 @@ function zeigeEinsatz(){
   show("s-einsatz");
 }
 
-function einsatzAbschliessen(){
+function einsatzOrtErreicht(){
+  show("s-nach-einsatz");
+}
+
+function nochEinEinsatz(){
+  zeigeEinsatz();
+}
+
+function weiterNachEinsatz(){
   if(ST.aufbau==="abfrage") starteAbfrage(); else zeigeAbschluss();
 }
 
-let QPOOL=[],QIDX=0;
-
+/* ── Abfrage ── */
 function starteAbfrage(){
-  QPOOL=[...(FRAGEN[ST.fahrzeug]||FRAGEN.PTF)].sort(()=>Math.random()-0.5).slice(0,6);
+  const pool=FRAGEN[ST.fahrzeug]||[];
+  if(pool.length===0){ST.quizResults=[];zeigeAbschluss();return;}
+  QPOOL=[...pool].sort(()=>Math.random()-0.5).slice(0,6);
   QIDX=0;ST.quizResults=[];
   zeigeFrageUI();show("s-abfrage");
 }
@@ -568,11 +517,12 @@ function naechsteFrage(){
   if(QIDX>=QPOOL.length) zeigeAbschluss(); else zeigeFrageUI();
 }
 
+/* ── Abschluss ── */
 function zeigeAbschluss(){
   document.getElementById("ac-rueckkehr").value=nowTime();
   const gl=ST.gebiet==="stuetzpunkt"?"Stützpunktgebiet":"Ortsfeuerwehrgebiet";
   document.getElementById("ac-chips").innerHTML=
-    `<span class="chip">${ST.fahrer} / ${ST.beifahrer}</span><span class="chip">${ST.fahrzeug}</span><span class="chip">${gl}</span><span class="chip">${ST.datum}</span><span class="chip">Abfahrt ${ST.abfahrt}</span>`;
+    `<span class="chip">${ST.fahrer} / ${ST.beifahrer}</span><span class="chip">${ST.fahrzeug}</span><span class="chip">${gl}</span><span class="chip">${ST.datum}</span><span class="chip">Abfahrt ${ST.abfahrt}</span>${ST.einsatzCount>0?`<span class="chip">${ST.einsatzCount}× Einsatz</span>`:""}`;
   const qr=document.getElementById("ac-quiz-result");
   if(ST.quizResults.length>0){
     qr.style.display="block";
@@ -589,7 +539,7 @@ function zeigeAbschluss(){
         </div>
         ${!x.richtig?`<div style="font-size:12px;color:var(--text3);margin-top:3px">Korrekt: ${x.korrekt}</div>`:""}
       </div>`).join("");
-  } else {qr.style.display="none";}
+  }else{qr.style.display="none";}
   show("s-abschluss");
 }
 
@@ -604,15 +554,18 @@ async function abschliessen(){
   try{
     await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({type:"alles",
-        fahrt:{datum:ST.datum,fahrer:ST.fahrer,beifahrer:ST.beifahrer,fahrzeug:ST.fahrzeug,fahrt:ST.fahrt,aufbau:ST.aufbau,gebiet:gl,abfahrt:ST.abfahrt,rueckkehr:rk,einsatzAddr:ST.einsatzAddr||"–",richtig,total,pct},
-        fragen:ST.quizResults.map(q=>({datum:ST.datum,fahrer:ST.fahrer,fahrzeug:ST.fahrzeug,frage:q.frage,gegeben:q.gegeben,korrekt:q.korrekt,richtig:q.richtig}))
+        fahrt:{datum:ST.datum,fahrer:ST.fahrer,beifahrer:ST.beifahrer,fahrzeug:ST.fahrzeug,
+               fahrt:ST.fahrt,aufbau:ST.aufbau,gebiet:gl,abfahrt:ST.abfahrt,rueckkehr:rk,
+               einsatzAddr:ST.einsatzAddr||"–",einsatzCount:ST.einsatzCount||0,richtig,total,pct},
+        fragen:ST.quizResults.map(q=>({datum:ST.datum,fahrer:ST.fahrer,fahrzeug:ST.fahrzeug,
+               frage:q.frage,gegeben:q.gegeben,korrekt:q.korrekt,richtig:q.richtig}))
       })
     });
     let sum=`${ST.fahrer} / ${ST.beifahrer} · ${ST.fahrzeug} · ${gl} · ${ST.datum} · ${ST.abfahrt}–${rk}`;
     if(total>0) sum+=` · Quiz ${richtig}/${total}`;
     document.getElementById("fd-summary").textContent=sum;
     show("s-fertig");
-  } catch(e){
+  }catch(e){
     statusEl.className="save-status save-err";
     statusEl.textContent="Fehler beim Speichern. Bitte Internetverbindung prüfen.";
   }
@@ -650,21 +603,17 @@ function drawQR(canvas,text,size){
   for(let rr=0;rr<mod;rr++)for(let c=0;c<mod;c++){if(m[rr][c])ctx.fillRect(off+c*cell,off+rr*cell,cell,cell);}
 }
 
-document.getElementById("f-fahrzeug").addEventListener("change",function(){
-  const fzg=this.value;
-  const wrap=document.getElementById("gebiet-wrap");
-  if(STUETZPUNKT_FAHRZEUGE.includes(fzg)){
-    wrap.style.display="block";
-  } else {
-    wrap.style.display="none";
-    selectedGebiet="orts";
-    document.getElementById("rc-stuetzpunkt").classList.remove("selected");
-    document.getElementById("rc-orts").classList.remove("selected");
-  }
+document.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById("f-fahrzeug").addEventListener("change",function(){
+    const fzg=this.value;
+    const wrap=document.getElementById("gebiet-wrap");
+    if(STUETZPUNKT_FAHRZEUGE.includes(fzg)){wrap.style.display="block";}
+    else{wrap.style.display="none";selectedGebiet="orts";
+      document.getElementById("rc-stuetzpunkt").classList.remove("selected");
+      document.getElementById("rc-orts").classList.remove("selected");}
+  });
+  init();
 });
-
-document.getElementById("f-datum").value=today();
-document.getElementById("f-abfahrt").value=nowTime();
 </script>
 </body>
 </html>
