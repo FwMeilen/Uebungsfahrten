@@ -132,7 +132,7 @@ select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);backgro
   </div>
 </div>
 
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.16</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.17</div>
 
 <script>
 const SHEET_ID = "1Y_kp8pqKNimB00UDSqWyWIfwXKZ7wRmBcJkWqBLvC3w";
@@ -220,8 +220,10 @@ function renderKPIs() {
   const mitQuiz = f.filter(r => parseInt(r["Quiz Total"]) > 0);
   if (mitQuiz.length > 0) {
     const avg = mitQuiz.reduce((s, r) => {
-      const pctRaw = String(r["%"] || "0").replace("%","").trim();
-      return s + (parseFloat(pctRaw) || 0);
+      const pctRaw = parseFloat(r["%"] || 0);
+      // Google Sheets gibt % als Dezimal zurück (0.17 = 17%)
+      const pct = pctRaw <= 1 ? pctRaw * 100 : pctRaw;
+      return s + pct;
     }, 0) / mitQuiz.length;
     document.getElementById("kpi-quiz").textContent = Math.round(avg) + "%";
   } else {
