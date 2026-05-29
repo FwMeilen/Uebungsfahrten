@@ -53,6 +53,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .badge{font-size:10px;font-weight:700;padding:2px 8px;display:inline-block;text-transform:uppercase;letter-spacing:0.05em;}
 .badge-green{background:var(--green-light);color:var(--green);}
 .badge-red{background:var(--red-light);color:var(--red);}
+.badge-blue{background:#E6F1FB;color:#0C447C;}
 .divider{height:1px;background:var(--gray-mid);margin:1rem 0;}
 .radio-group{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
 .radio-card{border:2px solid var(--gray-mid);padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;background:var(--bg);}
@@ -208,6 +209,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="top-row">
         <div style="min-width:0">
           <span class="badge badge-red" id="e-stichwort">BRAND</span>
+          <span class="badge badge-blue" id="e-alarmierung" style="margin-left:6px;display:none"></span>
           <div class="alarm-addr" id="e-addr"></div>
           <div class="alarm-sub" id="e-city"></div>
           <a class="maps-link" id="e-mapslink" href="#" target="_blank">
@@ -314,13 +316,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.12</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.14</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
 const FRAGEN_SHEET_ID="1EVK63S1UzguuIxlYgkSLT3_Aw9yZpb_YxuUjTC7fEdU";
 const FAHRZEUGE_B=["PTF 1/6","VA","PTF 4/7","PTF 2/3","OW"];
-const FAHRZEUGE_C=["TLF","ADL","PIF","ULF","OC","Schlauchverleger","MTF"];
+const FAHRZEUGE_C=["TLF","ADL","PIF","ULF","OC","SVF","MTF"];
 const FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
 const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","Schlauchverleger"];
 
@@ -339,23 +341,29 @@ const GEMEINDE_INFO={
   staefa:{name:"Stäfa",plz:"8712"},hombrechtikon:{name:"Hombrechtikon",plz:"8634"}
 };
 
-const EINSAETZE=[
-  {stichwort:"BRAND",meldung:"Gebäudebrand, Rauch aus Obergeschoss sichtbar. Personen im Gebäude nicht ausgeschlossen.",mittel:"1× TLF, 1× PTF, 1× MTF"},
-  {stichwort:"BRAND",meldung:"Kellerbrand in Mehrfamilienhaus. Starke Rauchentwicklung, Bewohner haben sich selbst gerettet.",mittel:"1× TLF, 1× PTF"},
-  {stichwort:"BRAND",meldung:"Fahrzeugbrand auf Parkplatz. Übergriff auf Nachbarfahrzeug möglich.",mittel:"1× TLF, 1× OW"},
-  {stichwort:"BRAND",meldung:"Gartenbrand, Gefahr der Ausbreitung auf Wohngebäude.",mittel:"1× TLF"},
-  {stichwort:"UNFALL",meldung:"Verkehrsunfall mit 2 Fahrzeugen, eine eingeklemmte Person.",mittel:"1× OW, 1× MTF"},
-  {stichwort:"UNFALL",meldung:"Motorradunfall auf Seestrasse. Fahrer verletzt, Ölaustritt auf Fahrbahn.",mittel:"1× OW, 1× PTF"},
-  {stichwort:"UNFALL",meldung:"Auffahrunfall auf der Hauptstrasse. Airbag ausgelöst, Person benommen.",mittel:"1× OW"},
-  {stichwort:"PERSON",meldung:"Person in Not im See, geht unter. Zeugen am Ufer.",mittel:"1× OW, Seerettung"},
-  {stichwort:"PERSON",meldung:"Vermisste Person, zuletzt am Seeufer gesehen.",mittel:"1× OC, 1× MTF"},
-  {stichwort:"TECHNISCH",meldung:"Sturmschaden: Baum auf Fahrbahn und Stromleitung. Strasse gesperrt.",mittel:"1× PTF, 1× OW"},
-  {stichwort:"TECHNISCH",meldung:"Überfluteter Keller nach Starkregen, Pumpen angefordert.",mittel:"1× TLF, 1× ULF"},
-  {stichwort:"TECHNISCH",meldung:"Gasaustritt in Wohngebäude, Bewohner bereits evakuiert.",mittel:"1× PTF, 1× OW, 1× MTF"},
-  {stichwort:"TECHNISCH",meldung:"Aufzug mit Personen steckengeblieben.",mittel:"1× OW"},
-  {stichwort:"TIER",meldung:"Tier in Not: Katze seit über 24h in Schacht eingeschlossen.",mittel:"1× MTF"},
-  {stichwort:"FEHLALARM",meldung:"Brandmeldeanlage ausgelöst, keine sichtbaren Brandzeichen.",mittel:"1× PTF, 1× OW"}
-];
+const EINSAETZE_CACHE_KEY="fw_einsaetze";
+const EINSAETZE_TTL=24*60*60*1000;
+let EINSAETZE=[];
+
+async function ladeEinsaetze(){
+  try{
+    const cached=localStorage.getItem(EINSAETZE_CACHE_KEY);
+    if(cached){const obj=JSON.parse(cached);if(Date.now()-obj.ts<EINSAETZE_TTL){EINSAETZE=obj.data;return;}}
+  }catch(e){}
+  try{
+    const url=`https://docs.google.com/spreadsheets/d/${FRAGEN_SHEET_ID}/gviz/tq?tqx=out:json&sheet=Einsatzmeldungen`;
+    const res=await fetch(url);
+    const text=await res.text();
+    const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+    const rows=(json.table.rows||[]).slice(1);
+    EINSAETZE=rows.map(row=>{
+      const c=row.c||[];
+      const val=i=>c[i]&&c[i].v!=null?String(c[i].v).trim():"";
+      return{stichwort:val(0),alarmierung:val(1),meldung:val(2),mittel:val(3)};
+    }).filter(e=>e.meldung);
+    try{localStorage.setItem(EINSAETZE_CACHE_KEY,JSON.stringify({ts:Date.now(),data:EINSAETZE}));}catch(e){}
+  }catch(e){console.warn("Einsatzmeldungen konnten nicht geladen werden:",e);}
+}
 
 let ADRESSEN={};
 let FRAGEN={};
@@ -457,7 +465,7 @@ async function ladeFragen(){
 
 /* ── Init ── */
 async function init(){
-  try{await Promise.all([ladeAdressen(),ladeFragen()]);}catch(e){console.warn(e);}
+  try{await Promise.all([ladeAdressen(),ladeFragen(),ladeEinsaetze()]);}catch(e){console.warn(e);}
   document.getElementById("init-overlay").style.display="none";
   document.getElementById("f-datum").value=today();
   document.getElementById("f-abfahrt").value=nowTime();
@@ -527,16 +535,43 @@ function zeigeEinsatz(){
     show("s-form1");
     return;
   }
-  const ens=ra(EINSAETZE);
+  // Filter Einsatzmeldungen nach gewähltem Fahrzeug
+  const fzg=ST.fahrzeug;
+  const katB=FAHRZEUGE_B;
+  const istB=katB.includes(fzg);
+  const passend=EINSAETZE.filter(e=>{
+    const mittel=e.mittel.toUpperCase();
+    // "B" im Einsatzmittel = alle B-Fahrzeuge
+    if(istB && mittel.split(/[,\s]+/).some(m=>m.trim()==="B")) return true;
+    // Direkter Match mit Fahrzeugnamen
+    return mittel.split(/[,\s]+/).some(m=>m.trim().toLowerCase()===fzg.toLowerCase())||
+           e.mittel.toLowerCase().includes(fzg.toLowerCase());
+  });
+  const pool=passend.length>0?passend:EINSAETZE;
+  const ens=ra(pool);
+
   ST.einsatzAddr=`${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}`;
   ST.einsatzCount=(ST.einsatzCount||0)+1;
   document.getElementById("e-stichwort").textContent=ens.stichwort;
+
+  // Alarmierung Badge
+  const almBadge=document.getElementById("e-alarmierung");
+  if(ens.alarmierung){
+    almBadge.textContent=ens.alarmierung;
+    almBadge.style.display="inline-block";
+  } else {
+    almBadge.style.display="none";
+  }
+
   document.getElementById("e-addr").textContent=`${ad.str} ${ad.nr}`;
   document.getElementById("e-city").textContent=`${ad.plz} ${ad.ort}`;
   document.getElementById("e-meldung").textContent=ens.meldung;
-  // Einsatzmittel: gewähltes Fahrzeug immer zuerst anzeigen
-  const mittel=ST.fahrzeug + (ens.mittel && !ens.mittel.includes(ST.fahrzeug) ? ", " + ens.mittel : "");
-  document.getElementById("e-mittel").textContent=mittel;
+  // Einsatzmittel: gewähltes Fahrzeug immer zuerst
+  const mittelRaw=ens.mittel||"";
+  const mittelOhne=mittelRaw.replace(/\bB\b/gi,"B-Fahrzeuge");
+  const hatFzg=mittelOhne.toLowerCase().includes(fzg.toLowerCase());
+  document.getElementById("e-mittel").textContent=hatFzg?mittelOhne:`${fzg}, ${mittelOhne}`;
+
   const q=encodeURIComponent(`${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}, Schweiz`);
   const url=`https://www.google.com/maps/search/?api=1&query=${q}`;
   document.getElementById("e-mapslink").href=url;
