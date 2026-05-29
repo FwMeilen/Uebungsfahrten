@@ -72,7 +72,10 @@ select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);backgro
 
 <div class="page">
   <div class="topbar">
-    <h1>Dashboard</h1>
+    <div>
+      <h1>Dashboard</h1>
+      <div id="daten-seit" style="font-size:12px;color:var(--text3);margin-top:3px"></div>
+    </div>
     <button class="btn btn-red" onclick="loadData()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
       Aktualisieren
@@ -129,7 +132,7 @@ select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);backgro
   </div>
 </div>
 
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.14</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.15</div>
 
 <script>
 const SHEET_ID = "1Y_kp8pqKNimB00UDSqWyWIfwXKZ7wRmBcJkWqBLvC3w";
@@ -226,6 +229,20 @@ function renderKPIs() {
   f.forEach(r => { const v = r["Fahrzeug"]; if(v) fzgCount[v] = (fzgCount[v]||0)+1; });
   const topFzg = Object.entries(fzgCount).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById("kpi-fahrzeug").textContent = topFzg ? topFzg[0] : "–";
+
+  // Daten seit: erstes Datum aus Fahrten
+  const daten = f.map(r => r["Datum"]).filter(Boolean).sort();
+  if (daten.length > 0) {
+    const erstesDatum = daten[0];
+    // Google Sheets liefert Datum als "Date(2026,4,29)" oder als String
+    let anzeige = erstesDatum;
+    const dateMatch = String(erstesDatum).match(/Date\((\d+),(\d+),(\d+)\)/);
+    if (dateMatch) {
+      const d = new Date(parseInt(dateMatch[1]), parseInt(dateMatch[2]), parseInt(dateMatch[3]));
+      anzeige = d.toLocaleDateString("de-CH");
+    }
+    document.getElementById("daten-seit").textContent = "Daten seit " + anzeige;
+  }
 }
 
 function renderFahrzeugChart() {
@@ -356,13 +373,16 @@ function renderFragen() {
     .filter(x => x.total >= minAnt)
     .sort((a,b) => (b.falsch/b.total) - (a.falsch/a.total));
 
+  // Max 20 wenn kein Fahrzeug-Filter aktiv
+  const maxAnzeige = filterFzg ? list.length : Math.min(list.length, 20);
+
   const el = document.getElementById("fragen-list");
   if (list.length === 0) {
     el.innerHTML = '<div class="empty">Noch keine Daten vorhanden.</div>';
     return;
   }
 
-  el.innerHTML = list.map(x => {
+  el.innerHTML = list.slice(0, maxAnzeige).map(x => {
     const pct = Math.round(x.falsch / x.total * 100);
     const color = pct >= 60 ? "var(--red)" : pct >= 30 ? "#cc7700" : "var(--green)";
     return `<div class="frage-row">
