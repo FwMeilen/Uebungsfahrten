@@ -316,7 +316,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.20</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.21</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -324,7 +324,7 @@ const FRAGEN_SHEET_ID="1EVK63S1UzguuIxlYgkSLT3_Aw9yZpb_YxuUjTC7fEdU";
 const FAHRZEUGE_B=["PTF 1/6","VA","PTF 4/7","PTF 2/3","OW"];
 const FAHRZEUGE_C=["TLF","ADL","PIF","ULF","OC","SVF","MTF"];
 const FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
-const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","SVF"];
+const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","SVF","PTF 2/3"];
 
 let selectedKat="";
 const ADDR_CACHE_KEY="fw_adressen_v7";
@@ -537,8 +537,10 @@ function zeigeEinsatz(){
   }
   // Filter Einsatzmeldungen nach gewähltem Fahrzeug
   const fzg=ST.fahrzeug;
+  const isPTF=fzg.startsWith("PTF");
   const passend=EINSAETZE.filter(e=>{
     const mittelTeile=e.mittel.split(/[\s,]+/).map(m=>m.trim().toLowerCase()).filter(Boolean);
+    if(isPTF&&mittelTeile.includes("ptf")) return true;
     return mittelTeile.includes(fzg.toLowerCase());
   });
   const pool=passend.length>0?passend:EINSAETZE;
