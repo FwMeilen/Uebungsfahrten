@@ -125,7 +125,7 @@ select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);backgro
   </div>
 </div>
 
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.01</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.02</div>
 
 <script>
 const SHEET_ID = "1Y_kp8pqKNimB00UDSqWyWIfwXKZ7wRmBcJkWqBLvC3w";
@@ -273,20 +273,21 @@ function renderFahrzeitChart() {
 function timeDiff(a, b) {
   const toMin = s => {
     if (s === null || s === undefined || s === "") return null;
-    const str = String(s);
-    // Google Sheets gibt Zeit als Dezimal zurück (z.B. 0.75 = 18:00)
-    if (!isNaN(str) && str.indexOf(":") === -1) {
+    const str = String(s).trim();
+    // Google Sheets Dezimalformat: 0.75 = 18:00
+    if (!isNaN(str) && !str.includes(":")) {
       const dec = parseFloat(str);
-      return Math.round(dec * 24 * 60);
+      if(dec >= 0 && dec <= 1) return Math.round(dec * 24 * 60);
     }
-    // HH:MM Format
+    // HH:MM oder HH:MM:SS
     const p = str.split(":");
-    if (p.length < 2) return null;
-    return parseInt(p[0]) * 60 + parseInt(p[1]);
+    if (p.length >= 2) return parseInt(p[0]) * 60 + parseInt(p[1]);
+    return null;
   };
   const ma = toMin(a), mb = toMin(b);
-  if (ma === null || mb === null) return 0;
-  return mb >= ma ? mb - ma : (mb + 1440) - ma;
+  if (ma === null || mb === null || isNaN(ma) || isNaN(mb)) return 0;
+  const diff = mb >= ma ? mb - ma : (mb + 1440) - ma;
+  return diff > 600 ? 0 : diff; // Ignore implausible values >10h
 }
 
 function populateFahrzeugFilter() {

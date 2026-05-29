@@ -164,13 +164,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <select id="f-fahrt">
         <option value="">– wählen –</option>
         <option value="frei">Freies Fahren</option>
-        <option value="einsatz">Einsatzmeldung</option>
+        <option value="einsatz" selected>Einsatzmeldung</option>
       </select>
       <label>Aufbau</label>
       <select id="f-aufbau">
         <option value="">– wählen –</option>
         <option value="ueben">Freies Üben</option>
-        <option value="abfrage">Abfrage</option>
+        <option value="abfrage" selected>Abfrage</option>
       </select>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="weiter()">
@@ -292,7 +292,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.02</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.04</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -386,25 +386,23 @@ async function ladeAdressen(){
 function genAddr(){
   const pool=ST.gebiet==="stuetzpunkt"?GEMEINDEN_STUETZ:GEMEINDEN_ORTS;
   const shuffled=[...pool].sort(()=>Math.random()-0.5);
-  const lastAddr=ST.einsatzAddr||"";
-  for(let attempt=0;attempt<3;attempt++){
-    for(const g of shuffled){
-      const list=ADRESSEN[g]||[];
-      if(list.length===0) continue;
-      // Bei Wiederholung: filtere letzte Adresse raus
-      const filtered=lastAddr?list.filter(a=>`${a.str} ${a.nr}`!==lastAddr.split(",")[0]):list;
-      const pool2=filtered.length>0?filtered:list;
-      const ad=ra(pool2);
-      const addrStr=`${ad.str} ${ad.nr}`;
-      if(addrStr!==lastAddr.split(",")[0]) return ad;
-    }
-  }
-  // Fallback: nimm irgendeine
+  const lastStr=ST.einsatzAddr?ST.einsatzAddr.split(",")[0].trim():"";
+  const FALLBACKS=[
+    {str:"Dorfstrasse",nr:"12",plz:"8706",ort:"Meilen"},
+    {str:"Bergstrasse",nr:"8",plz:"8706",ort:"Meilen"},
+    {str:"Schulhausstrasse",nr:"3",plz:"8704",ort:"Herrliberg"},
+    {str:"Seestrasse",nr:"45",plz:"8706",ort:"Feldmeilen"},
+    {str:"Kirchgasse",nr:"7",plz:"8706",ort:"Meilen"},
+    {str:"Hauptstrasse",nr:"22",plz:"8704",ort:"Herrliberg"},
+  ];
+  // Versuche aus API-Cache
   for(const g of shuffled){
-    const list=ADRESSEN[g]||[];
+    const list=(ADRESSEN[g]||[]).filter(a=>`${a.str} ${a.nr}`!==lastStr);
     if(list.length>0) return ra(list);
   }
-  return {str:"Seestrasse",nr:"1",plz:"8706",ort:"Meilen"};
+  // Fallback-Liste (ohne letzte Adresse)
+  const fbFiltered=FALLBACKS.filter(a=>`${a.str} ${a.nr}`!==lastStr);
+  return ra(fbFiltered.length>0?fbFiltered:FALLBACKS);
 }
 
 /* ── Fragen ── */
@@ -574,9 +572,10 @@ async function abschliessen(){
       body:JSON.stringify({type:"alles",
         fahrt:{datum:ST.datum,fahrer:ST.fahrer,beifahrer:ST.beifahrer,fahrzeug:ST.fahrzeug,
                fahrt:ST.fahrt,aufbau:ST.aufbau,gebiet:gl,abfahrt:ST.abfahrt,rueckkehr:rk,
-               einsatzAddr:ST.einsatzAddr||"–",einsatzCount:ST.einsatzCount||0,richtig,total,pct},
+               einsatzAddr:ST.einsatzAddr||"–",einsatzCount:ST.einsatzCount||0,
+               richtig:total>0?richtig:"–",total:total>0?total:"–",pct:total>0?pct+"%" :"–"},
         fragen:ST.quizResults.map(q=>({datum:ST.datum,fahrer:ST.fahrer,fahrzeug:ST.fahrzeug,
-               frage:q.frage,gegeben:q.gegeben,korrekt:q.korrekt,richtig:q.richtig}))
+               frage:q.frage,gegeben:q.gegeben,korrekt:q.korrekt,richtig:q.richtig?"JA":"NEIN"}))
       })
     });
     let sum=`${ST.fahrer} / ${ST.beifahrer} · ${ST.fahrzeug} · ${gl} · ${ST.datum} · ${ST.abfahrt}–${rk}`;
