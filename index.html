@@ -299,7 +299,7 @@ const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGsl
 const FRAGEN_SHEET_ID="1EVK63S1UzguuIxlYgkSLT3_Aw9yZpb_YxuUjTC7fEdU";
 const FAHRZEUGE=["PTF","OW","MTF","TLF","PIF","OC","ULF","ADL"];
 const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC"];
-const ADDR_CACHE_KEY="fw_adressen";
+const ADDR_CACHE_KEY="fw_adressen_v2";
 const ADDR_TTL=7*24*60*60*1000;
 const FRAGEN_CACHE_KEY="fw_fragen";
 const FRAGEN_TTL=7*24*60*60*1000;
@@ -347,13 +347,20 @@ function setMsg(m,s=""){document.getElementById("init-msg").textContent=m;docume
 /* ── Swisstopo ── */
 async function fetchGemeindeAdressen(key){
   const info=GEMEINDE_INFO[key];
-  const url=`https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=${encodeURIComponent(info.name)}&type=locations&origins=address&limit=50&sr=4326&lang=de`;
+  // Suche nach PLZ + Ortsname für präzisere Resultate
+  const query=`${info.plz} ${info.name}`;
+  const url=`https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=${encodeURIComponent(query)}&type=locations&origins=address&limit=50&sr=4326&lang=de`;
   const res=await fetch(url);
   const data=await res.json();
   const results=[];
   for(const item of(data.results||[])){
     const d=item.attrs||{};
     if(!d.detail) continue;
+    // Detail format: "strassenname nr plz ort kanton"
+    // Nur akzeptieren wenn der Ortsname im Detail vorkommt
+    const detailLower=d.detail.toLowerCase();
+    if(!detailLower.includes(info.name.toLowerCase())) continue;
+    if(!detailLower.includes(info.plz)) continue;
     const parts=d.detail.split(" ");
     if(parts.length<2) continue;
     const strNr=parts.slice(0,-3).join(" ");
