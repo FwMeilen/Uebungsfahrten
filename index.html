@@ -292,14 +292,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.04</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.05</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
 const FRAGEN_SHEET_ID="1EVK63S1UzguuIxlYgkSLT3_Aw9yZpb_YxuUjTC7fEdU";
 const FAHRZEUGE=["PTF","OW","MTF","TLF","PIF","OC","ULF","ADL"];
 const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC"];
-const ADDR_CACHE_KEY="fw_adressen_v3";
+const ADDR_CACHE_KEY="fw_adressen_v4";
 const ADDR_TTL=7*24*60*60*1000;
 const FRAGEN_CACHE_KEY="fw_fragen";
 const FRAGEN_TTL=7*24*60*60*1000;
@@ -383,26 +383,65 @@ async function ladeAdressen(){
   try{localStorage.setItem(ADDR_CACHE_KEY,JSON.stringify({ts:Date.now(),data:result}));}catch(e){}
 }
 
+const FALLBACK_ADRESSEN={
+  meilen:[
+    {str:"Dorfstrasse",nr:"12",plz:"8706",ort:"Meilen"},
+    {str:"Seestrasse",nr:"34",plz:"8706",ort:"Meilen"},
+    {str:"Bahnhofstrasse",nr:"5",plz:"8706",ort:"Meilen"},
+    {str:"Schulhausstrasse",nr:"8",plz:"8706",ort:"Meilen"},
+    {str:"Kirchgasse",nr:"3",plz:"8706",ort:"Meilen"},
+  ],
+  feldmeilen:[
+    {str:"Seestrasse",nr:"18",plz:"8706",ort:"Feldmeilen"},
+    {str:"Feldmeilenerstrasse",nr:"6",plz:"8706",ort:"Feldmeilen"},
+    {str:"Bergstrasse",nr:"11",plz:"8706",ort:"Feldmeilen"},
+  ],
+  herrliberg:[
+    {str:"Seestrasse",nr:"22",plz:"8704",ort:"Herrliberg"},
+    {str:"Dorfstrasse",nr:"9",plz:"8704",ort:"Herrliberg"},
+    {str:"Weinbergstrasse",nr:"4",plz:"8704",ort:"Herrliberg"},
+  ],
+  uetikon:[
+    {str:"Seestrasse",nr:"14",plz:"8707",ort:"Uetikon am See"},
+    {str:"Dorfstrasse",nr:"7",plz:"8707",ort:"Uetikon am See"},
+    {str:"Zürichstrasse",nr:"19",plz:"8707",ort:"Uetikon am See"},
+  ],
+  oetwil:[
+    {str:"Seestrasse",nr:"8",plz:"8618",ort:"Oetwil am See"},
+    {str:"Dorfstrasse",nr:"3",plz:"8618",ort:"Oetwil am See"},
+    {str:"Hauptstrasse",nr:"12",plz:"8618",ort:"Oetwil am See"},
+  ],
+  maennedorf:[
+    {str:"Seestrasse",nr:"41",plz:"8708",ort:"Männedorf"},
+    {str:"Dorfstrasse",nr:"15",plz:"8708",ort:"Männedorf"},
+    {str:"Schulhausstrasse",nr:"6",plz:"8708",ort:"Männedorf"},
+  ],
+  staefa:[
+    {str:"Seestrasse",nr:"28",plz:"8712",ort:"Stäfa"},
+    {str:"Dorfstrasse",nr:"11",plz:"8712",ort:"Stäfa"},
+    {str:"Kirchgasse",nr:"5",plz:"8712",ort:"Stäfa"},
+  ],
+  hombrechtikon:[
+    {str:"Dorfstrasse",nr:"16",plz:"8634",ort:"Hombrechtikon"},
+    {str:"Zürichstrasse",nr:"9",plz:"8634",ort:"Hombrechtikon"},
+    {str:"Schulhausstrasse",nr:"4",plz:"8634",ort:"Hombrechtikon"},
+  ],
+};
+
 function genAddr(){
   const pool=ST.gebiet==="stuetzpunkt"?GEMEINDEN_STUETZ:GEMEINDEN_ORTS;
-  const shuffled=[...pool].sort(()=>Math.random()-0.5);
   const lastStr=ST.einsatzAddr?ST.einsatzAddr.split(",")[0].trim():"";
-  const FALLBACKS=[
-    {str:"Dorfstrasse",nr:"12",plz:"8706",ort:"Meilen"},
-    {str:"Bergstrasse",nr:"8",plz:"8706",ort:"Meilen"},
-    {str:"Schulhausstrasse",nr:"3",plz:"8704",ort:"Herrliberg"},
-    {str:"Seestrasse",nr:"45",plz:"8706",ort:"Feldmeilen"},
-    {str:"Kirchgasse",nr:"7",plz:"8706",ort:"Meilen"},
-    {str:"Hauptstrasse",nr:"22",plz:"8704",ort:"Herrliberg"},
-  ];
-  // Versuche aus API-Cache
+  // Wähle zufällige Gemeinde aus dem Pool
+  const shuffled=[...pool].sort(()=>Math.random()-0.5);
   for(const g of shuffled){
-    const list=(ADRESSEN[g]||[]).filter(a=>`${a.str} ${a.nr}`!==lastStr);
+    const apiList=(ADRESSEN[g]||[]);
+    const fbList=(FALLBACK_ADRESSEN[g]||[]);
+    const combined=[...apiList,...fbList];
+    const filtered=combined.filter(a=>`${a.str} ${a.nr}`!==lastStr);
+    const list=filtered.length>0?filtered:combined;
     if(list.length>0) return ra(list);
   }
-  // Fallback-Liste (ohne letzte Adresse)
-  const fbFiltered=FALLBACKS.filter(a=>`${a.str} ${a.nr}`!==lastStr);
-  return ra(fbFiltered.length>0?fbFiltered:FALLBACKS);
+  return {str:"Seestrasse",nr:"34",plz:"8706",ort:"Meilen"};
 }
 
 /* ── Fragen ── */
