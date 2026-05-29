@@ -110,6 +110,12 @@ select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);backgro
       </div>
     </div>
 
+    <!-- Top 10 Fahrer -->
+    <div class="card">
+      <h2>Top 10 Fahrer nach Anzahl Fahrten</h2>
+      <div id="fahrer-list"></div>
+    </div>
+
     <!-- Fragen -->
     <div class="card">
       <h2>Fragen nach Fehlerquote (höchste zuerst)</h2>
@@ -125,7 +131,7 @@ select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);backgro
   </div>
 </div>
 
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.08</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.09</div>
 
 <script>
 const SHEET_ID = "1Y_kp8pqKNimB00UDSqWyWIfwXKZ7wRmBcJkWqBLvC3w";
@@ -175,8 +181,32 @@ function render() {
   renderKPIs();
   renderFahrzeugChart();
   renderFahrzeitChart();
+  renderFahrer();
   populateFahrzeugFilter();
   renderFragen();
+}
+
+function renderFahrer() {
+  const f = DATA.fahrten;
+  const counts = {};
+  f.forEach(r => {
+    const fahrer = (r["Fahrer"]||"").trim();
+    if(fahrer) counts[fahrer] = (counts[fahrer]||0) + 1;
+  });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const max = sorted[0]?.[1] || 1;
+  const el = document.getElementById("fahrer-list");
+  if(sorted.length===0){el.innerHTML='<div class="empty">Noch keine Daten vorhanden.</div>';return;}
+  el.innerHTML = sorted.map(([name, count], i) => {
+    const pct = Math.round(count/max*100);
+    const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+    return `<div class="frage-row">
+      <div class="frage-pct" style="color:var(--black);font-size:13px;min-width:28px">${i+1}.</div>
+      <div style="font-size:13px;font-weight:600;min-width:50px">${medal} ${name}</div>
+      <div class="frage-bar-bg"><div class="frage-bar" style="width:${pct}%;background:var(--black)"></div></div>
+      <div style="font-size:12px;color:var(--text3);white-space:nowrap;flex-shrink:0">${count} Fahrt${count!==1?"en":""}</div>
+    </div>`;
+  }).join("");
 }
 
 function renderKPIs() {
