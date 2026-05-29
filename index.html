@@ -316,7 +316,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.17</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.20</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -386,7 +386,7 @@ async function ladeAdressen(){
   }catch(e){}
   setMsg("Adressen werden geladen…","Google Sheets");
   try{
-    const url=`https://docs.google.com/spreadsheets/d/${FRAGEN_SHEET_ID}/gviz/tq?tqx=out:json&sheet=Adressen`;
+    const url=`https://docs.google.com/spreadsheets/d/1gmUs6tQBwAlHzGdjJ7jXWrGX9XHgC0yzUbn-LpZ7hbY/gviz/tq?tqx=out:json&sheet=Adressen`;
     const res=await fetch(url);
     const text=await res.text();
     const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
