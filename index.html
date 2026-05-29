@@ -292,7 +292,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.01</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.02</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -386,6 +386,20 @@ async function ladeAdressen(){
 function genAddr(){
   const pool=ST.gebiet==="stuetzpunkt"?GEMEINDEN_STUETZ:GEMEINDEN_ORTS;
   const shuffled=[...pool].sort(()=>Math.random()-0.5);
+  const lastAddr=ST.einsatzAddr||"";
+  for(let attempt=0;attempt<3;attempt++){
+    for(const g of shuffled){
+      const list=ADRESSEN[g]||[];
+      if(list.length===0) continue;
+      // Bei Wiederholung: filtere letzte Adresse raus
+      const filtered=lastAddr?list.filter(a=>`${a.str} ${a.nr}`!==lastAddr.split(",")[0]):list;
+      const pool2=filtered.length>0?filtered:list;
+      const ad=ra(pool2);
+      const addrStr=`${ad.str} ${ad.nr}`;
+      if(addrStr!==lastAddr.split(",")[0]) return ad;
+    }
+  }
+  // Fallback: nimm irgendeine
   for(const g of shuffled){
     const list=ADRESSEN[g]||[];
     if(list.length>0) return ra(list);
