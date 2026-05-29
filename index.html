@@ -118,9 +118,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 <div class="site-header">
   <div class="site-header-inner">
-    <div class="logo-flame">
-      <svg viewBox="0 0 24 24"><path d="M12 2C8 6 6 9 8 13c-2-1-3-3-3-5C3 13 5 18 12 22c7-4 9-9 7-14-1 2-3 3-5 3 2-2 1-6-2-9z"/></svg>
-    </div>
+    <img src="https://www.feuerwehr-meilen.ch/fileadmin/Public/Website/Templates/Images/Logo-FeuerwehrMeilen.png" alt="Stützpunktfeuerwehr Meilen" style="height:38px;width:auto;object-fit:contain;">
     <div class="logo-text">Stützpunktfeuerwehr Meilen<span>Fahrtraining</span></div>
   </div>
 </div>
@@ -144,7 +142,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <label>Fahrzeugkategorie</label>
       <div class="radio-group" id="kat-group">
         <div class="radio-card" id="rc-kat-b" onclick="selectKat('B')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="15" height="13" rx="1"/><path d="M16 10h4l3 4v5h-7V10z"/><circle cx="5.5" cy="19.5" r="1.5"/><circle cx="18.5" cy="19.5" r="1.5"/></svg>
           B Fahrzeuge
         </div>
         <div class="radio-card" id="rc-kat-c" onclick="selectKat('C')">
@@ -203,6 +201,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       <span>Einsatzmeldung</span>
     </div>
+    <div style="background:var(--bg2);border-left:3px solid var(--gray-mid);padding:0.6rem 0.9rem;margin-bottom:0.75rem;font-size:12px;color:var(--text2);line-height:1.5;">
+      Ziel zu Übungszwecken zufällig gewählt. Anfahrt gut prüfen und Strassenverkehrsregeln einhalten.
+    </div>
     <div class="card" style="border-top-color:var(--black)">
       <div class="top-row">
         <div style="min-width:0">
@@ -233,12 +234,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem;display:block"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
       <h2>Gute Fahrt!</h2>
       <p class="sub" style="margin-top:0.5rem" id="gf-info"></p>
-      <div class="btn-row" style="justify-content:center;margin-top:1.5rem">
-        <button class="btn btn-red" onclick="fahrtBeenden()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><square x="3" y="3" width="18" height="18" rx="2"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-          Fahrt beenden
-        </button>
-      </div>
+      <div class="btn-row" style="justify-content:center;margin-top:1.5rem" id="gf-btn-row"></div>
     </div>
   </div>
 
@@ -318,7 +314,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.11</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.12</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -505,6 +501,18 @@ function weiter(){
       gebiet:needsGebiet?selectedGebiet:"orts",einsatzAddr:null,quizResults:[],einsatzCount:0};
   if(fahrt==="frei"){
     document.getElementById("gf-info").textContent=`${fzg} · ${fa} / ${bf}`;
+    const btnRow=document.getElementById("gf-btn-row");
+    if(aufbau==="abfrage"){
+      btnRow.innerHTML=`<button class="btn btn-primary" onclick="fahrtBeenden()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        Weiter zu Aufbau
+      </button>`;
+    } else {
+      btnRow.innerHTML=`<button class="btn btn-red" onclick="fahrtBeenden()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        Fahrt beenden
+      </button>`;
+    }
     show("s-gute-fahrt");
   } else if(fahrt==="einsatz") zeigeEinsatz();
   else if(aufbau==="abfrage") starteAbfrage();
@@ -537,7 +545,7 @@ function zeigeEinsatz(){
 }
 
 function fahrtBeenden(){
-  zeigeAbschluss();
+  if(ST.aufbau==="abfrage") starteAbfrage(); else zeigeAbschluss();
 }
 
 function einsatzOrtErreicht(){
@@ -554,8 +562,20 @@ function weiterNachEinsatz(){
 
 /* ── Abfrage ── */
 function starteAbfrage(){
-  const pool=FRAGEN[ST.fahrzeug]||[];
-  if(pool.length===0){ST.quizResults=[];zeigeAbschluss();return;}
+  // Versuche exakten Namen, dann ohne Leerzeichen/Sonderzeichen
+  const fzg=ST.fahrzeug;
+  let pool=FRAGEN[fzg]||[];
+  // Fallback: suche nach ähnlichem Key
+  if(pool.length===0){
+    const key=Object.keys(FRAGEN).find(k=>k.toLowerCase()===fzg.toLowerCase());
+    if(key) pool=FRAGEN[key]||[];
+  }
+  if(pool.length===0){
+    // Keine Fragen für dieses Fahrzeug – direkt zum Abschluss
+    ST.quizResults=[];
+    zeigeAbschluss();
+    return;
+  }
   QPOOL=[...pool].sort(()=>Math.random()-0.5).slice(0,6);
   QIDX=0;ST.quizResults=[];
   zeigeFrageUI();show("s-abfrage");
