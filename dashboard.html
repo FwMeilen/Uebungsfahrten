@@ -125,7 +125,7 @@ select.filter{height:32px;padding:0 8px;border:1px solid var(--gray-mid);backgro
   </div>
 </div>
 
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.03</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.06</div>
 
 <script>
 const SHEET_ID = "1Y_kp8pqKNimB00UDSqWyWIfwXKZ7wRmBcJkWqBLvC3w";
@@ -139,7 +139,7 @@ async function fetchSheet(sheet) {
   const res = await fetch(url);
   const text = await res.text();
   const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-  const cols = json.table.cols.map(c => c.label);
+  const cols = json.table.cols.map(c => c.label.trim());
   const rows = (json.table.rows || []).map(r =>
     Object.fromEntries(cols.map((c, i) => [c, r.c[i] ? r.c[i].v : ""]))
   );
@@ -274,15 +274,16 @@ function timeDiff(a, b) {
   const toMin = s => {
     if (s === null || s === undefined || s === "") return null;
     const str = String(s).trim();
-    // HH:MM:SS oder HH:MM (Google Sheets gibt oft HH:MM:SS zurück)
+    // Google Sheets Date() format: "Date(1899,11,30,18,30,0)"
+    const dateMatch = str.match(/Date\(\d+,\d+,\d+,(\d+),(\d+)/);
+    if (dateMatch) return parseInt(dateMatch[1]) * 60 + parseInt(dateMatch[2]);
+    // HH:MM:SS oder HH:MM
     if (str.includes(":")) {
       const p = str.split(":");
-      const h = parseInt(p[0]);
-      const m = parseInt(p[1]);
+      const h = parseInt(p[0]), m = parseInt(p[1]);
       if (!isNaN(h) && !isNaN(m)) return h * 60 + m;
-      return null;
     }
-    // Google Sheets Dezimalformat: 0.75 = 18:00
+    // Dezimalformat: 0.75 = 18:00
     if (!isNaN(str)) {
       const dec = parseFloat(str);
       if (dec >= 0 && dec <= 1) return Math.round(dec * 24 * 60);
