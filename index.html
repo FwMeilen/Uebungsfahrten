@@ -107,7 +107,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .init-overlay p{color:white;font-size:14px;font-weight:600;}
 .init-sub{color:#aaa;font-size:12px;}
 .site-footer{background:var(--black);color:#888;font-size:11px;text-align:center;padding:1rem;}
-</style>
+.typ-badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;padding:3px 10px;margin-bottom:10px;border-radius:2px;}
+.typ-badge-frage{background:#E6F1FB;color:#0C447C;}
+.typ-badge-taetigkeit{background:#FFF3CD;color:#856404;}
+.stufe-btn{width:100%;text-align:left;padding:12px 14px;margin-bottom:8px;border:2px solid var(--gray-mid);background:var(--bg);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;display:block;font-family:inherit;line-height:1.4;border-radius:0;}
+.stufe-btn:hover{background:var(--bg2);border-color:var(--gray);}
+.stufe-btn.selected-1{background:var(--green-light);border-color:var(--green);color:var(--green);}
+.stufe-btn.selected-2{background:#FFF3CD;border-color:#856404;color:#856404;}
+.stufe-btn.selected-3{background:var(--red-light);border-color:var(--red);color:var(--red-dark);}
+.hilfe-box{margin-top:0.75rem;display:none;}
+.hilfe-box label{color:var(--red-dark);}
+.hilfe-box textarea{width:100%;min-height:80px;padding:8px 10px;border:1px solid var(--gray-mid);font-size:13px;font-family:inherit;resize:vertical;border-radius:0;}
+.hilfe-box textarea:focus{outline:none;border-color:var(--red);}</style>
 </head>
 <body>
 
@@ -158,15 +169,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         </select>
       </div>
       <div id="gebiet-wrap" style="display:none">
-        <label>Einsatzgebiet</label>
+        <label>Gebiet Ortsfeuerwehr</label>
         <div class="radio-group">
+          <div class="radio-card" id="rc-orts" onclick="selectGebiet('orts')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Ortsfeuerwehrgebiet
+          </div>
           <div class="radio-card" id="rc-stuetzpunkt" onclick="selectGebiet('stuetzpunkt')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             Stützpunktgebiet
-          </div>
-          <div class="radio-card" id="rc-orts" onclick="selectGebiet('orts')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Ortsfeuerwehr
           </div>
         </div>
       </div>
@@ -262,14 +273,19 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="screen" id="s-abfrage">
     <div class="card">
       <div class="progress-bar-bg"><div class="progress-bar" id="q-progress" style="width:0%"></div></div>
-      <div class="frage-nr" id="q-nr">Frage 1 von 6</div>
+      <div class="frage-nr" id="q-nr">Frage 1 von 9</div>
+      <div id="q-typ-badge"></div>
       <div class="frage-text" id="q-text"></div>
       <div id="q-antworten"></div>
       <div class="erklaerung" id="q-erklaerung"></div>
+      <div class="hilfe-box" id="q-hilfe-box">
+        <label>Wo braucht Ihr Hilfe / Unterstützung / Nachausbildung</label>
+        <textarea id="q-hilfe-text" placeholder="Beschreibung…"></textarea>
+      </div>
       <div class="btn-row" id="q-next-row" style="display:none">
         <button class="btn btn-primary" onclick="naechsteFrage()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          Nächste Frage
+          Nächste
         </button>
       </div>
     </div>
@@ -316,7 +332,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.21</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.22</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -455,8 +471,10 @@ async function ladeFragen(){
         const c=row.c||[];
         const val=i=>c[i]&&c[i].v!=null?String(c[i].v).trim():"";
         const map={A:0,B:1,C:2,D:3};
-        return{f:val(0),a:[val(1),val(2),val(3),val(4)],r:map[val(5).toUpperCase()]??0,e:val(6)};
-      }).filter(q=>q.f&&q.a[0]);
+        // Spalte 0=Typ, 1=Frage, 2-5=Antworten, 6=Richtig, 7=Erklärung
+        const typ=val(0).toLowerCase(); // "tätigkeit" oder "frage"
+        return{typ:typ||"frage",f:val(1),a:[val(2),val(3),val(4),val(5)],r:map[val(6).toUpperCase()]??0,e:val(7)};
+      }).filter(q=>q.f);
     }catch(e){result[fzg]=[];}
   }
   FRAGEN=result;
@@ -506,7 +524,7 @@ function weiter(){
   if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||!selectedKat||(needsGebiet&&!selectedGebiet)){err.style.display="block";return;}
   err.style.display="none";
   ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,
-      gebiet:needsGebiet?selectedGebiet:"orts",einsatzAddr:null,quizResults:[],einsatzCount:0};
+      gebiet:needsGebiet?selectedGebiet:"orts",einsatzAddr:null,einsatzAddrListe:[],quizResults:[],taetigkeitResults:[],einsatzCount:0};
   if(fahrt==="frei"){
     document.getElementById("gf-info").textContent=`${fzg} · ${fa} / ${bf}`;
     const btnRow=document.getElementById("gf-btn-row");
@@ -548,6 +566,8 @@ function zeigeEinsatz(){
 
   ST.einsatzAddr=`${ad.str} ${ad.nr}, ${ad.plz} ${ad.ort}`;
   ST.einsatzCount=(ST.einsatzCount||0)+1;
+  if(!ST.einsatzAddrListe) ST.einsatzAddrListe=[];
+  ST.einsatzAddrListe.push(ST.einsatzAddr);
   document.getElementById("e-stichwort").textContent=ens.stichwort;
 
   // Alarmierung Badge
@@ -606,22 +626,52 @@ function starteAbfrage(){
     zeigeAbschluss();
     return;
   }
-  QPOOL=[...pool].sort(()=>Math.random()-0.5).slice(0,6);
-  QIDX=0;ST.quizResults=[];
+  // 3 zufällige Tätigkeiten + 6 zufällige Fragen
+  const taetigkeiten=[...pool.filter(q=>q.typ==="tätigkeit"||q.typ==="taetigkeit")].sort(()=>Math.random()-0.5).slice(0,3);
+  const fragen=[...pool.filter(q=>q.typ!=="tätigkeit"&&q.typ!=="taetigkeit")].sort(()=>Math.random()-0.5).slice(0,6);
+  QPOOL=[...taetigkeiten,...fragen].sort(()=>Math.random()-0.5);
+  QIDX=0;ST.quizResults=[];ST.taetigkeitResults=[];
   zeigeFrageUI();show("s-abfrage");
 }
 
 function zeigeFrageUI(){
   const q=QPOOL[QIDX],total=QPOOL.length;
   document.getElementById("q-progress").style.width=`${(QIDX/total)*100}%`;
-  document.getElementById("q-nr").textContent=`Frage ${QIDX+1} von ${total}`;
+  document.getElementById("q-nr").textContent=`${QIDX+1} von ${total}`;
   document.getElementById("q-text").textContent=q.f;
   document.getElementById("q-erklaerung").style.display="none";
   document.getElementById("q-next-row").style.display="none";
-  const shuffled=q.a.map((t,i)=>({t,i})).sort(()=>Math.random()-0.5);
-  document.getElementById("q-antworten").innerHTML=shuffled.map(x=>
-    `<button class="antwort-btn" data-idx="${x.i}" onclick="antworten(${x.i})">${x.t}</button>`
-  ).join("");
+  document.getElementById("q-hilfe-box").style.display="none";
+  document.getElementById("q-hilfe-text").value="";
+  const isTaetigkeit=(q.typ==="tätigkeit"||q.typ==="taetigkeit");
+  // Typ-Badge
+  const badge=document.getElementById("q-typ-badge");
+  badge.innerHTML=isTaetigkeit
+    ?`<span class="typ-badge typ-badge-taetigkeit">Tätigkeit</span>`
+    :`<span class="typ-badge typ-badge-frage">Frage</span>`;
+  if(isTaetigkeit){
+    document.getElementById("q-antworten").innerHTML=`
+      <button class="stufe-btn" id="stufe-1" onclick="bewerteStudfe(1)">1 &nbsp;·&nbsp; Konnte ich ohne weiteres umsetzen</button>
+      <button class="stufe-btn" id="stufe-2" onclick="bewerteStudfe(2)">2 &nbsp;·&nbsp; Musste ich nachschauen / brauchte Hilfe</button>
+      <button class="stufe-btn" id="stufe-3" onclick="bewerteStudfe(3)">3 &nbsp;·&nbsp; Konnten wir zusammen nicht</button>`;
+  } else {
+    const shuffled=q.a.map((t,i)=>({t,i})).sort(()=>Math.random()-0.5);
+    document.getElementById("q-antworten").innerHTML=shuffled.map(x=>
+      `<button class="antwort-btn" data-idx="${x.i}" onclick="antworten(${x.i})">${x.t}</button>`
+    ).join("");
+  }
+}
+
+function bewerteStudfe(stufe){
+  document.querySelectorAll(".stufe-btn").forEach(b=>b.disabled=true);
+  document.getElementById(`stufe-${stufe}`).classList.add(`selected-${stufe}`);
+  const q=QPOOL[QIDX];
+  if(!ST.taetigkeitResults) ST.taetigkeitResults=[];
+  ST.taetigkeitResults.push({frage:q.f,stufe:stufe,hilfe:""});
+  if(stufe===3){
+    document.getElementById("q-hilfe-box").style.display="block";
+  }
+  document.getElementById("q-next-row").style.display="flex";
 }
 
 function antworten(idx){
@@ -639,6 +689,13 @@ function antworten(idx){
 }
 
 function naechsteFrage(){
+  // Hilfe-Text bei Stufe 3 speichern
+  if(ST.taetigkeitResults&&ST.taetigkeitResults.length>0){
+    const last=ST.taetigkeitResults[ST.taetigkeitResults.length-1];
+    if(last.stufe===3){
+      last.hilfe=document.getElementById("q-hilfe-text").value.trim();
+    }
+  }
   QIDX++;
   if(QIDX>=QPOOL.length) zeigeAbschluss(); else zeigeFrageUI();
 }
@@ -678,12 +735,17 @@ async function abschliessen(){
   const statusEl=document.getElementById("save-status");
   statusEl.style.display="block";statusEl.className="save-status";statusEl.textContent="Wird gespeichert…";
   try{
+    const hilfeText=(ST.taetigkeitResults||[]).filter(t=>t.stufe===3&&t.hilfe).map(t=>`${t.frage}: ${t.hilfe}`).join("\n");
     await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({type:"alles",
         fahrt:{datum:ST.datum,fahrer:ST.fahrer,beifahrer:ST.beifahrer,fahrzeug:ST.fahrzeug,
                fahrt:ST.fahrt,aufbau:ST.aufbau,gebiet:gl,abfahrt:ST.abfahrt,rueckkehr:rk,
                einsatzAddr:ST.einsatzAddr||"–",einsatzCount:ST.einsatzCount||0,
-               richtig:total>0?richtig:"–",total:total>0?total:"–",pct:total>0?pct+"%" :"–"},
+               richtig:total>0?richtig:"–",total:total>0?total:"–",pct:total>0?pct+"%" :"–",
+               anzahlEinsaetze:ST.einsatzCount||0,
+               alleAdressen:ST.einsatzAddrListe?(ST.einsatzAddrListe.join("
+")||"–"):"–",
+               hilfe:hilfeText||""},
         fragen:ST.quizResults.map(q=>({datum:ST.datum,fahrer:ST.fahrer,fahrzeug:ST.fahrzeug,
                frage:q.frage,gegeben:q.gegeben,korrekt:q.korrekt,richtig:q.richtig?"JA":"NEIN"}))
       })
