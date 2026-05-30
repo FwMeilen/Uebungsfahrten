@@ -345,7 +345,7 @@ const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","SVF","PTF 2/3"];
 let selectedKat="";
 const ADDR_CACHE_KEY="fw_adressen_v7";
 const ADDR_TTL=24*60*60*1000; // 1 Tag
-const FRAGEN_CACHE_KEY="fw_fragen";
+const FRAGEN_CACHE_KEY="fw_fragen_v2";
 const FRAGEN_TTL=7*24*60*60*1000;
 
 const GEMEINDEN_ORTS=["meilen","feldmeilen","herrliberg"];
@@ -483,10 +483,18 @@ async function ladeFragen(){
 
 /* ── Init ── */
 async function init(){
-  try{await Promise.all([ladeAdressen(),ladeFragen(),ladeEinsaetze()]);}catch(e){console.warn(e);}
-  document.getElementById("init-overlay").style.display="none";
-  document.getElementById("f-datum").value=today();
-  document.getElementById("f-abfahrt").value=nowTime();
+  try{
+    await Promise.all([
+      ladeAdressen().catch(e=>console.warn("Adressen:",e)),
+      ladeFragen().catch(e=>console.warn("Fragen:",e)),
+      ladeEinsaetze().catch(e=>console.warn("Einsaetze:",e))
+    ]);
+  }catch(e){console.warn("Init-Fehler:",e);}
+  finally{
+    document.getElementById("init-overlay").style.display="none";
+    document.getElementById("f-datum").value=today();
+    document.getElementById("f-abfahrt").value=nowTime();
+  }
 }
 
 /* ── Form 1 ── */
