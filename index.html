@@ -337,7 +337,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.30</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.31</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -416,7 +416,7 @@ async function ladeAdressen(){
     Object.keys(GEMEINDE_INFO).forEach(k=>{result[k]=[];});
     for(const row of rows){
       const c=row.c||[];
-      const val=i=>c[i]&&c[i].v!=null?String(c[i].v).trim():"";
+      const val=i=>c[i]!=null?(c[i].f!=null?String(c[i].f).trim():(c[i].v!=null?String(c[i].v).trim():"")):"";
       const gemeinde=val(0).toLowerCase().replace(/\s+/g,"");
       const str=val(1);
       const nr=val(2);
