@@ -75,7 +75,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .alarm-text{font-size:15px;font-weight:600;line-height:1.5;}
 .maps-link{font-size:13px;color:var(--red);display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-weight:700;}
 .maps-link:hover{text-decoration:underline;}
-.qr-wrap{background:white;padding:10px;display:inline-block;border:1px solid var(--gray-mid);}
 .top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
 /* Weiter-Wahl nach Einsatz */
 .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem;}
@@ -113,6 +112,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .load-popup-list{color:#ccc;line-height:1.6;}
 .load-popup-close{position:absolute;top:8px;right:10px;background:none;border:none;color:#888;font-size:16px;cursor:pointer;line-height:1;}
 .load-popup-close:hover{color:#fff;}
+.info-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--gray-mid);color:var(--gray);font-size:11px;font-weight:700;cursor:pointer;vertical-align:middle;margin-left:6px;flex-shrink:0;}
+.info-icon:hover{background:var(--gray);color:#fff;}
+.info-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:center;justify-content:center;padding:1.25rem;}
+.info-modal{background:#fff;max-width:360px;width:100%;padding:1.25rem;position:relative;}
+.info-modal h3{font-size:14px;font-weight:700;margin-bottom:0.5rem;}
+.info-modal p{font-size:13px;color:var(--text2);line-height:1.6;white-space:pre-line;}
+.info-modal-close{position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:var(--gray);cursor:pointer;line-height:1;}
+.label-row{display:flex;align-items:center;justify-content:space-between;}
 .typ-badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;padding:3px 10px;margin-bottom:10px;border-radius:2px;}
 .typ-badge-frage{background:#E6F1FB;color:#0C447C;}
 .typ-badge-taetigkeit{background:#FFF3CD;color:#856404;}
@@ -123,6 +130,19 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .stufe-btn.selected-3{background:var(--red-light);border-color:var(--red);color:var(--red-dark);}
 .hilfe-box{margin-top:0.75rem;display:none;}
 .hilfe-box label{color:var(--red-dark);}
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--bg);border:1px solid var(--gray-mid);margin-bottom:6px;cursor:pointer;transition:background 0.15s;}
+.check-item:active{background:var(--bg2);}
+.check-item.done{background:var(--green-light);border-color:var(--green);}
+.check-item.done .check-box{background:var(--green);border-color:var(--green);}
+.check-item.done .check-box::after{content:"✓";color:#fff;font-size:13px;font-weight:700;}
+.check-box{width:24px;height:24px;border:2px solid var(--gray-mid);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.check-label{font-size:13px;line-height:1.5;color:var(--text);}
+.check-item.done .check-label{color:var(--green);text-decoration:line-through;}
+.check-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);margin:16px 0 6px;}
+.check-alles{width:100%;padding:14px;background:var(--black);color:#fff;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.05em;}
+.check-alles:hover{background:#333;}
+.check-weiter{width:100%;padding:14px;background:var(--green);color:#fff;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:1rem;text-transform:uppercase;letter-spacing:0.05em;}
+.check-weiter:hover{background:var(--green-dark,#1e4d15);}
 .hilfe-box textarea{width:100%;min-height:80px;padding:8px 10px;border:1px solid var(--gray-mid);font-size:13px;font-family:inherit;resize:vertical;border-radius:0;}
 .hilfe-box textarea:focus{outline:none;border-color:var(--red);}</style>
 </head>
@@ -146,9 +166,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <!-- FORM 1 -->
   <div class="screen active" id="s-form1">
-    <div class="card">
-      <h2>Fahrt erfassen</h2>
-      <p class="sub">Angaben vor der Abfahrt ausfüllen</p>
+
+    <!-- Block 1: Fahrer Infos -->
+    <div class="card" style="margin-bottom:0.75rem">
+      <h2>1. Fahrer</h2>
+      <p class="sub" style="margin-bottom:0.75rem">Bitte Kürzel, Datum und Abfahrtszeit eintragen.</p>
       <div class="grid2">
         <div><label>Fahrer (Kürzel)</label><input type="text" id="f-fahrer" maxlength="3" style="text-transform:uppercase"></div>
         <div><label>Beifahrer (Kürzel)</label><input type="text" id="f-beifahrer" maxlength="3" style="text-transform:uppercase"></div>
@@ -157,6 +179,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div><label>Datum</label><input type="date" id="f-datum"></div>
         <div><label>Abfahrtszeit</label><input type="time" id="f-abfahrt"></div>
       </div>
+    </div>
+
+    <!-- Block 2: Fahrzeugwahl -->
+    <div class="card" style="margin-bottom:0.75rem">
+      <h2>2. Fahrzeug</h2>
+      <p class="sub" style="margin-bottom:0.75rem">Kategorie und Fahrzeug auswählen.</p>
       <label>Fahrzeugkategorie</label>
       <div class="radio-group" id="kat-group">
         <div class="radio-card" id="rc-kat-b" onclick="selectKat('B')">
@@ -187,22 +215,41 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           </div>
         </div>
       </div>
-      <label>Fahrt</label>
-      <select id="f-fahrt">
-        <option value="">– wählen –</option>
-        <option value="frei">Freies Fahren</option>
-        <option value="einsatz" selected>Einsatzmeldung</option>
-      </select>
-      <label>Aufbau</label>
-      <select id="f-aufbau">
-        <option value="">– wählen –</option>
-        <option value="ueben">Freies Üben</option>
-        <option value="abfrage" selected>Abfrage</option>
-      </select>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="weiter()">
+    </div>
+
+    <!-- Block 3: Trainingsmodus -->
+    <div class="card">
+      <h2>3. Fahrtraining</h2>
+      <p class="sub" style="margin-bottom:0.75rem">Fahrtraining- und Fahrzeugwissen-Modus wählen.</p>
+      <div class="label-row"><label>Fahrtraining</label><span class="info-icon" onclick="zeigeInfo('fahrtraining')">i</span></div>
+      <div class="radio-group" style="margin-bottom:1rem">
+        <div class="radio-card" id="rc-fahrt-einsatz" onclick="selectFahrtMode('einsatz')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Einsatzmeldung
+        </div>
+        <div class="radio-card" id="rc-fahrt-frei" onclick="selectFahrtMode('frei')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Freies Fahren
+        </div>
+      </div>
+      <div class="label-row"><label>Fahrzeugwissen</label><span class="info-icon" onclick="zeigeInfo('fahrzeugwissen')">i</span></div>
+      <div class="radio-group">
+        <div class="radio-card" id="rc-aufbau-abfrage" onclick="selectAufbauMode('abfrage')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Abfrage
+        </div>
+        <div class="radio-card" id="rc-aufbau-ueben" onclick="selectAufbauMode('ueben')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          Freies Üben
+        </div>
+      </div>
+      <!-- Hidden selects für Kompatibilität -->
+      <select id="f-fahrt" style="display:none"><option value="einsatz" selected>einsatz</option><option value="frei">frei</option></select>
+      <select id="f-aufbau" style="display:none"><option value="abfrage" selected>abfrage</option><option value="ueben">ueben</option></select>
+      <div class="btn-row" style="margin-top:1.25rem">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;height:48px;font-size:14px;" onclick="weiter()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          Weiter
+          Fahrtraining starten
         </button>
       </div>
       <p class="err-msg" id="form1-err">Bitte alle Felder ausfüllen.</p>
@@ -231,10 +278,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <div class="alarm-sub" id="e-city"></div>
           <a class="maps-link" id="e-mapslink" href="#" target="_blank">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Google Maps öffnen
+            In Google Maps ansehen
           </a>
         </div>
-        <div class="qr-wrap"><canvas id="e-qr" width="100" height="100"></canvas></div>
       </div>
       <div class="alarm-meld"><div class="alarm-lbl">Meldung</div><div class="alarm-text" id="e-meldung"></div></div>
       <div class="alarm-meld"><div class="alarm-lbl">Einsatzmittel</div><div class="alarm-text" id="e-mittel"></div></div>
@@ -256,6 +302,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card" style="border-top-color:var(--black)">
       <h2 id="vor-ort-adresse"></h2>
       <p class="sub" id="vor-ort-city"></p>
+      <p class="sub" style="margin-top:0.5rem">Bitte folgende Punkte vor Ort überprüfen und beantworten.</p>
       <div class="divider"></div>
       <!-- Zufällige Frage -->
       <div id="vor-ort-frage-block">
@@ -264,7 +311,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
       <div class="divider"></div>
       <!-- Zufahrt -->
-      <h3>Zufahrt zur Liegenschaft</h3>
+      <div class="label-row"><h3 style="margin:0">Zufahrt zur Liegenschaft</h3><span class="info-icon" onclick="zeigeInfo('zufahrt')">i</span></div>
       <p class="sub" style="margin-bottom:0.5rem">Gibt es wichtige Informationen zur Zufahrt für die Feuerwehr?</p>
       <div class="radio-group" style="margin-bottom:0.75rem;">
         <div class="radio-card" id="zufahrt-ja" onclick="selectZufahrt('ja')">Ja</div>
@@ -279,6 +326,23 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           Einsatz abschliessen
         </button>
       </div>
+      <div id="vor-ort-save-status" class="save-status"></div>
+    </div>
+  </div>
+
+  <!-- FREIES AUFBAUTRAINING -->
+  <div class="screen" id="s-ueben">
+    <div class="disclaimer">
+      <div class="disclaimer-title">Fahrzeugwissen</div>
+      <div class="disclaimer-sub">Freies Üben</div>
+    </div>
+    <div class="card" style="text-align:center;padding:2rem 1.25rem">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem;display:block"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      <p style="font-size:15px;line-height:1.7;color:var(--text2);margin-bottom:1.5rem">Schaut den Aufbau und Inhalt genau an und nehmt Gerätschaften in Betrieb. Freies Üben nach Euren Bedürfnissen.</p>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;height:48px;font-size:14px;" onclick="zeigeFahrtFertig()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Fahrzeugwissen beenden
+      </button>
     </div>
   </div>
 
@@ -288,6 +352,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem;display:block"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
       <h2>Gute Fahrt!</h2>
       <p class="sub" style="margin-top:0.5rem" id="gf-info"></p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-top:0.75rem">Freie Fahrt nach Euren Bedürfnissen. Bitte fahrt vorsichtig und inkludiert schmale Strassen, Rückwärtsfahren mit Begleitperson und kleine Manöver.</p>
+      <div style="background:var(--bg2);border-left:4px solid var(--black);padding:0.75rem 1rem;margin-top:1rem;display:inline-block;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--gray);margin-bottom:2px;">Fahrdauer</div>
+        <div id="gf-timer" style="font-size:22px;font-weight:700;">00:00</div>
+      </div>
       <div class="btn-row" style="justify-content:center;margin-top:1.5rem" id="gf-btn-row"></div>
     </div>
   </div>
@@ -304,11 +373,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="choice-grid">
         <div class="choice-card" onclick="nochEinEinsatz()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 8px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          Noch ein Einsatz
+          Nochmals einen neuen Einsatz anzeigen
         </div>
         <div class="choice-card" onclick="weiterNachEinsatz()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 8px"><polyline points="9 18 15 12 9 6"/></svg>
-          Weiter zu Aufbautraining
+          Weiter zu Fahrzeugwissen
         </div>
       </div>
     </div>
@@ -319,6 +388,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card">
       <div class="progress-bar-bg"><div class="progress-bar" id="q-progress" style="width:0%"></div></div>
       <div class="frage-nr" id="q-nr">Frage 1 von 9</div>
+      <p class="sub" style="margin-bottom:0.5rem">Beantwortet die Frage bzw. führt die Tätigkeit sorgfältig aus.</p>
       <div id="q-typ-badge"></div>
       <div class="frage-text" id="q-text"></div>
       <div id="q-antworten"></div>
@@ -336,10 +406,43 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
+  <!-- FAHRT FERTIG -->
+  <div class="screen" id="s-fahrt-fertig">
+    <div class="card">
+      <h2>Wie weiter?</h2>
+      <p class="sub" style="margin-bottom:0.5rem">Wählt aus, wie es weitergeht.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:1rem">
+        <div class="choice-card" id="choice-mehr-wissen" style="display:none;padding:0.65rem;" onclick="mehrFahrzeugwissen()">
+          <div class="choice-label" style="font-size:12px;">Mehr Fahrzeugwissen</div>
+          <div style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;margin-top:2px;color:var(--text3)">(=nochmals 10 Fragen)</div>
+        </div>
+        <div class="choice-card" style="padding:0.65rem;" onclick="fahrerWechsel()">
+          <div class="choice-label" style="font-size:12px;">Fahrerwechsel</div>
+        </div>
+        <div class="choice-card" style="padding:0.65rem;" onclick="zeigeRetablieren()">
+          <div class="choice-label" style="font-size:12px;">Trainingsfahrt beenden und retablieren</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETABLIEREN -->
+  <div class="screen" id="s-retablieren">
+    <div class="card">
+      <h2>Fahrzeug Retablieren</h2>
+      <p class="sub" style="margin-bottom:1rem">Bitte alle Punkte abarbeiten bevor das Fahrtraining abgeschlossen wird.</p>
+      <button class="check-alles" onclick="alleErledigt()">✓ &nbsp; Alles gemacht</button>
+      <div id="check-liste"></div>
+      <button class="check-weiter" onclick="zeigeAbschluss()">
+        Weiter zu Fahrtraining abschliessen →
+      </button>
+    </div>
+  </div>
+
   <!-- ABSCHLUSS -->
   <div class="screen" id="s-abschluss">
     <div class="card">
-      <span class="badge badge-green">Fahrt abgeschlossen</span>
+      <span class="badge badge-green">Fahrtraining abgeschlossen</span>
       <h2 style="margin-top:0.5rem">Abschluss</h2>
       <div style="margin:0.75rem 0" id="ac-chips"></div>
       <div class="divider"></div>
@@ -372,19 +475,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="screen" id="s-fertig">
     <div class="card" style="text-align:center;padding:2rem 1.25rem">
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem;display:block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <h2>Fahrt abgeschlossen</h2>
+      <h2>Fahrtraining abgeschlossen</h2>
+      <p class="sub" style="margin-bottom:0.5rem">Vielen Dank! Die Zusammenfassung wurde gespeichert.</p>
       <div id="fd-summary-box" style="background:var(--bg2);border-left:4px solid var(--green);padding:1rem;margin:1rem 0;text-align:left;font-size:13px;line-height:1.8;"></div>
       <div class="btn-row" style="justify-content:center;margin-top:1rem">
         <button class="btn btn-primary" onclick="neustart()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-          Neue Fahrt
+          Neues Fahrtraining
         </button>
       </div>
     </div>
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen &nbsp;·&nbsp; v0.45</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.00</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -577,6 +681,16 @@ async function init(){
 }
 
 /* ── Form 1 ── */
+function selectFahrtMode(val){
+  document.getElementById("rc-fahrt-einsatz").classList.toggle("selected",val==="einsatz");
+  document.getElementById("rc-fahrt-frei").classList.toggle("selected",val==="frei");
+  document.getElementById("f-fahrt").value=val;
+}
+function selectAufbauMode(val){
+  document.getElementById("rc-aufbau-abfrage").classList.toggle("selected",val==="abfrage");
+  document.getElementById("rc-aufbau-ueben").classList.toggle("selected",val==="ueben");
+  document.getElementById("f-aufbau").value=val;
+}
 function selectKat(kat){
   selectedKat=kat;
   document.getElementById("rc-kat-b").classList.toggle("selected",kat==="B");
@@ -611,25 +725,27 @@ function weiter(){
   if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||!selectedKat||(needsGebiet&&!selectedGebiet)){err.style.display="block";return;}
   err.style.display="none";
   ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,
-      gebiet:needsGebiet?selectedGebiet:"orts",einsatzAddr:null,einsatzAddrListe:[],quizResults:[],taetigkeitResults:[],einsatzCount:0,einsatzZeit:null,einsatzAddrObj:null};
+      gebiet:needsGebiet?selectedGebiet:"orts",einsatzAddr:null,einsatzAddrListe:[],quizResults:[],taetigkeitResults:[],einsatzCount:0,einsatzZeit:null,einsatzAddrObj:null,vonAbfrage:false,fahrzeitBestaetigt:false};
   if(fahrt==="frei"){
     document.getElementById("gf-info").textContent=`${fzg} · ${fa} / ${bf}`;
     const btnRow=document.getElementById("gf-btn-row");
     if(aufbau==="abfrage"){
       btnRow.innerHTML=`<button class="btn btn-primary" onclick="fahrtBeenden()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        Weiter zu Aufbau
+        Freies Fahren abschliessen und weiter zu Fahrzeugwissen
       </button>`;
     } else {
       btnRow.innerHTML=`<button class="btn btn-red" onclick="fahrtBeenden()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-        Fahrt beenden
+        Fahrtraining beenden
       </button>`;
     }
+    startFahrdauerTimer();
     show("s-gute-fahrt");
   } else if(fahrt==="einsatz") zeigeEinsatz();
   else if(aufbau==="abfrage") starteAbfrage();
-  else zeigeAbschluss();
+  else if(aufbau==="ueben"){ST.vonAbfrage=false;show("s-ueben");}
+  else zeigeFahrtFertig();
 }
 
 /* ── Einsatz ── */
@@ -680,12 +796,31 @@ function zeigeEinsatz(){
   const q=encodeURIComponent(`${ad.str} ${cleanNr(ad.nr)}, ${ad.plz} ${ad.ort}, Schweiz`);
   const url=`https://www.google.com/maps/search/?api=1&query=${q}`;
   document.getElementById("e-mapslink").href=url;
-  drawQR(document.getElementById("e-qr"),url,100);
   show("s-einsatz");
 }
 
+let fahrdauerInterval=null;
+function startFahrdauerTimer(){
+  ST.freieFahrtStart=Date.now();
+  if(fahrdauerInterval) clearInterval(fahrdauerInterval);
+  const update=()=>{
+    const sec=Math.floor((Date.now()-ST.freieFahrtStart)/1000);
+    const m=String(Math.floor(sec/60)).padStart(2,"0"),s=String(sec%60).padStart(2,"0");
+    const el=document.getElementById("gf-timer");
+    if(el) el.textContent=`${m}:${s}`;
+  };
+  update();
+  fahrdauerInterval=setInterval(update,1000);
+}
+function stopFahrdauerTimer(){
+  if(fahrdauerInterval){clearInterval(fahrdauerInterval);fahrdauerInterval=null;}
+}
+
 function fahrtBeenden(){
-  if(ST.aufbau==="abfrage") starteAbfrage(); else zeigeAbschluss();
+  stopFahrdauerTimer();
+  if(ST.aufbau==="abfrage") starteAbfrage();
+  else if(ST.aufbau==="ueben"){ST.vonAbfrage=false;show("s-ueben");}
+  else zeigeFahrtFertig();
 }
 
 function einsatzOrtErreicht(){
@@ -754,6 +889,8 @@ async function einsatzVorOrtAbschliessen(){
     antwort=vorOrtAuswahl;
   }
   const zufahrt=zufahrtAuswahl==="ja"?document.getElementById("vor-ort-zufahrt").value.trim():"";
+  const statusEl=document.getElementById("vor-ort-save-status");
+  if(statusEl){statusEl.style.display="block";statusEl.className="save-status";statusEl.textContent="Wird gespeichert…";}
   // Rückmeldung ins Auswertungs-Sheet speichern
   const ad=ST.einsatzAddrObj;
   if(ad){
@@ -765,6 +902,7 @@ async function einsatzVorOrtAbschliessen(){
     try{await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});}
     catch(e){console.warn("Rückmeldung Fehler:",e);}
   }
+  if(statusEl){statusEl.style.display="none";statusEl.textContent="";}
   show("s-nach-einsatz");
 }
 
@@ -773,7 +911,9 @@ function nochEinEinsatz(){
 }
 
 function weiterNachEinsatz(){
-  if(ST.aufbau==="abfrage") starteAbfrage(); else zeigeAbschluss();
+  if(ST.aufbau==="abfrage") starteAbfrage();
+  else if(ST.aufbau==="ueben"){ST.vonAbfrage=false;show("s-ueben");}
+  else zeigeFahrtFertig();
 }
 
 /* ── Abfrage ── */
@@ -802,7 +942,7 @@ function starteAbfrage(){
   const fragen=[...gewaehltAllg,...gewaehltFzg];
   QPOOL=[...taetigkeiten,...fragen].sort(()=>Math.random()-0.5);
   QIDX=0;ST.quizResults=[];ST.taetigkeitResults=[];
-  if(QPOOL.length===0){zeigeAbschluss();return;}
+  if(QPOOL.length===0){ST.vonAbfrage=true;zeigeFahrtFertig();return;}
   zeigeFrageUI();show("s-abfrage");
 }
 
@@ -899,7 +1039,109 @@ function naechsteFrage(){
     }
   }
   QIDX++;
-  if(QIDX>=QPOOL.length) zeigeAbschluss(); else zeigeFrageUI();
+  if(QIDX>=QPOOL.length){ST.vonAbfrage=true;zeigeFahrtFertig();} else zeigeFrageUI();
+}
+
+/* ── Fahrt Fertig ── */
+function zeigeFahrtFertig(){
+  const extra=document.getElementById("choice-mehr-wissen");
+  if(extra) extra.style.display=ST.vonAbfrage?"block":"none";
+  show("s-fahrt-fertig");
+}
+
+function mehrFahrzeugwissen(){
+  starteAbfrage();
+}
+
+function fahrerWechsel(){
+  const fzg=ST.fahrzeug;
+  // Reset wie neustart
+  selectedGebiet="";selectedKat="";selectedFahrt=null;selectedAufbau=null;
+  document.getElementById("rc-kat-b").classList.remove("selected");
+  document.getElementById("rc-kat-c").classList.remove("selected");
+  document.getElementById("fahrzeug-wrap").style.display="none";
+  document.getElementById("rc-stuetzpunkt").classList.remove("selected");
+  document.getElementById("rc-orts").classList.remove("selected");
+  document.getElementById("gebiet-wrap").style.display="none";
+  // Fahrer/Beifahrer tauschen
+  document.getElementById("f-fahrer").value=ST.beifahrer||"";
+  document.getElementById("f-beifahrer").value=ST.fahrer||"";
+  document.getElementById("f-datum").value=today();
+  document.getElementById("f-abfahrt").value=nowTime();
+  document.getElementById("f-fahrt").value="einsatz";
+  document.getElementById("f-aufbau").value="abfrage";
+  selectFahrtMode("einsatz");
+  selectAufbauMode("abfrage");
+  // Kategorie + Fahrzeug + Gebiet vorausfüllen
+  if(fzg){
+    const kat=FAHRZEUGE_C.includes(fzg)?"C":"B";
+    selectKat(kat);
+    const fzgEl=document.getElementById("f-fahrzeug");
+    if(fzgEl){fzgEl.value=fzg;fzgEl.dispatchEvent(new Event("change"));}
+  }
+  // Gebiet merken
+  if(ST.gebiet){
+    selectGebiet(ST.gebiet);
+  }
+  show("s-form1");
+  window.scrollTo(0,0);
+}
+
+/* ── Retablieren ── */
+const RETABLIER_PUNKTE=[
+  {section:"Tanken / Fahrtenbuch"},
+  {text:"Tanken wenn <75% / ¾ voll"},
+  {text:"Aggregate, Lüfter, Multicut, Motorsägen – Tank muss voll sein"},
+  {text:"Eintrag ins Fahrtenbuch (Datum, Fahrstrecke, Kürzel, getankte Liter)"},
+  {text:"Check Stand Harnstoff (AddBlue) – wenn unter 40%: Rep.-Zettel"},
+  {section:"Reinigung"},
+  {text:"Radkästen, Pneu und Aufbau reinigen"},
+  {text:"Gerätschaften reinigen"},
+  {text:"Fahrzeugkabine reinigen (PET, Verpackungen entsorgen)"},
+  {text:"Fahrzeugkabinenboden reinigen (Bäseli und Schwamm)"},
+  {section:"Kontrollen"},
+  {text:"Fahrzeug an externe Strom- und Luftversorgung anschliessen"},
+  {text:"Alles Material vollständig und einsatzbereit"},
+  {text:"Handfunkgeräte Kanal 3, richtig in Ladestation, Ladeanzeige leuchtet"},
+  {text:"Handlampen im Ladegerät, Ladeanzeige leuchtet"},
+  {text:"4-Stoff Messgerät in Ladestation (Altair 4x)"},
+  {text:"Visuelle Kontrolle aussen auf Schäden – ggf. Rep.-Zettel"},
+  {text:"0.5L Mineralwasserflaschen auffüllen"},
+  {text:"Mineralwasser Nahrungsergänzungsmittel auffüllen / Ablaufdatum prüfen"},
+  {section:"Material"},
+  {text:"Alle gebrauchten Schläuche ersetzen"},
+  {text:"Nasses/feuchtes Material hinter Fahrzeug zum Trocknen deponieren"},
+  {text:"Nasse/feuchte Triopan ersetzen und zum Trocknen aufstellen"},
+  {text:"Defektes Material ersetzen resp. mit Rep.-Zettel versehen"},
+  {text:"Kettensäge und Multicut retablieren + Rep.-Zettel"},
+  {section:"Fahrzeugtüren und Rollladen"},
+  {text:"Türen und Rollläden schliessen (Ausnahme: nasse Innenräume/Material)"}
+];
+
+function zeigeRetablieren(){
+  const liste=document.getElementById("check-liste");
+  liste.innerHTML=RETABLIER_PUNKTE.map((p,i)=>{
+    if(p.section) return `<div class="check-section">${p.section}</div>`;
+    return `<div class="check-item" id="chk-${i}" onclick="toggleCheck(${i})">
+      <div class="check-box"></div>
+      <div class="check-label">${p.text}</div>
+    </div>`;
+  }).join("");
+  show("s-retablieren");
+}
+
+function toggleCheck(i){
+  const el=document.getElementById("chk-"+i);
+  if(el) el.classList.toggle("done");
+}
+
+function alleErledigt(){
+  RETABLIER_PUNKTE.forEach((p,i)=>{
+    if(p.text){
+      const el=document.getElementById("chk-"+i);
+      if(el) el.classList.add("done");
+    }
+  });
 }
 
 /* ── Abschluss ── */
@@ -917,8 +1159,10 @@ function zeigeAbschluss(){
   }
   document.getElementById("ac-rueckkehr").value=nowTime();
   const gl=ST.gebiet==="stuetzpunkt"?"Stützpunktgebiet":"Ortsfeuerwehrgebiet";
+  const fragenFalschCount=(ST.quizResults||[]).filter(x=>!x.richtig).length;
+  const aufgabenNichtGruenCount=(ST.taetigkeitResults||[]).filter(t=>t.stufe!==1).length;
   document.getElementById("ac-chips").innerHTML=
-    `<span class="chip">${ST.fahrer} / ${ST.beifahrer}</span><span class="chip">${ST.fahrzeug}</span><span class="chip">${gl}</span><span class="chip">${ST.datum}</span><span class="chip">Abfahrt ${ST.abfahrt}</span>${ST.einsatzCount>0?`<span class="chip">${ST.einsatzCount}× Einsatz</span>`:""}`;
+    `<span class="chip">${ST.fahrer} / ${ST.beifahrer}</span><span class="chip">${ST.fahrzeug}</span><span class="chip">${gl}</span><span class="chip">${ST.datum}</span><span class="chip">Abfahrt ${ST.abfahrt}</span>${ST.einsatzCount>0?`<span class="chip">${ST.einsatzCount}× Einsatz</span>`:""}${(ST.quizResults||[]).length>0?`<span class="chip">${fragenFalschCount}× Fragen falsch</span>`:""}${(ST.taetigkeitResults||[]).length>0?`<span class="chip">${aufgabenNichtGruenCount}× Aufgaben zu repetieren</span>`:""}`;
   // Tätigkeit-Auswertung
   const tr=document.getElementById("ac-taetigkeit-result");
   const taetList=ST.taetigkeitResults||[];
@@ -957,8 +1201,36 @@ function zeigeAbschluss(){
   show("s-abschluss");
 }
 
+function timeDiffMinuten(a,b){
+  const toMin=s=>{if(!s)return null;const p=s.split(":");const h=parseInt(p[0]),m=parseInt(p[1]);if(isNaN(h)||isNaN(m))return null;return h*60+m;};
+  const ma=toMin(a),mb=toMin(b);
+  if(ma===null||mb===null) return 0;
+  return mb>=ma?mb-ma:(mb+1440)-ma;
+}
+
 async function abschliessen(){
   const rk=document.getElementById("ac-rueckkehr").value;
+  const mins=timeDiffMinuten(ST.abfahrt,rk);
+  if(mins>300&&!ST.fahrzeitBestaetigt){
+    const h=Math.floor(mins/60),m=mins%60;
+    document.getElementById("fahrzeit-warn-text").textContent=`Die erfasste Fahrzeit beträgt ${h}h ${m}min (Abfahrt ${ST.abfahrt} – Rückkehr ${rk}). Ist das korrekt?`;
+    document.getElementById("fahrzeit-warn-bg").style.display="flex";
+    return;
+  }
+  await abschliessenSpeichern(rk);
+}
+
+function fahrzeitAnpassen(){
+  document.getElementById("fahrzeit-warn-bg").style.display="none";
+}
+
+function fahrzeitBestaetigen(){
+  ST.fahrzeitBestaetigt=true;
+  document.getElementById("fahrzeit-warn-bg").style.display="none";
+  abschliessen();
+}
+
+async function abschliessenSpeichern(rk){
   const richtig=ST.quizResults.filter(x=>x.richtig).length;
   const total=ST.quizResults.length;
   const pct=total>0?Math.round(richtig/total*100):0;
@@ -1020,27 +1292,28 @@ function neustart(){
   show("s-form1");
 }
 
-function drawQR(canvas,text,size){
-  const ctx=canvas.getContext("2d");
-  ctx.fillStyle="white";ctx.fillRect(0,0,size,size);
-  const mod=25,cell=Math.floor((size-12)/mod),off=Math.floor((size-mod*cell)/2);
-  const m=Array.from({length:mod},()=>new Array(mod).fill(0));
-  [[0,0],[0,mod-7],[mod-7,0]].forEach(([rr,c])=>{
-    for(let i=0;i<7;i++)for(let j=0;j<7;j++){if(i===0||i===6||j===0||j===6||(i>=2&&i<=4&&j>=2&&j<=4))m[rr+i][c+j]=1;}
-  });
-  let seed=0;for(let i=0;i<text.length;i++)seed=(seed*31+text.charCodeAt(i))&0xffffffff;
-  const rng=()=>{seed=((seed*1664525)+1013904223)&0xffffffff;return(seed>>>0)/4294967296;};
-  const fixed=new Set();
-  for(let i=0;i<7;i++)for(let j=0;j<7;j++){fixed.add(`${i},${j}`);fixed.add(`${i},${mod-7+j}`);fixed.add(`${mod-7+i},${j}`);}
-  for(let rr=0;rr<mod;rr++)for(let c=0;c<mod;c++){if(!fixed.has(`${rr},${c}`))m[rr][c]=rng()>0.5?1:0;}
-  ctx.fillStyle="#111";
-  for(let rr=0;rr<mod;rr++)for(let c=0;c<mod;c++){if(m[rr][c])ctx.fillRect(off+c*cell,off+rr*cell,cell,cell);}
+const INFO_TEXTE={
+  fahrtraining:{titel:"Fahrtraining",text:"\u201eEinsatzmeldung\u201c simuliert eine echte Alarmierung mit Anfahrt zu einer zufälligen Adresse. Dient dem Üben einer unbekannten Anfahrt durch den Beifahrer und stärkt die Ortskenntnis.\n\nBei \u201eFreies Fahren\u201c könnt Ihr frei nach Euren Bedürfnissen fahren."},
+  fahrzeugwissen:{titel:"Fahrzeugwissen",text:"\u201eAbfrage\u201c stellt 10 Fragen und Tätigkeiten rund um das Fahrzeug und die Ausrüstung. Hier könnt Ihr Euer Wissen festigen!\n\nBei \u201eFreies Üben\u201c könnt Ihr das Fahrzeug und den Aufbau ohne Fragen selbst üben."},
+  zufahrt:{titel:"Zufahrt zur Liegenschaft",text:"Falls Ihr wichtige Informationen zur Zufahrt für die Feuerwehr habt, meldet dies bitte hier.\nBsp: Zufahrt nur durch Tor mit Zahlenschloss / Baustelle verhindert Zufahrt über Mauerstrasse"}
+};
+function zeigeInfo(key){
+  const info=INFO_TEXTE[key];
+  if(!info) return;
+  document.getElementById("info-modal-title").textContent=info.titel;
+  document.getElementById("info-modal-text").textContent=info.text;
+  document.getElementById("info-modal-bg").style.display="flex";
+}
+function schliesseInfo(){
+  document.getElementById("info-modal-bg").style.display="none";
 }
 
 function hideOverlay(){
   document.getElementById("init-overlay").style.display="none";
   document.getElementById("f-datum").value=today();
   document.getElementById("f-abfahrt").value=nowTime();
+  selectFahrtMode("einsatz");
+  selectAufbauMode("abfrage");
 }
 
 function showLoadPopup(fehler){
@@ -1063,6 +1336,25 @@ document.addEventListener("DOMContentLoaded",()=>{
   init();
 });
 </script>
+<div class="info-modal-bg" id="info-modal-bg" onclick="if(event.target===this)schliesseInfo()">
+  <div class="info-modal">
+    <button class="info-modal-close" onclick="schliesseInfo()">✕</button>
+    <h3 id="info-modal-title"></h3>
+    <p id="info-modal-text"></p>
+  </div>
+</div>
+
+<div class="info-modal-bg" id="fahrzeit-warn-bg">
+  <div class="info-modal">
+    <h3>Lange Fahrzeit erkannt</h3>
+    <p id="fahrzeit-warn-text"></p>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn" style="flex:1;justify-content:center;" onclick="fahrzeitAnpassen()">Zeit anpassen</button>
+      <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="fahrzeitBestaetigen()">Bestätigen</button>
+    </div>
+  </div>
+</div>
+
 <div class="load-popup" id="load-popup">
   <button class="load-popup-close" onclick="document.getElementById('load-popup').style.display='none'">✕</button>
   <div class="load-popup-title">⚠ Nicht geladen</div>
