@@ -501,7 +501,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.08</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.09</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -1021,7 +1021,10 @@ function mehrFahrzeugwissen(){
   starteAbfrage();
 }
 
+let FAHRERWECHSEL_LAEUFT=false;
 async function fahrerWechsel(){
+  if(FAHRERWECHSEL_LAEUFT) return;
+  FAHRERWECHSEL_LAEUFT=true;
   document.getElementById("wechsel-overlay").style.display="flex";
   try{
     await speichereAktuelleFahrtUndErzeugePDF(nowTime());
@@ -1059,6 +1062,7 @@ async function fahrerWechsel(){
     window.scrollTo(0,0);
   }finally{
     document.getElementById("wechsel-overlay").style.display="none";
+    FAHRERWECHSEL_LAEUFT=false;
   }
 }
 
@@ -1330,7 +1334,6 @@ function baueGeneriertesPDF(){
   const pct=total>0?Math.round(richtig/total*100):0;
   const gl=ST.gebiet==="stuetzpunkt"?"Stützpunktgebiet":"Ortsfeuerwehrgebiet";
   const taetList=ST.taetigkeitResults||[];
-  const nichtGruen=taetList.filter(t=>t.stufe!==1).length;
   const stufeLabel={1:"Sehr gut",2:"Bitte weiter üben",3:"Nehmen wir auf"};
   const stufeFarbe={1:[45,106,31],2:[133,84,4],3:[204,0,0]};
   const dauerMin=timeDiffMinuten(ST.abfahrt,ST.rueckkehr);
@@ -1348,22 +1351,27 @@ function baueGeneriertesPDF(){
   doc.line(20,y,190,y);
   y+=8;
 
+  // Grauer Block: Datum bis Fahrzeit
+  doc.setFillColor(244,244,244);
+  doc.rect(16,y-5,178,44,'F');
+
   doc.setFont("helvetica","normal");
   doc.setFontSize(10);
   const zeile=(label,wert)=>{
     doc.setFont("helvetica","bold");doc.text(label,20,y);
-    doc.setFont("helvetica","normal");doc.text(String(wert),65,y);
-    y+=6;
+    doc.setFont("helvetica","normal");
+    const lines=doc.splitTextToSize(String(wert),105);
+    doc.text(lines,65,y);
+    y+=6*Math.max(1,lines.length);
   };
   zeile("Datum:",ST.datum);
-  zeile("Fahrzeug:",ST.fahrzeug+" · "+gl);
+  zeile("Fahrzeug:",ST.fahrzeug);
+  zeile("Gebiet:",gl);
   zeile("Fahrer:",vollerName(ST.fahrer));
   zeile("Beifahrer:",vollerName(ST.beifahrer));
-  zeile("Abfahrt:",ST.abfahrt);
-  zeile("Rückkehr:",ST.rueckkehr);
-  zeile("Fahrzeit:",formatDauerHHMM(dauerMin));
+  zeile("Fahrzeit:",`${formatDauerHHMM(dauerMin)} (von ${ST.abfahrt} bis ${ST.rueckkehr})`);
 
-  y+=4;
+  y+=6;
   doc.setDrawColor(224,224,224);
   doc.setLineWidth(0.3);
   doc.line(20,y,190,y);
@@ -1379,7 +1387,6 @@ function baueGeneriertesPDF(){
     zeile("Fragen richtig:",`${richtig} von ${total} (${pct}%)`);
     zeile("Fragen falsch:",falsch);
   }
-  if(taetList.length>0) zeile("Aufgaben zu repetieren:",nichtGruen);
   if(ST.einsatzCount>0){
     zeile("Übungseinsatzorte angefahren:",ST.einsatzCount);
     if(ST.einsatzAddrListe&&ST.einsatzAddrListe.length>0){
@@ -1422,6 +1429,9 @@ function baueGeneriertesPDF(){
       y+=lines.length*5;
       if(!q.richtig){
         doc.setFontSize(9);doc.setTextColor(120,120,120);
+        const antwortLines=doc.splitTextToSize(`Deine Antwort: ${q.gegeben}`,155);
+        doc.text(antwortLines,26,y);
+        y+=antwortLines.length*4.5;
         const korrLines=doc.splitTextToSize(`Korrekt: ${q.korrekt}`,155);
         doc.text(korrLines,26,y);
         y+=korrLines.length*4.5;
@@ -1436,7 +1446,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.08`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.09`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
