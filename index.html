@@ -501,7 +501,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.10</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.11</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -1335,7 +1335,6 @@ function baueGeneriertesPDF(){
   const doc=new jsPDF();
   const richtig=ST.quizResults.filter(x=>x.richtig).length;
   const total=ST.quizResults.length;
-  const falsch=total-richtig;
   const pct=total>0?Math.round(richtig/total*100):0;
   const gl=ST.gebiet==="stuetzpunkt"?"Stützpunktgebiet":"Ortsfeuerwehrgebiet";
   const taetList=ST.taetigkeitResults||[];
@@ -1388,60 +1387,62 @@ function baueGeneriertesPDF(){
   y+=7;
   doc.setFontSize(10);
 
-  if(total>0){
-    zeile("Fragen richtig:",`${richtig} von ${total} (${pct}%)`);
-    zeile("Fragen falsch:",falsch);
-  }
-  if(ST.einsatzCount>0){
-    zeile("Übungseinsatzorte angefahren:",ST.einsatzCount);
-    if(ST.einsatzAddrListe&&ST.einsatzAddrListe.length>0){
-      doc.setFont("helvetica","normal");
-      ST.einsatzAddrListe.forEach(addr=>{
-        const lines=doc.splitTextToSize(`– ${addr}`,160);
-        doc.text(lines,25,y);
-        y+=lines.length*5;
-      });
-      y+=2;
-    }
+  if(ST.einsatzCount>0) zeile("Übungseinsätze:",ST.einsatzCount);
+  if(total>0) zeile("Fragen richtig von total:",`${richtig} von ${total} (${pct}%)`);
+
+  if(ST.einsatzCount>0&&ST.einsatzAddrListe&&ST.einsatzAddrListe.length>0){
+    y+=2;
+    doc.setFont("helvetica","bold");doc.text("Übungsorte angefahren:",20,y);y+=6;
+    doc.setFont("helvetica","normal");
+    ST.einsatzAddrListe.forEach(addr=>{
+      const lines=doc.splitTextToSize(`– ${addr}`,160);
+      doc.text(lines,25,y);
+      y+=lines.length*5;
+    });
   }
 
   if(taetList.length>0){
-    y+=2;
+    y+=4;
     doc.setFont("helvetica","bold");doc.text("Tätigkeiten:",20,y);y+=6;
     taetList.forEach((t,i)=>{
       doc.setFont("helvetica","normal");doc.setTextColor(0,0,0);
-      const lines=doc.splitTextToSize(`${i+1}. ${t.frage}`,140);
-      doc.text(lines,25,y);
+      const nummer=`${i+1}. `;
+      const lines=doc.splitTextToSize(t.frage,125);
+      doc.text(nummer,25,y);
+      doc.text(lines,31,y);
       const farbe=stufeFarbe[t.stufe]||[0,0,0];
       doc.setTextColor(farbe[0],farbe[1],farbe[2]);
       doc.setFont("helvetica","bold");
-      doc.text(stufeLabel[t.stufe]||"",165,y,{align:"left"});
+      doc.text(stufeLabel[t.stufe]||"",162,y);
       doc.setTextColor(0,0,0);
-      y+=lines.length*5;
+      y+=lines.length*5+1;
     });
   }
 
   if(total>0){
     y+=4;
-    doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text("Fragen im Detail:",20,y);y+=6;
+    doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text("Fragen im Detail:",20,y);y+=7;
     ST.quizResults.forEach((q,i)=>{
-      doc.setFont("helvetica","normal");
-      doc.setTextColor(q.richtig?45:204,q.richtig?106:0,q.richtig?31:0);
-      doc.text(q.richtig?"✓":"✗",20,y);
+      // Farbiger Punkt statt Symbol (jsPDF-Standardschrift kann ✓/✗ nicht darstellen)
+      if(q.richtig) doc.setFillColor(45,106,31); else doc.setFillColor(204,0,0);
+      doc.circle(21.5,y-1.2,1.8,"F");
       doc.setTextColor(0,0,0);
-      const lines=doc.splitTextToSize(`F${i+1}: ${q.frage}`,160);
+      doc.setFont("helvetica","bold");doc.setFontSize(9);
+      const lines=doc.splitTextToSize(`F${i+1}: ${q.frage}`,158);
       doc.text(lines,26,y);
-      y+=lines.length*5;
+      y+=lines.length*4.5;
+      doc.setFont("helvetica","normal");doc.setFontSize(8.5);
       if(!q.richtig){
-        doc.setFontSize(9);doc.setTextColor(120,120,120);
-        const antwortLines=doc.splitTextToSize(`Deine Antwort: ${q.gegeben}`,155);
+        doc.setTextColor(120,120,120);
+        const antwortLines=doc.splitTextToSize(`Deine Antwort: ${q.gegeben}`,153);
         doc.text(antwortLines,26,y);
-        y+=antwortLines.length*4.5;
-        const korrLines=doc.splitTextToSize(`Korrekt: ${q.korrekt}`,155);
-        doc.text(korrLines,26,y);
-        y+=korrLines.length*4.5;
-        doc.setFontSize(10);doc.setTextColor(0,0,0);
+        y+=antwortLines.length*4;
       }
+      doc.setTextColor(45,106,31);
+      const korrLines=doc.splitTextToSize(`Korrekt: ${q.korrekt}`,153);
+      doc.text(korrLines,26,y);
+      y+=korrLines.length*4+2.5;
+      doc.setFontSize(10);doc.setTextColor(0,0,0);
     });
   }
 
@@ -1451,7 +1452,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.10`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.11`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
