@@ -502,7 +502,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.15</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.16</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -786,6 +786,7 @@ function stopFahrdauerTimer(){
 }
 
 function fahrtBeenden(){
+  if(ST.freieFahrtStart) ST.freieFahrtMinuten=Math.round((Date.now()-ST.freieFahrtStart)/60000);
   stopFahrdauerTimer();
   if(ST.aufbau==="abfrage") starteAbfrage();
   else if(ST.aufbau==="ueben"){ST.vonAbfrage=false;show("s-ueben");}
@@ -1400,6 +1401,8 @@ function baueGeneriertesPDF(){
   y+=7;
   doc.setFontSize(10);
 
+  if(ST.fahrt==="frei") zeile("Freies Fahren:",`absolviert · Fahrdauer ${formatDauerHHMM(ST.freieFahrtMinuten)}`);
+  if(ST.aufbau==="ueben") zeile("Freies Aufbautraining:","absolviert");
   if(ST.einsatzCount>0) zeile("Übungseinsätze:",ST.einsatzCount);
   if(total>0) zeile("Fragen richtig von total:",`${richtig} von ${total} (${pct}%)`);
 
@@ -1466,7 +1469,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.15`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.16`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
