@@ -501,7 +501,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.11</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.12</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -1285,7 +1285,7 @@ function renderPdfListe(){
       <div style="font-size:13px;font-weight:700;margin-bottom:8px;">${p.label}</div>
       <div class="entry-actions" style="justify-content:flex-start;">
         <button class="btn btn-primary klein" onclick="herunterladenPDF(${i})">PDF herunterladen</button>
-        <button class="btn btn-green klein" onclick="sendePdfPerMail(${i},this)">Per Mail senden</button>
+        <button class="btn btn-green klein" onclick="sendePdfPerMail(${i},this)">Per Mail an ${p.kuerzel} senden</button>
       </div>
       <div class="status-msg" id="pdf-mail-status-${i}"></div>
     </div>`).join("");
@@ -1452,7 +1452,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.11`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.12`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
