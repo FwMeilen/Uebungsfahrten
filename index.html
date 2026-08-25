@@ -177,8 +177,77 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 <div class="page">
 
+  <!-- START: Auswahl -->
+  <div class="screen active" id="s-start">
+    <div class="card">
+      <h2>Was möchtest du tun?</h2>
+      <p class="sub" style="margin-bottom:0.5rem">Wähle aus, wie es weitergeht.</p>
+      <div class="choice-grid" style="margin-top:1rem">
+        <div class="choice-card" onclick="starteFahrtraining()">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <div class="choice-label">Fahrtraining starten</div>
+        </div>
+        <div class="choice-card" onclick="zeigeReservation()">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <div class="choice-label">Fahrzeug reservieren</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESERVATION -->
+  <div class="screen" id="s-reservation">
+    <div class="card">
+      <h2>Fahrzeug reservieren</h2>
+      <p class="sub" style="margin-bottom:1rem">Reservation wird im Fahrtraining-Kalender eingetragen.</p>
+
+      <div class="grid2">
+        <div><label>Fahrer (Kürzel)</label><input type="text" id="r-fahrer" maxlength="3" style="text-transform:uppercase"></div>
+        <div><label>Beifahrer (Kürzel)</label><input type="text" id="r-beifahrer" maxlength="3" style="text-transform:uppercase"></div>
+      </div>
+
+      <label>Fahrzeugkategorie</label>
+      <div class="radio-group">
+        <div class="radio-card" id="rc-r-kat-b" onclick="selectResKat('B')">B Fahrzeuge</div>
+        <div class="radio-card" id="rc-r-kat-c" onclick="selectResKat('C')">C Fahrzeuge</div>
+      </div>
+      <div id="r-fahrzeug-wrap" style="display:none">
+        <label>Fahrzeug</label>
+        <select id="r-fahrzeug"><option value="">– wählen –</option></select>
+      </div>
+
+      <label>Datum</label>
+      <input type="date" id="r-datum">
+      <div class="grid2">
+        <div><label>Von</label><input type="time" id="r-von"></div>
+        <div><label>Bis</label><input type="time" id="r-bis"></div>
+      </div>
+
+      <label>Bemerkung (optional)</label>
+      <input type="text" id="r-bemerkung" placeholder="z. B. Aufbautraining ADL">
+
+      <div class="btn-row" style="margin-top:1.25rem">
+        <button class="btn btn-green" id="btn-reservieren" style="width:100%;justify-content:center;height:48px;font-size:14px;" onclick="reservierungAbsenden()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Reservieren
+        </button>
+      </div>
+      <div class="status-msg" id="r-status"></div>
+
+      <div class="btn-row" style="margin-top:0.75rem">
+        <button class="btn" style="width:100%;justify-content:center;" onclick="zurueckZumStart()">Zurück</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Belegung</h2>
+      <iframe src="https://calendar.google.com/calendar/embed?src=62b1941e2e5dbdd33420a9e65da917d307323bf984b1713a2b60b1f1009c9a69%40group.calendar.google.com&ctz=Europe%2FZurich&mode=WEEK&showTitle=0&showPrint=0&showTabs=0&showCalendars=0"
+        style="border:1px solid var(--gray-mid);width:100%;height:500px" frameborder="0" scrolling="no"></iframe>
+    </div>
+  </div>
+
   <!-- FORM 1 -->
-  <div class="screen active" id="s-form1">
+  <div class="screen" id="s-form1">
 
     <!-- Block 1: Fahrer Infos -->
     <div class="card" style="margin-bottom:0.75rem">
@@ -502,7 +571,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.16</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.17</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -627,6 +696,90 @@ function selectAufbauMode(val){
   document.getElementById("rc-aufbau-ueben").classList.toggle("selected",val==="ueben");
   document.getElementById("f-aufbau").value=val;
 }
+/* ── Startscreen & Reservation ── */
+function starteFahrtraining(){
+  show("s-form1");
+  window.scrollTo(0,0);
+}
+function zurueckZumStart(){
+  show("s-start");
+  window.scrollTo(0,0);
+}
+function zeigeReservation(){
+  document.getElementById("r-datum").value=today();
+  const jetzt=new Date();
+  const rundeAuf=new Date(jetzt.getTime()+(30-jetzt.getMinutes()%30)*60000);
+  const p2=n=>String(n).padStart(2,"0");
+  document.getElementById("r-von").value=`${p2(rundeAuf.getHours())}:${p2(rundeAuf.getMinutes())}`;
+  const bis=new Date(rundeAuf.getTime()+120*60000);
+  document.getElementById("r-bis").value=`${p2(bis.getHours())}:${p2(bis.getMinutes())}`;
+  const st=document.getElementById("r-status");
+  st.style.display="none"; st.className="status-msg"; st.textContent="";
+  show("s-reservation");
+  window.scrollTo(0,0);
+}
+
+let resKat="";
+function selectResKat(kat){
+  resKat=kat;
+  document.getElementById("rc-r-kat-b").classList.toggle("selected",kat==="B");
+  document.getElementById("rc-r-kat-c").classList.toggle("selected",kat==="C");
+  const liste=kat==="B"?FAHRZEUGE_B:FAHRZEUGE_C;
+  const sel=document.getElementById("r-fahrzeug");
+  sel.innerHTML='<option value="">– wählen –</option>'+liste.map(f=>`<option>${f}</option>`).join("");
+  document.getElementById("r-fahrzeug-wrap").style.display="block";
+}
+
+async function reservierungAbsenden(){
+  const st=document.getElementById("r-status");
+  const btn=document.getElementById("btn-reservieren");
+  const fahrer=document.getElementById("r-fahrer").value.trim().toUpperCase();
+  const beifahrer=document.getElementById("r-beifahrer").value.trim().toUpperCase();
+  const fahrzeug=document.getElementById("r-fahrzeug").value;
+  const datum=document.getElementById("r-datum").value;
+  const von=document.getElementById("r-von").value;
+  const bis=document.getElementById("r-bis").value;
+  const bemerkung=document.getElementById("r-bemerkung").value.trim();
+
+  st.style.display="block"; st.className="status-msg";
+  if(!fahrer||!beifahrer||!fahrzeug||!datum||!von||!bis){
+    st.className="status-msg err-msg"; st.textContent="Bitte alle Felder ausfüllen.";
+    return;
+  }
+  if(bis<=von){
+    st.className="status-msg err-msg"; st.textContent="Die Bis-Zeit muss nach der Von-Zeit liegen.";
+    return;
+  }
+
+  btn.disabled=true;
+  st.textContent="Wird geprüft…";
+  try{
+    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({type:"reservieren",fahrzeug,fahrer,beifahrer,bemerkung,
+        von:`${datum}T${von}:00`,bis:`${datum}T${bis}:00`})});
+    const data=await res.json();
+    if(data.ok){
+      st.className="status-msg ok-msg";
+      st.textContent=`Reserviert: ${data.titel} · ${data.von}–${data.bis}`;
+      document.getElementById("r-bemerkung").value="";
+    } else if(data.error==="BELEGT"){
+      st.className="status-msg err-msg";
+      st.textContent=`${fahrzeug} ist in diesem Zeitraum bereits belegt (${data.belegtVon}–${data.belegtBis}, ${data.belegtDurch}).`;
+      btn.disabled=false;
+    } else if(data.error==="ZEIT_REIHENFOLGE"){
+      st.className="status-msg err-msg"; st.textContent="Die Bis-Zeit muss nach der Von-Zeit liegen."; btn.disabled=false;
+    } else {
+      st.className="status-msg err-msg";
+      st.textContent="Fehler bei der Reservation."+(data.detail?" ("+data.detail+")":"");
+      btn.disabled=false;
+    }
+  }catch(e){
+    st.className="status-msg err-msg"; st.textContent="Verbindungsfehler: "+e.message;
+    btn.disabled=false;
+  }
+  setTimeout(()=>{btn.disabled=false;},1500);
+}
+
 function selectKat(kat){
   selectedKat=kat;
   document.getElementById("rc-kat-b").classList.toggle("selected",kat==="B");
@@ -1469,7 +1622,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.16`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.17`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
@@ -1491,7 +1644,7 @@ function neustart(){
   document.getElementById("f-fahrzeug").value="";
   document.getElementById("f-fahrt").value="einsatz";
   document.getElementById("f-aufbau").value="abfrage";
-  show("s-form1");
+  show("s-start");
 }
 
 const INFO_TEXTE={
