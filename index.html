@@ -501,7 +501,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.13</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.14</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -970,10 +970,18 @@ function taetigkeitAbgeschlossen(){
   if(kpBox){
     const kpItems=q.a.filter(x=>x&&x.trim());
     if(kpItems.length>0){
-      kpBox.innerHTML=`<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--gray);margin-bottom:6px;">Habt ihr überprüft:</div>`
-        +kpItems.map((x,i)=>`<div style="padding:8px 12px;margin-bottom:6px;background:var(--bg2);border-left:3px solid var(--gray-mid);font-size:13px;color:var(--text2);">Kontrollpunkt ${i+1}: ${x}</div>`).join("");
+      kpBox.innerHTML=`<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--gray);margin-bottom:8px;">Habt ihr überprüft:</div>`
+        +kpItems.map((x,i)=>`<div class="check-item" id="kp-${i}" onclick="toggleKontrollpunkt(${i})">
+            <div class="check-box"></div>
+            <div class="check-label">${x}</div>
+          </div>`).join("");
     }
   }
+}
+
+function toggleKontrollpunkt(i){
+  const el=document.getElementById("kp-"+i);
+  if(el) el.classList.toggle("done");
 }
 
 function bewerteStudfe(stufe){
@@ -1457,7 +1465,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.13`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.14`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
