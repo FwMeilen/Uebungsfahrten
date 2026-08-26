@@ -598,7 +598,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.22</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.23</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -631,8 +631,13 @@ async function ladeInitDaten(){
       if(Date.now()-obj.ts<INIT_TTL){ anwendenInitDaten(obj.data); return; }
     }
   }catch(e){}
+  const ladeStart=Date.now();
   const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"lade_init_daten"})});
   const dataRaw=await res.json();
+  if(dataRaw.dauerMs!=null){
+    console.log(`Startdaten geladen: ${(dataRaw.dauerMs/1000).toFixed(2)}s Verarbeitung, `
+      +`${((Date.now()-ladeStart)/1000).toFixed(2)}s gesamt`);
+  }
   anwendenInitDaten(dataRaw);
   try{localStorage.setItem(INIT_CACHE_KEY,JSON.stringify({ts:Date.now(),data:dataRaw}));}catch(e){}
 }
@@ -1816,7 +1821,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.22`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.23`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
