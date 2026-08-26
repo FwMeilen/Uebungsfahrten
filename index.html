@@ -598,14 +598,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.21</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.22</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
-const FAHRZEUGE_B=["PTF 1/6","VA","PTF 4/7","PTF 2/3","OW"];
-const FAHRZEUGE_C=["TLF","ADL","PIF","ULF","OC","SVF","MTF"];
-const FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
-const STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","SVF","PTF 2/3"];
+let FAHRZEUGE_B=["PTF 1/6","VA","PTF 4/7","PTF 2/3","OW"];
+let FAHRZEUGE_C=["TLF","ADL","PIF","ULF","OC","SVF","MTF"];
+let FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
+let STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","SVF","PTF 2/3"];
 
 let selectedKat="";
 
@@ -655,6 +655,10 @@ function anwendenInitDaten(dataRaw){
   FRAGEN_ALLGEMEIN=dataRaw.fragenAllgemein||[];
   EINSAETZE=dataRaw.einsaetze||[];
   MITGLIEDER=dataRaw.mitglieder||{};
+  if(dataRaw.fahrzeugeB&&dataRaw.fahrzeugeB.length) FAHRZEUGE_B=dataRaw.fahrzeugeB;
+  if(dataRaw.fahrzeugeC&&dataRaw.fahrzeugeC.length) FAHRZEUGE_C=dataRaw.fahrzeugeC;
+  if(dataRaw.stuetzpunkt) STUETZPUNKT_FAHRZEUGE=dataRaw.stuetzpunkt;
+  FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
 }
 
 function vollerName(kuerzel){
@@ -755,6 +759,17 @@ async function ladeResTypen(){
     const d=await res.json();
     if(d.ok&&d.typen&&d.typen.length) RES_TYPEN=d.typen;
   }catch(e){console.warn("Reservationstypen:",e);}
+  try{
+    const res2=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({type:"lade_fahrzeuge"})});
+    const f=await res2.json();
+    if(f.ok){
+      if(f.b&&f.b.length) FAHRZEUGE_B=f.b;
+      if(f.c&&f.c.length) FAHRZEUGE_C=f.c;
+      if(f.stuetzpunkt) STUETZPUNKT_FAHRZEUGE=f.stuetzpunkt;
+      FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
+    }
+  }catch(e){console.warn("Fahrzeuge:",e);}
   const sel=document.getElementById("r-typ");
   sel.innerHTML=RES_TYPEN.map(t=>`<option>${t}</option>`).join("");
   resTypGeaendert();
@@ -1801,7 +1816,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.21`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.22`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
