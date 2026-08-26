@@ -310,6 +310,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <select id="f-fahrzeug">
           <option value="">– wählen –</option>
         </select>
+        <div id="fzg-gesperrt" style="display:none;background:var(--red-light);border-left:3px solid var(--red);
+          padding:0.75rem 1rem;margin-top:0.6rem;font-size:13px;font-weight:600;color:var(--red-dark);line-height:1.5"></div>
       </div>
       <div id="gebiet-wrap" style="display:none">
         <label>Gebiet Ortsfeuerwehr</label>
@@ -598,7 +600,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.23</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.24</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -606,6 +608,7 @@ let FAHRZEUGE_B=["PTF 1/6","VA","PTF 4/7","PTF 2/3","OW"];
 let FAHRZEUGE_C=["TLF","ADL","PIF","ULF","OC","SVF","MTF"];
 let FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
 let STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","SVF","PTF 2/3"];
+let KEIN_FAHRTRAINING=[];
 
 let selectedKat="";
 
@@ -663,6 +666,7 @@ function anwendenInitDaten(dataRaw){
   if(dataRaw.fahrzeugeB&&dataRaw.fahrzeugeB.length) FAHRZEUGE_B=dataRaw.fahrzeugeB;
   if(dataRaw.fahrzeugeC&&dataRaw.fahrzeugeC.length) FAHRZEUGE_C=dataRaw.fahrzeugeC;
   if(dataRaw.stuetzpunkt) STUETZPUNKT_FAHRZEUGE=dataRaw.stuetzpunkt;
+  if(dataRaw.keinFahrtraining) KEIN_FAHRTRAINING=dataRaw.keinFahrtraining;
   FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
 }
 
@@ -987,6 +991,11 @@ function selectKat(kat){
   const list=kat==="B"?FAHRZEUGE_B:FAHRZEUGE_C;
   sel.innerHTML='<option value="">– wählen –</option>'+list.map(f=>`<option>${f}</option>`).join("");
   document.getElementById("fahrzeug-wrap").style.display="block";
+  if(!sel.dataset.freigabeGebunden){
+    sel.addEventListener("change",pruefeFahrzeugFreigabe);
+    sel.dataset.freigabeGebunden="1";
+  }
+  pruefeFahrzeugFreigabe();
   // Reset gebiet
   selectedGebiet="orts";
   document.getElementById("gebiet-wrap").style.display="none";
@@ -1002,6 +1011,17 @@ function selectGebiet(val){
 
 let PENDING_WEITER=null;
 
+function pruefeFahrzeugFreigabe(){
+  const fzg=document.getElementById("f-fahrzeug").value;
+  const hinweis=document.getElementById("fzg-gesperrt");
+  const gesperrt=fzg&&KEIN_FAHRTRAINING.includes(fzg);
+  if(hinweis) hinweis.style.display=gesperrt?"block":"none";
+  if(hinweis&&gesperrt){
+    hinweis.textContent=`Mit dem ${fzg} sind keine Fahrtrainings möglich. Für eine Reservation zurück zur Startseite.`;
+  }
+  return !gesperrt;
+}
+
 function weiter(){
   const fa=document.getElementById("f-fahrer").value.trim().toUpperCase();
   const bf=document.getElementById("f-beifahrer").value.trim().toUpperCase();
@@ -1014,6 +1034,7 @@ function weiter(){
   const err=document.getElementById("form1-err");
   if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||!selectedKat||(needsGebiet&&!selectedGebiet)){err.style.display="block";return;}
   err.style.display="none";
+  if(!pruefeFahrzeugFreigabe()){ window.scrollTo(0,0); return; }
 
   // Kürzel-Check gegen Mitgliederliste (nur wenn Liste geladen ist)
   if(Object.keys(MITGLIEDER).length>0){
@@ -1821,7 +1842,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.23`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.24`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
