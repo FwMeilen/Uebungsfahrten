@@ -253,6 +253,26 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
+  <!-- RESERVATION BESTÄTIGT -->
+  <div class="screen" id="s-reservation-ok">
+    <div class="card" style="text-align:center;padding:2rem 1.25rem">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem;display:block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <h2>Reservation erfasst</h2>
+      <p class="sub" style="margin-bottom:0.5rem">Der Kalendereintrag wurde erstellt.</p>
+      <div id="ro-summary" style="background:var(--bg2);border-left:4px solid var(--green);padding:1rem;margin:1rem 0;text-align:left;font-size:13px;line-height:1.8;"></div>
+      <div class="btn-row" style="justify-content:center;margin-top:1rem">
+        <button class="btn btn-green" id="ro-mail-btn" style="width:100%;justify-content:center;height:44px;" onclick="sendeReservationMail()"></button>
+      </div>
+      <div class="status-msg" id="ro-status"></div>
+      <div class="btn-row" style="justify-content:center;margin-top:0.75rem">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;height:44px;" onclick="zurueckZumStart()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          Weiter
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- FORM 1 -->
   <div class="screen" id="s-form1">
 
@@ -578,7 +598,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.20</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.21</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -801,6 +821,61 @@ function selectResKat(kat){
 }
 
 let RES_KUERZEL_BESTAETIGT=false;
+let RES_LETZTE=null;
+
+function zeigeReservationOk(data){
+  RES_LETZTE=data;
+  const personen=data.beifahrerName
+    ? `${data.fahrerName} (${data.fahrer}) und ${data.beifahrerName} (${data.beifahrer})`
+    : `${data.fahrerName} (${data.fahrer})`;
+  let html=`<strong>${data.typ}</strong><br>${data.fahrzeug}<br>${data.datum} · ${data.vonZeit}–${data.bisZeit}<br>${personen}`;
+  if(data.bemerkung) html+=`<br><em>${data.bemerkung}</em>`;
+  document.getElementById("ro-summary").innerHTML=html;
+
+  const kuerzelText=data.beifahrer?`${data.fahrer} und ${data.beifahrer}`:data.fahrer;
+  const btn=document.getElementById("ro-mail-btn");
+  btn.textContent=`Kalendereintrag an ${kuerzelText} senden`;
+  btn.disabled=false;
+
+  const st=document.getElementById("ro-status");
+  st.style.display="none"; st.className="status-msg"; st.textContent="";
+  show("s-reservation-ok");
+  window.scrollTo(0,0);
+}
+
+async function sendeReservationMail(){
+  if(!RES_LETZTE) return;
+  const btn=document.getElementById("ro-mail-btn");
+  const st=document.getElementById("ro-status");
+  btn.disabled=true;
+  st.style.display="block"; st.className="status-msg"; st.textContent="Wird gesendet…";
+  try{
+    const d=RES_LETZTE;
+    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({type:"sende_reservation_mail",
+        fahrer:d.fahrer,beifahrer:d.beifahrer,typ:d.typ,fahrzeug:d.fahrzeug,titel:d.titel,
+        datum:d.datum,vonZeit:d.vonZeit,bisZeit:d.bisZeit,vonIso:d.vonIso,bisIso:d.bisIso,
+        bemerkung:d.bemerkung})});
+    const antwort=await res.json();
+    if(antwort.ok){
+      st.className="status-msg ok-msg";
+      let txt=`Gesendet an ${antwort.gesendetAn.length} Empfänger.`;
+      if(antwort.ohneMail&&antwort.ohneMail.length) txt+=` Keine Adresse hinterlegt für: ${antwort.ohneMail.join(", ")}.`;
+      st.textContent=txt;
+    } else if(antwort.error==="KEINE_EMAIL"){
+      st.className="status-msg err-msg";
+      st.textContent="Keine E-Mail-Adressen hinterlegt.";
+      btn.disabled=false;
+    } else {
+      st.className="status-msg err-msg";
+      st.textContent="Fehler beim Senden."+(antwort.detail?" ("+antwort.detail+")":"");
+      btn.disabled=false;
+    }
+  }catch(e){
+    st.className="status-msg err-msg"; st.textContent="Fehler: "+e.message;
+    btn.disabled=false;
+  }
+}
 
 function resKuerzelZurueck(){
   document.getElementById("res-kuerzel-warn-bg").style.display="none";
@@ -848,10 +923,10 @@ async function reservierungAbsenden(){
         von:`${datum}T${von}:00`,bis:`${datum}T${bis}:00`})});
     const data=await res.json();
     if(data.ok){
-      st.className="status-msg ok-msg";
-      st.textContent=`Reserviert: ${data.titel} · ${data.von}–${data.bis}`;
+      st.style.display="none"; st.textContent="";
       document.getElementById("r-bemerkung").value="";
       RES_KUERZEL_BESTAETIGT=false;
+      zeigeReservationOk(data);
     } else if(data.error==="KUERZEL_UNBEKANNT"){
       const liste=(data.unbekannt||[]).join(", ");
       document.getElementById("res-kuerzel-warn-text").textContent=
@@ -1726,7 +1801,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.20`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.21`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
