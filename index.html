@@ -576,7 +576,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.18</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.19</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -757,6 +757,7 @@ async function zeigeReservation(){
   document.getElementById("r-bis").value=`${p2(bis.getHours())}:${p2(bis.getMinutes())}`;
   const st=document.getElementById("r-status");
   st.style.display="none"; st.className="status-msg"; st.textContent="";
+  RES_KUERZEL_BESTAETIGT=false;
   const dEl=document.getElementById("r-datum");
   if(!dEl.dataset.gebunden){ dEl.addEventListener("change",pruefeSonntag); dEl.dataset.gebunden="1"; }
   pruefeSonntag();
@@ -773,6 +774,22 @@ function selectResKat(kat){
   const sel=document.getElementById("r-fahrzeug");
   sel.innerHTML='<option value="">– wählen –</option>'+liste.map(f=>`<option>${f}</option>`).join("");
   document.getElementById("r-fahrzeug-wrap").style.display="block";
+}
+
+let RES_KUERZEL_BESTAETIGT=false;
+
+function resKuerzelZurueck(){
+  document.getElementById("res-kuerzel-warn-bg").style.display="none";
+  RES_KUERZEL_BESTAETIGT=false;
+  document.getElementById("btn-reservieren").disabled=false;
+  const st=document.getElementById("r-status");
+  st.style.display="none"; st.textContent="";
+}
+
+function resKuerzelWeiter(){
+  document.getElementById("res-kuerzel-warn-bg").style.display="none";
+  RES_KUERZEL_BESTAETIGT=true;
+  reservierungAbsenden();
 }
 
 async function reservierungAbsenden(){
@@ -803,16 +820,20 @@ async function reservierungAbsenden(){
   try{
     const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
       body:JSON.stringify({type:"reservieren",fahrzeug,fahrer,beifahrer,bemerkung,typ,
+        kuerzelBestaetigt:RES_KUERZEL_BESTAETIGT,
         von:`${datum}T${von}:00`,bis:`${datum}T${bis}:00`})});
     const data=await res.json();
     if(data.ok){
       st.className="status-msg ok-msg";
       st.textContent=`Reserviert: ${data.titel} · ${data.von}–${data.bis}`;
       document.getElementById("r-bemerkung").value="";
+      RES_KUERZEL_BESTAETIGT=false;
     } else if(data.error==="KUERZEL_UNBEKANNT"){
-      st.className="status-msg err-msg";
-      st.textContent=`Kürzel nicht gefunden: ${(data.unbekannt||[]).join(", ")}`;
-      btn.disabled=false;
+      const liste=(data.unbekannt||[]).join(", ");
+      document.getElementById("res-kuerzel-warn-text").textContent=
+        `Folgende Kürzel sind nicht in der Mitgliederliste: ${liste}. Trotzdem reservieren?`;
+      document.getElementById("res-kuerzel-warn-bg").style.display="flex";
+      st.style.display="none"; st.textContent="";
     } else if(data.error==="SONNTAG"){
       st.className="status-msg err-msg";
       st.textContent="Keine Fahrtrainings am Sonntag.";
@@ -1681,7 +1702,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.18`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.19`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
@@ -1765,6 +1786,17 @@ document.addEventListener("DOMContentLoaded",()=>{
     <div style="display:flex;gap:8px;margin-top:1rem;">
       <button class="btn" style="flex:1;justify-content:center;" onclick="fahrzeitAnpassen()">Zeit anpassen</button>
       <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="fahrzeitBestaetigen()">Bestätigen</button>
+    </div>
+  </div>
+</div>
+
+<div class="info-modal-bg" id="res-kuerzel-warn-bg">
+  <div class="info-modal">
+    <h3>Kürzel nicht gefunden</h3>
+    <p id="res-kuerzel-warn-text"></p>
+    <div style="display:flex;gap:8px;margin-top:1rem;">
+      <button class="btn" style="flex:1;justify-content:center;" onclick="resKuerzelZurueck()">Zurück</button>
+      <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="resKuerzelWeiter()">Weiter</button>
     </div>
   </div>
 </div>
