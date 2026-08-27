@@ -600,7 +600,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.25</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.26</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -610,6 +610,7 @@ let FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
 let STUETZPUNKT_FAHRZEUGE=["PIF","ULF","OC","SVF","PTF 2/3"];
 let KEIN_FAHRTRAINING=[];
 let HANDGESCHALTET=[];
+let UEBUNG_TERMINE=[], UEBUNG_GESPERRT=[];
 
 /** Anzeigename mit Zusatz – der Wert im Feld bleibt der reine Fahrzeugname */
 function fahrzeugLabel(name){
@@ -674,6 +675,7 @@ function anwendenInitDaten(dataRaw){
   if(dataRaw.stuetzpunkt) STUETZPUNKT_FAHRZEUGE=dataRaw.stuetzpunkt;
   if(dataRaw.keinFahrtraining) KEIN_FAHRTRAINING=dataRaw.keinFahrtraining;
   if(dataRaw.handgeschaltet) HANDGESCHALTET=dataRaw.handgeschaltet;
+  ladeUebungsbetrieb();
   FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
 }
 
@@ -977,7 +979,10 @@ async function reservierungAbsenden(){
       btn.disabled=false;
     } else if(data.error==="BELEGT"){
       st.className="status-msg err-msg";
-      st.textContent=`${fahrzeug} ist in diesem Zeitraum bereits belegt (${data.belegtVon}–${data.belegtBis}, ${data.belegtDurch}).`;
+      st.textContent = data.anderesFahrzeug
+        ? `Zur gleichen Zeit ist bereits ${data.anderesFahrzeug} reserviert (${data.belegtVon}–${data.belegtBis}). `
+          +`Es darf immer nur eines der Fahrzeuge ${data.gruppe} unterwegs sein, damit die Einsatzbereitschaft bleibt.`
+        : `${fahrzeug} ist in diesem Zeitraum bereits belegt (${data.belegtVon}–${data.belegtBis}, ${data.belegtDurch}).`;
       btn.disabled=false;
     } else if(data.error==="ZEIT_REIHENFOLGE"){
       st.className="status-msg err-msg"; st.textContent="Die Bis-Zeit muss nach der Von-Zeit liegen."; btn.disabled=false;
@@ -1022,6 +1027,39 @@ function selectGebiet(val){
 
 let PENDING_WEITER=null;
 
+async function ladeUebungsbetrieb(){
+  try{
+    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({type:"lade_uebungsbetrieb"})});
+    const d=await res.json();
+    if(d.ok){ UEBUNG_TERMINE=d.termine||[]; UEBUNG_GESPERRT=d.gesperrt||[]; }
+  }catch(e){ console.warn("Übungsbetrieb:",e); }
+}
+
+/** Läuft zum gewählten Zeitpunkt Übungsbetrieb? */
+function uebungZurZeit(datum,zeit){
+  if(!datum||UEBUNG_TERMINE.length===0) return null;
+  const start=new Date(`${datum}T${zeit||"00:00"}:00`).getTime();
+  if(isNaN(start)) return null;
+  return UEBUNG_TERMINE.find(t=>start>=t.von&&start<t.bis)||null;
+}
+
+function pruefeUebungsbetrieb(){
+  const fzg=document.getElementById("f-fahrzeug").value;
+  const datum=document.getElementById("f-datum").value;
+  const zeit=document.getElementById("f-abfahrt").value;
+  if(!fzg||!UEBUNG_GESPERRT.includes(fzg)) return true;
+  const termin=uebungZurZeit(datum,zeit);
+  if(!termin) return true;
+  const bis=new Date(termin.bis);
+  const p2=n=>String(n).padStart(2,"0");
+  document.getElementById("uebung-text").textContent=
+    `Zu dieser Zeit läuft Übungsbetrieb (bis ${p2(bis.getHours())}:${p2(bis.getMinutes())} Uhr). `
+    +`${UEBUNG_GESPERRT.join(", ")} stehen für Fahrtrainings nicht zur Verfügung.`;
+  document.getElementById("uebung-bg").style.display="flex";
+  return false;
+}
+
 function pruefeFahrzeugFreigabe(){
   const fzg=document.getElementById("f-fahrzeug").value;
   const hinweis=document.getElementById("fzg-gesperrt");
@@ -1046,6 +1084,7 @@ function weiter(){
   if(!fa||!bf||!dat||!abf||!fzg||!fahrt||!aufbau||!selectedKat||(needsGebiet&&!selectedGebiet)){err.style.display="block";return;}
   err.style.display="none";
   if(!pruefeFahrzeugFreigabe()){ window.scrollTo(0,0); return; }
+  if(!pruefeUebungsbetrieb()) return;
 
   // Kürzel-Check gegen Mitgliederliste (nur wenn Liste geladen ist)
   if(Object.keys(MITGLIEDER).length>0){
@@ -1853,7 +1892,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.25`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.26`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
@@ -1937,6 +1976,16 @@ document.addEventListener("DOMContentLoaded",()=>{
     <div style="display:flex;gap:8px;margin-top:1rem;">
       <button class="btn" style="flex:1;justify-content:center;" onclick="fahrzeitAnpassen()">Zeit anpassen</button>
       <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="fahrzeitBestaetigen()">Bestätigen</button>
+    </div>
+  </div>
+</div>
+
+<div class="info-modal-bg" id="uebung-bg">
+  <div class="info-modal">
+    <h3>Übungsbetrieb</h3>
+    <p id="uebung-text"></p>
+    <div style="margin-top:1rem;">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="document.getElementById('uebung-bg').style.display='none'">Verstanden</button>
     </div>
   </div>
 </div>
