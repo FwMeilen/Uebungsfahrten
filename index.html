@@ -600,7 +600,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.26</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.27</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -787,9 +787,11 @@ async function ladeResTypen(){
       if(f.stuetzpunkt) STUETZPUNKT_FAHRZEUGE=f.stuetzpunkt;
       if(f.handgeschaltet) HANDGESCHALTET=f.handgeschaltet;
       if(f.keinFahrtraining) KEIN_FAHRTRAINING=f.keinFahrtraining;
+      if(f.uebungGesperrt) UEBUNG_GESPERRT=f.uebungGesperrt;
       FAHRZEUGE=[...FAHRZEUGE_B,...FAHRZEUGE_C];
     }
   }catch(e){console.warn("Fahrzeuge:",e);}
+  if(UEBUNG_TERMINE.length===0) await ladeUebungsbetrieb();
   const sel=document.getElementById("r-typ");
   sel.innerHTML=RES_TYPEN.map(t=>`<option>${t}</option>`).join("");
   resTypGeaendert();
@@ -799,6 +801,30 @@ function resTypGeaendert(){
   const typ=document.getElementById("r-typ").value;
   document.getElementById("r-bemerkung-wrap").style.display = typ==="Fahrtraining" ? "none" : "block";
   pruefeSonntag();
+  pruefeResUebung();
+}
+
+function pruefeResUebung(){
+  const typ=document.getElementById("r-typ").value;
+  const fzg=document.getElementById("r-fahrzeug").value;
+  const datum=document.getElementById("r-datum").value;
+  const von=document.getElementById("r-von").value;
+  const bis=document.getElementById("r-bis").value;
+  const st=document.getElementById("r-status");
+  if(typ!=="Fahrtraining"||!fzg||!datum||!von||!bis) return true;
+  if(!UEBUNG_GESPERRT.includes(fzg)) return true;
+  const a=new Date(`${datum}T${von}:00`).getTime();
+  const b=new Date(`${datum}T${bis}:00`).getTime();
+  if(isNaN(a)||isNaN(b)) return true;
+  const treffer=UEBUNG_TERMINE.find(t=>t.von<b&&t.bis>a);
+  if(!treffer) return true;
+  const p2=n=>String(n).padStart(2,"0");
+  const tv=new Date(treffer.von), tb=new Date(treffer.bis);
+  st.style.display="block"; st.className="status-msg err-msg";
+  st.textContent=`In diesem Zeitraum läuft Übungsbetrieb (${treffer.titel||"Übungsbetrieb"}, `
+    +`${p2(tv.getHours())}:${p2(tv.getMinutes())}–${p2(tb.getHours())}:${p2(tb.getMinutes())}). `
+    +`${fzg} steht dann für Fahrtrainings nicht zur Verfügung.`;
+  return false;
 }
 
 function pruefeSonntag(){
@@ -838,7 +864,14 @@ async function zeigeReservation(){
   st.style.display="none"; st.className="status-msg"; st.textContent="";
   RES_KUERZEL_BESTAETIGT=false;
   const dEl=document.getElementById("r-datum");
-  if(!dEl.dataset.gebunden){ dEl.addEventListener("change",pruefeSonntag); dEl.dataset.gebunden="1"; }
+  if(!dEl.dataset.gebunden){
+    dEl.addEventListener("change",()=>{pruefeSonntag();pruefeResUebung();});
+    ["r-von","r-bis","r-fahrzeug"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.addEventListener("change",pruefeResUebung);
+    });
+    dEl.dataset.gebunden="1";
+  }
   pruefeSonntag();
   show("s-reservation");
   window.scrollTo(0,0);
@@ -949,6 +982,7 @@ async function reservierungAbsenden(){
     return;
   }
   if(pruefeSonntag()) return;
+  if(!pruefeResUebung()) return;
 
   btn.disabled=true;
   st.className="status-msg"; st.textContent="Wird geprüft…";
@@ -969,6 +1003,13 @@ async function reservierungAbsenden(){
         `Folgende Kürzel sind nicht in der Mitgliederliste: ${liste}. Trotzdem reservieren?`;
       document.getElementById("res-kuerzel-warn-bg").style.display="flex";
       st.style.display="none"; st.textContent="";
+    } else if(data.error==="UEBUNGSBETRIEB"){
+      st.className="status-msg err-msg";
+      st.textContent=`In diesem Zeitraum läuft Übungsbetrieb (${data.uebungTitel}, `
+        +`${data.uebungVon}–${data.uebungBis}). `
+        +`${(data.gesperrt||[]).join(", ")} stehen dann für Fahrtrainings nicht zur Verfügung. `
+        +`Für andere Zwecke kannst du den Typ wechseln.`;
+      btn.disabled=false;
     } else if(data.error==="SONNTAG"){
       st.className="status-msg err-msg";
       st.textContent="Keine Fahrtrainings am Sonntag.";
@@ -1892,7 +1933,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.26`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.27`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
