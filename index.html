@@ -169,6 +169,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <p>Lädt neue Fahrt…</p>
 </div>
 
+<div class="init-overlay" id="fragen-overlay" style="display:none">
+  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#CC0000" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
+  <p>Fragen werden geladen…</p>
+</div>
+
 <div class="site-header">
   <div class="site-header-inner">
     <img src="https://www.feuerwehr-meilen.ch/fileadmin/Public/Website/Templates/Images/Logo-FeuerwehrMeilen.png" alt="Stützpunktfeuerwehr Meilen" style="height:38px;width:auto;object-fit:contain;">
@@ -600,7 +605,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.28</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.29</div>
 
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
@@ -666,8 +671,7 @@ function anwendenInitDaten(dataRaw){
     result[key].push({str,nr,plz:plz||GEMEINDE_INFO[key].plz,ort:ort||GEMEINDE_INFO[key].name});
   }
   ADRESSEN=result;
-  FRAGEN=dataRaw.fragen||{};
-  FRAGEN_ALLGEMEIN=dataRaw.fragenAllgemein||[];
+  // Fahrzeugfragen kommen erst nach, sobald das Fahrzeug feststeht
   EINSAETZE=dataRaw.einsaetze||[];
   MITGLIEDER=dataRaw.mitglieder||{};
   if(dataRaw.fahrzeugeB&&dataRaw.fahrzeugeB.length) FAHRZEUGE_B=dataRaw.fahrzeugeB;
@@ -687,6 +691,32 @@ function vollerName(kuerzel){
 let ADRESSEN={};
 let FRAGEN={};
 let FRAGEN_ALLGEMEIN=[];
+let FRAGEN_LAEUFT=null;
+
+/**
+ * Fragen für ein Fahrzeug nachladen.
+ * Wird angestossen sobald das Fahrzeug feststeht, damit sie bereit sind,
+ * wenn die Abfrage startet. Mehrfachaufrufe teilen sich denselben Vorgang.
+ */
+function ladeFragen(fzg){
+  if(!fzg) return Promise.resolve();
+  if(FRAGEN[fzg]) return Promise.resolve();
+  if(FRAGEN_LAEUFT && FRAGEN_LAEUFT.fzg===fzg) return FRAGEN_LAEUFT.p;
+  const p=(async()=>{
+    try{
+      const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify({type:"lade_fragen",fahrzeug:fzg})});
+      const d=await res.json();
+      if(d.ok){
+        FRAGEN[fzg]=d.fragen||[];
+        if((d.fragenAllgemein||[]).length) FRAGEN_ALLGEMEIN=d.fragenAllgemein;
+      }
+    }catch(e){ console.warn("Fragen laden:",e); }
+    finally{ FRAGEN_LAEUFT=null; }
+  })();
+  FRAGEN_LAEUFT={fzg,p};
+  return p;
+}
 let ST={};
 let selectedGebiet="";
 let QPOOL=[],QIDX=0;
@@ -1049,7 +1079,10 @@ function selectKat(kat){
     +list.map(f=>`<option value="${f}">${fahrzeugLabel(f)}</option>`).join("");
   document.getElementById("fahrzeug-wrap").style.display="block";
   if(!sel.dataset.freigabeGebunden){
-    sel.addEventListener("change",pruefeFahrzeugFreigabe);
+    sel.addEventListener("change",()=>{
+      pruefeFahrzeugFreigabe();
+      if(sel.value) ladeFragen(sel.value);   // im Hintergrund vorbereiten
+    });
     sel.dataset.freigabeGebunden="1";
   }
   pruefeFahrzeugFreigabe();
@@ -1361,9 +1394,15 @@ function keineFragenWeiter(){
 }
 
 /* ── Abfrage ── */
-function starteAbfrage(){
-  // Versuche exakten Namen, dann ohne Leerzeichen/Sonderzeichen
+async function starteAbfrage(){
   const fzg=ST.fahrzeug;
+  // Falls die Fragen noch nicht da sind: jetzt holen
+  if(!FRAGEN[fzg]){
+    const ov=document.getElementById("fragen-overlay");
+    if(ov) ov.style.display="flex";
+    await ladeFragen(fzg);
+    if(ov) ov.style.display="none";
+  }
   let pool=FRAGEN[fzg]||[];
   // Fallback: suche nach ähnlichem Key
   if(pool.length===0){
@@ -1948,7 +1987,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.28`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.29`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
