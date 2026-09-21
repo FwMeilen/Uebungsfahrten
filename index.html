@@ -315,6 +315,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <select id="f-fahrzeug">
           <option value="">– wählen –</option>
         </select>
+        <div id="fzg-reservation" style="display:none;padding:0.65rem 1rem;margin-top:0.6rem;font-size:13px;font-weight:600;line-height:1.5"></div>
         <div id="fzg-gesperrt" style="display:none;background:var(--red-light);border-left:3px solid var(--red);
           padding:0.75rem 1rem;margin-top:0.6rem;font-size:13px;font-weight:600;color:var(--red-dark);line-height:1.5"></div>
       </div>
@@ -605,7 +606,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.32</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.33</div>
 
 <script>
 /* ── Netzwerk-Baustein für alle MWD-Seiten ──
@@ -1205,6 +1206,11 @@ function selectKat(kat){
     sel.addEventListener("change",()=>{
       pruefeFahrzeugFreigabe();
       if(sel.value) ladeFragen(sel.value);   // im Hintergrund vorbereiten
+      resPruefenSpaeter();
+    });
+    ["f-datum","f-abfahrt","f-fahrer","f-beifahrer"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.addEventListener("change",resPruefenSpaeter);
     });
     sel.dataset.freigabeGebunden="1";
   }
@@ -1310,7 +1316,140 @@ function kuerzelWarnOk(){
   }
 }
 
-function weiterFortsetzen(fa,bf,dat,abf,fzg,fahrt,aufbau,needsGebiet){
+/* ── Reservation beim Start prüfen ──
+ * Eigene Reservation → weiter. Fremd belegt → gesperrt.
+ * Keine Reservation → Rückfrage, auf Wunsch wird reserviert.
+ * SESSION_RES merkt sich den Eintrag dieser Sitzung, damit er nach einem
+ * Fahrerwechsel als eigener gilt und beim Abschluss angepasst werden kann.
+ */
+let SESSION_RES=null, SONNTAG_OK=false, PENDING_START=null, RES_PRUEF_UHR=null;
+const zweiStellig=n=>String(n).padStart(2,"0");
+
+function resAnzeigen(r){
+  const el=document.getElementById("fzg-reservation");
+  if(!el) return;
+  if(!r){ el.style.display="none"; return; }
+  const farbe=(bg,rand,schrift)=>{ el.style.background=bg; el.style.borderLeft="3px solid "+rand; el.style.color=schrift; };
+  el.style.display="block";
+  if(r.status==="eigen"){
+    farbe("var(--green-light)","var(--green)","var(--green)");
+    el.textContent=`Deine Reservation ${r.eigen.von}–${r.eigen.bis} gefunden ✓`;
+  } else if(r.status==="besetzt"){
+    farbe("var(--red-light)","var(--red)","var(--red-dark)");
+    const b=r.besetzt;
+    el.textContent = b.fahrzeug!==document.getElementById("f-fahrzeug").value
+      ? `Zur gleichen Zeit ist ${b.fahrzeug} reserviert (${b.von}–${b.bis}, ${(b.kuerzel||[]).join("/")}). Es darf nur ein Fahrzeug der Gruppe ${r.gruppe} gleichzeitig unterwegs sein.`
+      : `${b.fahrzeug} ist ${b.von}–${b.bis} reserviert (${(b.kuerzel||[]).join("/")}) und steht nicht zur Verfügung.`;
+  } else {
+    farbe("var(--bg2)","var(--gray-mid)","var(--text2)");
+    el.textContent=`Keine Reservation gefunden (${r.von}–${r.bis}) – beim Start kannst du gleich reservieren.`;
+  }
+}
+
+function resEingaben(){
+  const v=id=>document.getElementById(id).value;
+  return {fahrzeug:v("f-fahrzeug"), datum:v("f-datum"), abfahrt:v("f-abfahrt"),
+    fahrer:v("f-fahrer").trim().toUpperCase(), beifahrer:v("f-beifahrer").trim().toUpperCase(),
+    eigeneId:SESSION_RES?SESSION_RES.id:""};
+}
+
+/** Beim Ausfüllen: Verfügbarkeit im Hintergrund anzeigen */
+function resPruefenSpaeter(){
+  clearTimeout(RES_PRUEF_UHR);
+  RES_PRUEF_UHR=setTimeout(async()=>{
+    const e=resEingaben();
+    if(!e.fahrzeug||!e.datum||!e.abfahrt){ resAnzeigen(null); return; }
+    try{
+      const r=await fwAufruf(SHEETS_URL,Object.assign({type:"ft_verfuegbarkeit"},e),{seite:"Fahrtraining",still:true});
+      const jetzt=resEingaben();
+      if(r.ok&&jetzt.fahrzeug===e.fahrzeug&&jetzt.datum===e.datum&&jetzt.abfahrt===e.abfahrt) resAnzeigen(r);
+    }catch(x){ /* still – beim Start wird ohnehin nochmals geprüft */ }
+  },400);
+}
+
+async function weiterFortsetzen(fa,bf,dat,abf,fzg,fahrt,aufbau,needsGebiet){
+  const args=[fa,bf,dat,abf,fzg,fahrt,aufbau,needsGebiet];
+  // Sonntag: Hinweis, der sich übergehen lässt
+  if(new Date(dat+"T12:00:00").getDay()===0&&!SONNTAG_OK){
+    PENDING_START=args;
+    document.getElementById("sonntag-bg").style.display="flex";
+    return;
+  }
+  const ov=document.getElementById("fragen-overlay");
+  const ovText=ov?ov.querySelector("p"):null, altText=ovText?ovText.textContent:"";
+  if(ov){ if(ovText) ovText.textContent="Reservation wird geprüft…"; ov.style.display="flex"; }
+  let r;
+  try{ r=await fwAufruf(SHEETS_URL,Object.assign({type:"ft_verfuegbarkeit"},resEingaben()),{seite:"Fahrtraining"}); }
+  catch(e){ r=null; }
+  finally{ if(ov){ ov.style.display="none"; if(ovText) ovText.textContent=altText; } }
+  if(!r||!r.ok){
+    alert("Die Reservation konnte nicht geprüft werden. Bitte nochmals «Weiter» drücken.");
+    return;
+  }
+  resAnzeigen(r);
+  if(r.status==="besetzt"){
+    document.getElementById("fzg-reservation").scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  if(r.status==="eigen"){
+    if(r.eigen.auto&&SESSION_RES&&r.eigen.id===SESSION_RES.id){
+      // Fahrerwechsel: Kürzel ergänzen und Block mindestens bis zur neuen Standarddauer verlängern
+      const bis=new Date(new Date(dat+"T"+abf+":00").getTime()+r.dauerMin*60000);
+      fwAufruf(SHEETS_URL,{type:"ft_reservation_anpassen",eventId:SESSION_RES.id,kuerzel:[fa,bf],
+        bisMindestens:bis.toISOString()},{seite:"Fahrtraining",still:true}).catch(()=>{});
+    } else if(!SESSION_RES){
+      SESSION_RES={id:r.eigen.id,auto:r.eigen.auto};
+    }
+    weiterStarten(...args);
+    return;
+  }
+  // Frei: nachfragen
+  PENDING_START=args;
+  document.getElementById("res-frage-text").textContent=
+    `${fahrzeugLabel(fzg)} · ${dat.split("-").reverse().join(".")} · ${r.von}–${r.bis} · ${fa}${bf?"/"+bf:""}`;
+  document.getElementById("res-frage-status").style.display="none";
+  document.getElementById("res-frage-ok").disabled=false;
+  document.getElementById("res-frage-bg").style.display="flex";
+}
+
+function resFrageZurueck(){
+  document.getElementById("res-frage-bg").style.display="none";
+  PENDING_START=null;
+}
+
+async function resFrageOk(){
+  const btn=document.getElementById("res-frage-ok"), st=document.getElementById("res-frage-status");
+  btn.disabled=true;
+  st.style.display="block"; st.style.color="var(--text2)"; st.textContent="Wird reserviert…";
+  const [fa,bf,dat,abf,fzg]=PENDING_START;
+  try{
+    const r=await fwAufruf(SHEETS_URL,{type:"ft_reservieren",fahrzeug:fzg,datum:dat,abfahrt:abf,fahrer:fa,beifahrer:bf},{seite:"Fahrtraining"});
+    if(r.ok){
+      SESSION_RES={id:r.eventId,auto:!r.vorhanden};
+      document.getElementById("res-frage-bg").style.display="none";
+      resAnzeigen({status:"eigen",eigen:{von:r.von,bis:r.bis}});
+      const args=PENDING_START; PENDING_START=null;
+      weiterStarten(...args);
+    } else if(r.error==="BELEGT"){
+      document.getElementById("res-frage-bg").style.display="none";
+      resAnzeigen({status:"besetzt",besetzt:r.besetzt,gruppe:r.gruppe});
+      PENDING_START=null;
+    } else {
+      st.style.color="var(--red-dark)"; st.textContent="Reservieren hat nicht geklappt. Bitte nochmals versuchen.";
+      btn.disabled=false;
+    }
+  }catch(e){ st.style.color="var(--red-dark)"; st.textContent=e.message; btn.disabled=false; }
+}
+
+function sonntagZurueck(){ document.getElementById("sonntag-bg").style.display="none"; PENDING_START=null; }
+function sonntagWeiter(){
+  document.getElementById("sonntag-bg").style.display="none";
+  SONNTAG_OK=true;
+  const a=PENDING_START; PENDING_START=null;
+  if(a) weiterFortsetzen(...a);
+}
+
+function weiterStarten(fa,bf,dat,abf,fzg,fahrt,aufbau,needsGebiet){
   ST={fahrer:fa,beifahrer:bf,datum:dat,abfahrt:abf,fahrzeug:fzg,fahrt,aufbau,
       gebiet:needsGebiet?selectedGebiet:"orts",einsatzAddr:null,einsatzAddrListe:[],quizResults:[],taetigkeitResults:[],einsatzCount:0,einsatzZeit:null,einsatzAddrObj:null,vonAbfrage:false,fahrzeitBestaetigt:false};
   if(fahrt==="frei"){
@@ -1904,6 +2043,14 @@ async function abschliessenSpeichern(rk){
   statusEl.style.display="block";statusEl.textContent="Wird gespeichert…";
   try{
     await speichereAktuelleFahrtUndErzeugePDF(rk);
+    // Automatisch angelegten Block auf die tatsächliche Rückkehr kürzen bzw. verlängern
+    if(SESSION_RES&&SESSION_RES.auto){
+      let tag=ST.datum;
+      if(rk<ST.abfahrt){ const d=new Date(ST.datum+"T12:00:00"); d.setDate(d.getDate()+1);
+        tag=`${d.getFullYear()}-${zweiStellig(d.getMonth()+1)}-${zweiStellig(d.getDate())}`; }
+      fwAufruf(SHEETS_URL,{type:"ft_reservation_anpassen",eventId:SESSION_RES.id,
+        ende:new Date(tag+"T"+rk+":00").toISOString()},{seite:"Fahrtraining",still:true}).catch(()=>{});
+    }
     const stufeLabel=["","✓ Ohne weiteres","⚠ Nachgeschaut","✗ Nicht gelöst"];
     const taetList=ST.taetigkeitResults||[];
     let summaryHtml=`<strong>${ST.fahrer} / ${ST.beifahrer}</strong> · ${fahrzeugLabel(ST.fahrzeug)} · ${gl}<br>${ST.datum} · ${ST.abfahrt}–${rk}`;
@@ -2102,13 +2249,14 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.32`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.33`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
 }
 
 function neustart(){
+  SESSION_RES=null; SONNTAG_OK=false; resAnzeigen(null);
   SESSION_PDFS=[];
   selectedGebiet="";selectedKat="";
   document.getElementById("rc-kat-b").classList.remove("selected");
@@ -2186,6 +2334,30 @@ document.addEventListener("DOMContentLoaded",()=>{
     <div style="display:flex;gap:8px;margin-top:1rem;">
       <button class="btn" style="flex:1;justify-content:center;" onclick="fahrzeitAnpassen()">Zeit anpassen</button>
       <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="fahrzeitBestaetigen()">Bestätigen</button>
+    </div>
+  </div>
+</div>
+
+<div class="info-modal-bg" id="res-frage-bg">
+  <div class="info-modal">
+    <h3>Keine Reservation gefunden</h3>
+    <p>Sollen wir das Fahrzeug gleich reservieren?</p>
+    <p id="res-frage-text" style="font-weight:700;color:var(--text);margin-top:.5rem"></p>
+    <div id="res-frage-status" style="display:none;font-size:13px;margin-top:.6rem"></div>
+    <div style="display:flex;gap:10px;margin-top:1rem;">
+      <button class="btn" style="flex:1;justify-content:center;" onclick="resFrageZurueck()">Zurück</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" id="res-frage-ok" onclick="resFrageOk()">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="info-modal-bg" id="sonntag-bg">
+  <div class="info-modal">
+    <h3>Sonntag</h3>
+    <p>Heute sind Übungsfahrten nicht erwünscht.</p>
+    <div style="display:flex;gap:10px;margin-top:1rem;">
+      <button class="btn" style="flex:1;justify-content:center;" onclick="sonntagZurueck()">Zurück</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="sonntagWeiter()">Ignorieren und trotzdem weiter</button>
     </div>
   </div>
 </div>
