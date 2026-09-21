@@ -605,8 +605,106 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.29</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.30</div>
 
+<script>
+/* ── Netzwerk: geduldige Wiederholung (gemeinsam für alle MWD-Seiten) ──
+ * Google liefert gelegentlich eine Fehlerseite statt Daten, vor allem beim
+ * Kaltstart. fwAufruf() wiederholt dann mit wachsenden Pausen (bis ca. 15 s),
+ * zeigt «Server startet …» und fragt erst danach, ob erneut versucht werden soll.
+ * Jeder Aufruf erhält eine Kennung, damit eine Wiederholung auf dem Server
+ * nichts doppelt schreibt. Wiederholungen werden fürs Aussetzer-Protokoll gemeldet.
+ */
+(function(){
+  const PAUSEN=[0,1000,2000,4000,8000];
+  const MELDE_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
+  let aktiv=0, entscheid=null;
+
+  function banner(){
+    let b=document.getElementById("fw-netz-banner");
+    if(!b){
+      b=document.createElement("div");
+      b.id="fw-netz-banner";
+      b.style.cssText="position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;max-width:92vw;"
+        +"color:#fff;font:600 13px 'Open Sans',Arial,sans-serif;padding:11px 16px;"
+        +"box-shadow:0 4px 18px rgba(0,0,0,.25);display:none;align-items:center;gap:12px;flex-wrap:wrap";
+      document.body.appendChild(b);
+    }
+    return b;
+  }
+  function zeigeWarten(){
+    if(entscheid) return;
+    const b=banner(); b.style.background="#1a1a1a";
+    b.textContent="⏳ Server startet, einen Moment …";
+    b.style.display="flex";
+  }
+  function verstecke(){
+    if(aktiv<=0&&!entscheid){ const b=document.getElementById("fw-netz-banner"); if(b) b.style.display="none"; }
+  }
+  function frageNochmals(){
+    if(entscheid) return entscheid;
+    entscheid=new Promise(resolve=>{
+      const b=banner(); b.style.background="#990000"; b.innerHTML="";
+      const t=document.createElement("span"); t.textContent="Server nicht erreichbar."; b.appendChild(t);
+      const knopf=(text,wert)=>{
+        const x=document.createElement("button"); x.textContent=text; x.type="button";
+        x.style.cssText="font:700 11px 'Open Sans',Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em;"
+          +"padding:7px 12px;border:2px solid #fff;cursor:pointer;background:"+(wert?"#fff":"transparent")
+          +";color:"+(wert?"#990000":"#fff");
+        x.onclick=()=>{ entscheid=null; b.style.display="none"; resolve(wert); };
+        b.appendChild(x);
+      };
+      knopf("Erneut versuchen",true); knopf("Schliessen",false);
+      b.style.display="flex";
+    });
+    return entscheid;
+  }
+  function melden(d){
+    try{
+      fetch(MELDE_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(Object.assign({type:"aussetzer_melden"},d))}).catch(()=>{});
+    }catch(e){}
+  }
+
+  /**
+   * @param url     Adresse des Apps Script
+   * @param payload Daten (Objekt)
+   * @param opts    {seite:"Name fürs Protokoll", still:true für Hintergrundaufrufe ohne Anzeige}
+   */
+  window.fwAufruf=async function(url,payload,opts){
+    opts=opts||{};
+    payload=Object.assign({},payload);
+    if(!payload.anfrageId) payload.anfrageId=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10);
+    const body=JSON.stringify(payload);
+    const aufruf=payload.type||payload.action||"";
+    const start=Date.now();
+    let versuche=0, zeigt=false;
+    while(true){
+      for(let i=0;i<PAUSEN.length;i++){
+        if(PAUSEN[i]) await new Promise(r=>setTimeout(r,PAUSEN[i]));
+        versuche++;
+        try{
+          const res=await fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body});
+          const text=await res.text();
+          try{
+            const daten=JSON.parse(text);
+            if(zeigt){ aktiv--; verstecke(); }
+            if(versuche>1) melden({seite:opts.seite||location.hostname,aufruf,versuche,dauerMs:Date.now()-start,erfolg:true});
+            return daten;
+          }catch(e){ console.warn("Keine gültige Antwort (Versuch "+versuche+"):",text.slice(0,200)); }
+        }catch(e){ console.warn("Netzwerkfehler (Versuch "+versuche+"):",e&&e.message); }
+        if(!zeigt&&!opts.still){ zeigt=true; aktiv++; zeigeWarten(); }
+      }
+      if(zeigt){ aktiv--; zeigt=false; }
+      melden({seite:opts.seite||location.hostname,aufruf,versuche,dauerMs:Date.now()-start,erfolg:false});
+      if(opts.still){ verstecke(); throw new Error("Server nicht erreichbar."); }
+      const nochmals=await frageNochmals();
+      if(!nochmals){ verstecke(); throw new Error("Server nicht erreichbar. Bitte später erneut versuchen."); }
+      zeigt=true; aktiv++; zeigeWarten();
+    }
+  };
+})();
+</script>
 <script>
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
 let FAHRZEUGE_B=["PTF 1/6","VA","PTF 4/7","PTF 2/3","OW"];
@@ -647,8 +745,7 @@ async function ladeInitDaten(){
     }
   }catch(e){}
   const ladeStart=Date.now();
-  const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"lade_init_daten"})});
-  const dataRaw=await res.json();
+  const dataRaw=await fwAufruf(SHEETS_URL,{type:"lade_init_daten"},{seite:"Fahrtraining"});
   if(dataRaw.dauerMs!=null){
     console.log(`Startdaten geladen: ${(dataRaw.dauerMs/1000).toFixed(2)}s Verarbeitung, `
       +`${((Date.now()-ladeStart)/1000).toFixed(2)}s gesamt`);
@@ -704,9 +801,7 @@ function ladeFragen(fzg){
   if(FRAGEN_LAEUFT && FRAGEN_LAEUFT.fzg===fzg) return FRAGEN_LAEUFT.p;
   const p=(async()=>{
     try{
-      const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-        body:JSON.stringify({type:"lade_fragen",fahrzeug:fzg})});
-      const d=await res.json();
+      const d=await fwAufruf(SHEETS_URL,{type:"lade_fragen",fahrzeug:fzg},{seite:"Fahrtraining"});
       if(d.ok){
         FRAGEN[fzg]=d.fragen||[];
         if((d.fragenAllgemein||[]).length) FRAGEN_ALLGEMEIN=d.fragenAllgemein;
@@ -802,15 +897,11 @@ let RES_TYPEN=["Fahrtraining","Übung","Reservation"];
 
 async function ladeResTypen(){
   try{
-    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({type:"lade_res_typen"})});
-    const d=await res.json();
+    const d=await fwAufruf(SHEETS_URL,{type:"lade_res_typen"},{seite:"Fahrtraining"});
     if(d.ok&&d.typen&&d.typen.length) RES_TYPEN=d.typen;
   }catch(e){console.warn("Reservationstypen:",e);}
   try{
-    const res2=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({type:"lade_fahrzeuge"})});
-    const f=await res2.json();
+    const f=await fwAufruf(SHEETS_URL,{type:"lade_fahrzeuge"},{seite:"Fahrtraining"});
     if(f.ok){
       if(f.b&&f.b.length) FAHRZEUGE_B=f.b;
       if(f.c&&f.c.length) FAHRZEUGE_C=f.c;
@@ -950,12 +1041,10 @@ async function sendeReservationMail(){
   st.style.display="block"; st.className="status-msg"; st.textContent="Wird gesendet…";
   try{
     const d=RES_LETZTE;
-    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({type:"sende_reservation_mail",
+    const antwort=await fwAufruf(SHEETS_URL,{type:"sende_reservation_mail",
         fahrer:d.fahrer,beifahrer:d.beifahrer,typ:d.typ,fahrzeug:d.fahrzeug,titel:d.titel,
         datum:d.datum,vonZeit:d.vonZeit,bisZeit:d.bisZeit,vonIso:d.vonIso,bisIso:d.bisIso,
-        bemerkung:d.bemerkung})});
-    const antwort=await res.json();
+        bemerkung:d.bemerkung},{seite:"Fahrtraining"});
     if(antwort.ok){
       st.className="status-msg ok-msg";
       let txt=`Gesendet an ${antwort.gesendetAn.length} Empfänger.`;
@@ -1017,11 +1106,9 @@ async function reservierungAbsenden(){
   btn.disabled=true;
   st.className="status-msg"; st.textContent="Wird geprüft…";
   try{
-    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({type:"reservieren",fahrzeug,fahrer,beifahrer,bemerkung,typ,
+    const data=await fwAufruf(SHEETS_URL,{type:"reservieren",fahrzeug,fahrer,beifahrer,bemerkung,typ,
         kuerzelBestaetigt:RES_KUERZEL_BESTAETIGT,
-        von:`${datum}T${von}:00`,bis:`${datum}T${bis}:00`})});
-    const data=await res.json();
+        von:`${datum}T${von}:00`,bis:`${datum}T${bis}:00`},{seite:"Fahrtraining"});
     if(data.ok){
       st.style.display="none"; st.textContent="";
       document.getElementById("r-bemerkung").value="";
@@ -1103,9 +1190,7 @@ let PENDING_WEITER=null;
 
 async function ladeUebungsbetrieb(){
   try{
-    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({type:"lade_uebungsbetrieb"})});
-    const d=await res.json();
+    const d=await fwAufruf(SHEETS_URL,{type:"lade_uebungsbetrieb"},{seite:"Fahrtraining",still:true});
     if(d.ok){ UEBUNG_TERMINE=d.termine||[]; UEBUNG_GESPERRT=d.gesperrt||[]; }
   }catch(e){ console.warn("Übungsbetrieb:",e); }
 }
@@ -1370,8 +1455,7 @@ async function einsatzVorOrtAbschliessen(){
       gemeinde:ad.ort,strasse:ad.str,nr:cleanNr(ad.nr),plz:ad.plz,ort:ad.ort,
       frageId:fq?fq.id:"",antwort:antwort||"",zufahrt:zufahrt||""
     };
-    try{await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});}
-    catch(e){console.warn("Rückmeldung Fehler:",e);}
+    fwAufruf(SHEETS_URL,payload,{seite:"Fahrtraining Rückmeldung",still:true}).catch(e=>console.warn("Rückmeldung:",e));
   }
   if(statusEl){statusEl.style.display="none";statusEl.textContent="";}
   show("s-nach-einsatz");
@@ -1749,8 +1833,7 @@ async function speichereAktuelleFahrtUndErzeugePDF(rk){
   const pct=total>0?Math.round(richtig/total*100):0;
   const gl=ST.gebiet==="stuetzpunkt"?"Stützpunktgebiet":"Ortsfeuerwehrgebiet";
   const hilfeText=(ST.taetigkeitResults||[]).filter(t=>t.stufe===3&&t.hilfe).map(t=>`${t.frage}: ${t.hilfe}`).join("\n");
-  await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({type:"alles",
+  await fwAufruf(SHEETS_URL,{type:"alles",
       fahrt:{datum:ST.datum,fahrer:ST.fahrer,beifahrer:ST.beifahrer,fahrzeug:ST.fahrzeug,
              fahrt:ST.fahrt,aufbau:ST.aufbau,gebiet:gl,abfahrt:ST.abfahrt,rueckkehr:rk,
              einsatzAddr:ST.einsatzAddr||"–",einsatzCount:ST.einsatzCount||0,
@@ -1762,8 +1845,7 @@ async function speichereAktuelleFahrtUndErzeugePDF(rk){
              frage:q.frage,gegeben:q.gegeben,korrekt:q.korrekt,richtig:q.richtig?"JA":"NEIN"})),
       taetigkeiten:(ST.taetigkeitResults||[]).map(t=>({datum:ST.datum,fahrer:ST.fahrer,fahrzeug:ST.fahrzeug,
              taetigkeit:t.frage,stufe:t.stufe,hilfe:t.hilfe||""}))
-    })
-  });
+    },{seite:"Fahrtraining Speichern"});
   ST.rueckkehr=rk;
   const pdfRes=baueGeneriertesPDF();
   if(pdfRes){
@@ -1771,8 +1853,7 @@ async function speichereAktuelleFahrtUndErzeugePDF(rk){
     SESSION_PDFS.push({kuerzel:ST.fahrer,label:`${vollerName(ST.fahrer)} · ${fahrzeugLabel(ST.fahrzeug)} · ${ST.abfahrt}–${rk}`,filename:pdfRes.filename,base64});
     // PDF im Drive archivieren (Fehler hier dürfen den Ablauf nicht blockieren)
     try{
-      await fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
-        body:JSON.stringify({type:"speichere_pdf",filename:pdfRes.filename,pdfBase64:base64})});
+      fwAufruf(SHEETS_URL,{type:"speichere_pdf",filename:pdfRes.filename,pdfBase64:base64},{seite:"Fahrtraining PDF",still:true}).catch(e=>console.warn("PDF-Archivierung:",e));
     }catch(e){console.warn("PDF-Archivierung fehlgeschlagen:",e);}
   }
 }
@@ -1839,9 +1920,7 @@ async function sendePdfPerMail(idx,btn){
   if(btn) btn.disabled=true;
   statusEl.style.display="block";statusEl.className="status-msg";statusEl.textContent="Wird gesendet…";
   try{
-    const res=await fetch(SHEETS_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({type:"sende_pdf_mail",kuerzel:p.kuerzel,filename:p.filename,pdfBase64:p.base64})});
-    const data=await res.json();
+    const data=await fwAufruf(SHEETS_URL,{type:"sende_pdf_mail",kuerzel:p.kuerzel,filename:p.filename,pdfBase64:p.base64},{seite:"Fahrtraining"});
     if(data.ok){
       statusEl.className="status-msg ok-msg";statusEl.textContent="Gesendet.";
     } else {
@@ -1987,7 +2066,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.29`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.30`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
