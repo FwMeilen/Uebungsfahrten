@@ -1382,6 +1382,8 @@ async function weiterFortsetzen(fa,bf,dat,abf,fzg,fahrt,aufbau,needsGebiet){
   try{ r=await fwAufruf(SHEETS_URL,Object.assign({type:"ft_verfuegbarkeit"},resEingaben()),{seite:"Fahrtraining"}); }
   catch(e){ r=null; }
   finally{ if(ov){ ov.style.display="none"; if(ovText) ovText.textContent=altText; } }
+  // Ältere Server-Version kennt die Prüfung noch nicht: ohne Prüfung starten statt sperren
+  if(r&&r.error==="UNBEKANNTER_AUFRUF"){ weiterStarten(...args); return; }
   if(!r||!r.ok){
     alert("Die Reservation konnte nicht geprüft werden. Bitte nochmals «Weiter» drücken.");
     return;
