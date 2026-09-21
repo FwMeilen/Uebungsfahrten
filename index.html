@@ -605,7 +605,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.31</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.32</div>
 
 <script>
 /* ── Netzwerk-Baustein für alle MWD-Seiten ──
@@ -886,8 +886,8 @@ async function init(){
     const addrCount=Object.values(ADRESSEN).reduce((s,a)=>s+a.length,0);
     if(addrCount===0) fehler.push("Adressen (Einsatzziele) – Sheet leer oder nicht erreichbar");
     if(EINSAETZE.length===0) fehler.push("Einsatzmeldungen – Sheet leer oder nicht erreichbar");
-    const fragenCount=Object.values(FRAGEN).reduce((s,a)=>s+a.length,0);
-    if(fragenCount===0) fehler.push("Abfrage-Fragen – Sheets leer oder nicht erreichbar");
+    // Fahrzeugfragen werden erst geladen, wenn das Fahrzeug feststeht –
+    // fehlen sie dann, meldet starteAbfrage() das mit einem eigenen Hinweis.
   }catch(e){console.warn("Init-Fehler:",e);fehler.push("Verbindungsfehler zum Server");}
   finally{
     hideOverlay();
@@ -2102,7 +2102,7 @@ function baueGeneriertesPDF(){
   y+=6;
   doc.setFontSize(8);
   doc.setTextColor(120,120,120);
-  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.31`,20,y);
+  doc.text(`Erstellt: ${new Date().toLocaleString("de-CH")} · CLv1.32`,20,y);
 
   const dateiname=`Fahrtraining_${ST.datum}_${ST.fahrer}.pdf`;
   return {doc,filename:dateiname};
