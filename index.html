@@ -687,7 +687,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           const res=await fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body});
           const text=await res.text();
           try{
-            const daten=JSON.parse(text);
+            // Ältere Server-Versionen antworten beim Speichern mit blossem «ok»
+            const daten = text.trim()==="ok" ? {ok:true} : JSON.parse(text);
             if(zeigt){ aktiv--; verstecke(); }
             if(versuche>1) melden({seite:opts.seite||location.hostname,aufruf,versuche,dauerMs:Date.now()-start,erfolg:true});
             return daten;
