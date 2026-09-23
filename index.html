@@ -624,7 +624,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.41</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.42</div>
 
 <script>
 /* ── Netzwerk-Baustein für alle MWD-Seiten (Stand W1.00) ──
@@ -2117,7 +2117,8 @@ async function speichereAktuelleFahrtUndErzeugePDF(rk){
   const pdfRes=baueGeneriertesPDF();
   if(pdfRes){
     const base64=pdfRes.doc.output("datauristring").split(",")[1];
-    SESSION_PDFS.push({kuerzel:ST.fahrer,label:`${vollerName(ST.fahrer)} · ${fahrzeugLabel(ST.fahrzeug)} · ${ST.abfahrt}–${rk}`,filename:pdfRes.filename,base64});
+    SESSION_PDFS.push({kuerzel:ST.fahrer,label:`${vollerName(ST.fahrer)} · ${fahrzeugLabel(ST.fahrzeug)} · ${ST.abfahrt}–${rk}`,filename:pdfRes.filename,base64,
+      fahrt:{fahrer:ST.fahrer,beifahrer:ST.beifahrer||"",fahrzeug:ST.fahrzeug,datum:ST.datum,abfahrt:ST.abfahrt,rueckkehr:rk}});
     // PDF im Drive archivieren (Fehler hier dürfen den Ablauf nicht blockieren)
     try{
       fwAufruf(SHEETS_URL,{type:"speichere_pdf",filename:pdfRes.filename,pdfBase64:base64},{seite:"Fahrtraining PDF",still:true}).catch(e=>console.warn("PDF-Archivierung:",e));
@@ -2195,7 +2196,7 @@ async function sendePdfPerMail(idx,btn){
   if(btn) btn.disabled=true;
   statusEl.style.display="block";statusEl.className="status-msg";statusEl.textContent="Wird gesendet…";
   try{
-    const data=await fwAufruf(SHEETS_URL,{type:"sende_pdf_mail",kuerzel:p.kuerzel,filename:p.filename,pdfBase64:p.base64},{seite:"Fahrtraining"});
+    const data=await fwAufruf(SHEETS_URL,{type:"sende_pdf_mail",kuerzel:p.kuerzel,filename:p.filename,pdfBase64:p.base64,fahrt:p.fahrt},{seite:"Fahrtraining"});
     if(data.ok){
       statusEl.className="status-msg ok-msg";statusEl.textContent="Gesendet.";
     } else {
