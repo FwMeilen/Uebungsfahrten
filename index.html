@@ -158,6 +158,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </head>
 <body>
 
+<div id="res-verwalten" style="display:none;max-width:640px;margin:2rem auto;padding:0 1rem">
+  <div class="card">
+    <h2 style="margin-top:0">Reservation ändern oder stornieren</h2>
+    <div id="rv-inhalt"><p>Wird geladen…</p></div>
+    <div class="status-msg" id="rv-status" style="display:none"></div>
+  </div>
+</div>
+
 <div class="init-overlay" id="init-overlay">
   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#CC0000" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-6.22-8.56"/></svg>
   <p id="init-msg">Wird geladen…</p>
@@ -606,7 +614,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.37</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.38</div>
 
 <script>
 /* ── Netzwerk-Baustein für alle MWD-Seiten (Stand W1.00) ──
@@ -803,6 +811,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 })();
 </script>
 <script>
+/* ── Reservation verwalten (Link aus der Bestätigungsmail) ── */
+const RV_TOKEN=new URLSearchParams(location.search).get("res")||"";
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbwvTL3yecdyTvSV5ZPgGslm5K-3UFjW9zc4A2qn_zUk50CcSIpXEaBE1hMiaU3GnNEQ/exec";
 let FAHRZEUGE_B=["PTF 1/6","VA","PTF 4/7","PTF 2/3","OW"];
 let FAHRZEUGE_C=["TLF","ADL","PIF","ULF","OC","SVF","MTF"];
@@ -1139,7 +1149,7 @@ async function sendeReservationMail(){
   try{
     const d=RES_LETZTE;
     const antwort=await fwAufruf(SHEETS_URL,{type:"sende_reservation_mail",
-        fahrer:d.fahrer,beifahrer:d.beifahrer,typ:d.typ,fahrzeug:d.fahrzeug,titel:d.titel,
+        fahrer:d.fahrer,beifahrer:d.beifahrer,typ:d.typ,fahrzeug:d.fahrzeug,titel:d.titel,eventId:d.eventId,
         datum:d.datum,vonZeit:d.vonZeit,bisZeit:d.bisZeit,vonIso:d.vonIso,bisIso:d.bisIso,
         bemerkung:d.bemerkung},{seite:"Fahrtraining"});
     if(antwort.ok){
@@ -2473,3 +2483,71 @@ document.addEventListener("DOMContentLoaded",()=>{
 </div>
 </body>
 </html>
+<script>
+/* Ansicht «Reservation ändern oder stornieren» – wird nur mit ?res=… angezeigt */
+(function(){
+  if(!RV_TOKEN) return;
+  const $$=id=>document.getElementById(id);
+  document.querySelectorAll(".init-overlay").forEach(e=>e.style.display="none");
+  const inhalt=$$("res-verwalten");
+  inhalt.style.display="block";
+  document.body.style.overflow="auto";
+  const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const status=(text,art)=>{ const st=$$("rv-status"); st.style.display=text?"block":"none";
+    st.className="status-msg"+(art?" "+art:""); st.textContent=text; };
+  const ruf=(p)=>fwAufruf(SHEETS_URL,Object.assign({token:RV_TOKEN},p),{seite:"Reservation verwalten"});
+  const fehlerText=r=>({LINK_UNGUELTIG:"Dieser Link ist nicht mehr gültig.",
+    STORNIERT:"Diese Reservation wurde bereits storniert.", VORBEI:"Diese Reservation ist vorbei.",
+    SONNTAG:"An Sonntagen sind keine Fahrtrainings möglich.", ZEIT_REIHENFOLGE:"Die Bis-Zeit muss nach der Von-Zeit liegen.",
+    ZEIT_UNGUELTIG:"Bitte Datum und Zeit prüfen.",
+    BELEGT:`In dieser Zeit ist das Fahrzeug belegt: ${r.belegtDurch||""} (${r.belegtVon||""}–${r.belegtBis||""}).`,
+    UEBUNGSBETRIEB:`In diesem Zeitraum läuft Übungsbetrieb (${r.uebungTitel||""}, ${r.uebungVon||""}–${r.uebungBis||""}).`
+  })[r.error]||("Fehler: "+(r.detail||r.error||"unbekannt"));
+  async function laden(){
+    try{
+      const r=await ruf({type:"res_verwalten_info"});
+      if(!r.ok){ $$("rv-inhalt").innerHTML=`<p>${esc(fehlerText(r))}</p>`; return; }
+      const d=r.daten;
+      $$("rv-inhalt").innerHTML=`
+        <p style="margin-top:0"><b>${esc(d.typ)}: ${esc(d.fahrzeug)}</b><br>
+          ${esc(d.datum)} · ${esc(d.vonZeit)}–${esc(d.bisZeit)}<br>
+          ${esc([d.fahrer,d.beifahrer].filter(x=>x).join(" / "))}
+          ${d.bemerkung?"<br>"+esc(d.bemerkung):""}</p>
+        ${r.vorbei?"<p>Diese Reservation ist vorbei.</p>":`
+        <label for="rv-datum">Datum</label><input type="date" id="rv-datum" value="${esc(d.vonIso.slice(0,10))}">
+        <div class="grid2">
+          <div><label for="rv-von">Von</label><input type="time" id="rv-von" value="${esc(d.vonZeit)}"></div>
+          <div><label for="rv-bis">Bis</label><input type="time" id="rv-bis" value="${esc(d.bisZeit)}"></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:1rem">
+          <button class="btn btn-primary" id="rv-speichern">Änderung speichern</button>
+          <button class="btn btn-red" id="rv-storno">Reservation stornieren</button>
+        </div>
+        <p style="margin-top:.75rem;font-size:12px;color:var(--gray)">Fahrer und Beifahrer erhalten eine Bestätigung.</p>`}`;
+      if(r.vorbei) return;
+      $$("rv-speichern").addEventListener("click",speichern);
+      $$("rv-storno").addEventListener("click",stornieren);
+    }catch(e){ $$("rv-inhalt").innerHTML=`<p>Server nicht erreichbar: ${esc(e.message)}</p>`; }
+  }
+  async function speichern(){
+    status("Wird geprüft…");
+    try{
+      const r=await ruf({type:"res_verwalten_aendern",datum:$$("rv-datum").value,von:$$("rv-von").value,bis:$$("rv-bis").value});
+      if(!r.ok){ status(fehlerText(r),"err-msg"); return; }
+      status("Geändert. Die Bestätigung ist unterwegs.","ok-msg");
+      laden();
+    }catch(e){ status("Server nicht erreichbar: "+e.message,"err-msg"); }
+  }
+  async function stornieren(){
+    if(!confirm("Reservation wirklich stornieren?")) return;
+    status("Wird storniert…");
+    try{
+      const r=await ruf({type:"res_verwalten_storno"});
+      if(!r.ok){ status(fehlerText(r),"err-msg"); return; }
+      $$("rv-inhalt").innerHTML="<p>Die Reservation ist storniert. Der Kalendereintrag wurde gelöscht.</p>";
+      status("Storniert. Die Bestätigung ist unterwegs.","ok-msg");
+    }catch(e){ status("Server nicht erreichbar: "+e.message,"err-msg"); }
+  }
+  laden();
+})();
+</script>
