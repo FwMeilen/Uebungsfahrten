@@ -619,7 +619,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 </div>
-<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.38</div>
+<div class="site-footer">© Stützpunktfeuerwehr Meilen / LOL &nbsp;·&nbsp; CLv1.39</div>
 
 <script>
 /* ── Netzwerk-Baustein für alle MWD-Seiten (Stand W1.00) ──
@@ -1135,13 +1135,22 @@ function zeigeReservationOk(data){
   if(data.bemerkung) html+=`<br><em>${data.bemerkung}</em>`;
   document.getElementById("ro-summary").innerHTML=html;
 
-  const kuerzelText=data.beifahrer?`${data.fahrer} und ${data.beifahrer}`:data.fahrer;
+  // Die Bestätigung mit Kalendereintrag verschickt der Server automatisch
   const btn=document.getElementById("ro-mail-btn");
-  btn.textContent=`Kalendereintrag an ${kuerzelText} senden`;
-  btn.disabled=false;
-
+  if(btn) btn.style.display="none";
   const st=document.getElementById("ro-status");
-  st.style.display="none"; st.className="status-msg"; st.textContent="";
+  const b=data.bestaetigung||{};
+  if(b.ok&&(b.gesendetAn||[]).length){
+    st.style.display="block"; st.className="status-msg ok-msg";
+    st.textContent=`Bestätigung mit Kalendereintrag gesendet an ${b.gesendetAn.length===1?"1 Empfänger":b.gesendetAn.length+" Empfänger"}.`
+      +((b.ohneMail&&b.ohneMail.length)?` Keine Adresse hinterlegt für: ${b.ohneMail.join(", ")}.`:"");
+  } else if(b.error==="KEINE_EMAIL"){
+    st.style.display="block"; st.className="status-msg";
+    st.textContent="Keine Mailadresse hinterlegt – es wurde keine Bestätigung verschickt.";
+  } else if(b.error){
+    st.style.display="block"; st.className="status-msg err-msg";
+    st.textContent="Die Bestätigung konnte nicht verschickt werden. Bitte beim MWD-Team melden.";
+  } else { st.style.display="none"; st.className="status-msg"; st.textContent=""; }
   show("s-reservation-ok");
   window.scrollTo(0,0);
 }
